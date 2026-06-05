@@ -3321,6 +3321,7 @@ async function saveS() {
 
   // Cloud sync (non-blocking — fires after local save completes)
   syncToCloud(entry);
+  saveRecordingToCloud(entry);
 }
 
 // ════════════════════════════════════
@@ -4256,6 +4257,44 @@ function _setCloudStatus(state, text) {
   el.style.display = '';
   el.className = `cloud-status ${state}`;
   el.textContent = text;
+}
+
+// ── Convert Blob → base64 string ─────────────────────────────────────────────
+function blobToBase64(blob) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload  = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(blob);
+  });
+}
+
+// ── Upload audio recording to Drive via Apps Script ──────────────────────────
+async function saveRecordingToCloud(entry) {
+  if (!APP_CONFIG.APPS_SCRIPT_URL || !currentUser) return;
+  if (!S._pendingBlob) return;   // no audio to upload
+  _setCloudStatus('syncing', '↑ Uploading audio…');
+  try {
+    const audioB64 = await blobToBase64(S._pendingBlob);
+    await fetch(APP_CONFIG.APPS_SCRIPT_URL, {
+      method:  'POST',
+      mode:    'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action:    'saveAudio',
+        user:      currentUser,
+        sessionId: entry.sessionId,
+        audioB64,
+        mimeType:  _pendingMime || 'audio/webm',
+        durationMs: entry.dur  || 0,
+        sizeBytes:  S._pendingBlob.size || 0,
+      }),
+    });
+    _setCloudStatus('synced', '✓ Audio saved to Drive');
+  } catch(e) {
+    console.warn('Audio upload failed:', e);
+    _setCloudStatus('failed', '✗ Audio upload failed — saved locally');
+  }
 }
 
 async function syncToCloud(entry) {
