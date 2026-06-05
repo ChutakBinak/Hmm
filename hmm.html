@@ -1,0 +1,4135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Hmm · Vocal Wellness</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;display:flex;flex-direction:column;height:100vh;user-select:none}
+
+:root{
+  --bg:#07091a;--surface:#0e1628;--surface2:#151e33;
+  --border:#1c2840;--accent:#7c3aed;--al:#a78bfa;
+  --teal:#0d9488;--tl:#2dd4bf;
+  --text:#e2e8f0;--muted:#4e627a;
+  --danger:#ef4444;--warn:#f59e0b;--ok:#10b981;
+  --rec:#dc2626;
+}
+
+/* ── SCREENS ── */
+.screen{display:none;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:16px}
+.screen.active{display:flex}
+
+/* ── NAV ── */
+.nav{background:var(--surface);border-top:1px solid var(--border);display:flex;padding:6px 0 env(safe-area-inset-bottom,6px);flex-shrink:0}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;background:none;border:none;color:var(--muted);font-size:10px;font-weight:600;font-family:inherit;cursor:pointer;letter-spacing:.04em;transition:color .2s}
+.nb.active{color:var(--al)}
+.nb svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── GENERIC ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin:10px 16px 0}
+.clabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
+.row{display:flex;gap:10px;padding:10px 16px 0}
+.chip{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center}
+.chip-n{font-size:28px;font-weight:900;line-height:1;color:var(--al)}
+.chip-l{font-size:10px;color:var(--muted);margin-top:4px}
+
+/* ── HOME ── */
+.ph{padding:20px 20px 0;display:flex;align-items:flex-start;justify-content:space-between}
+.pt{font-size:22px;font-weight:800}
+.ps{font-size:12px;color:var(--muted);margin-top:2px}
+
+.start-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#5b21b6,#7c3aed);border:none;border-radius:20px;color:#fff;font-family:inherit;font-size:17px;font-weight:700;padding:20px;margin:14px 16px 0;cursor:pointer;width:calc(100% - 32px);transition:transform .15s,box-shadow .15s;box-shadow:0 8px 28px rgba(124,58,237,.45);letter-spacing:-.01em}
+.start-btn:active{transform:scale(.97)}
+.start-btn svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.hz-row{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px 0;font-size:13px;color:var(--muted)}
+.hz-in{width:72px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;font-weight:700;padding:5px 8px;text-align:center}
+.hz-in:focus{outline:none;border-color:var(--accent)}
+
+.bars-wrap{display:flex;align-items:flex-end;gap:3px;height:64px}
+.mb{flex:1;border-radius:4px 4px 0 0;background:var(--accent);opacity:.55;min-height:4px}
+.mb.today{opacity:1;background:var(--al)}
+.mb.nil{background:var(--surface2);opacity:1}
+.day-ls{display:flex;gap:3px;margin-top:4px}
+.day-l{flex:1;text-align:center;font-size:9px;color:var(--muted)}
+
+/* ── SESSION ── */
+.sess-hd{padding:20px 20px 0;text-align:center}
+.s-timer{font-size:54px;font-weight:900;letter-spacing:-3px;font-variant-numeric:tabular-nums}
+.s-status{font-size:12px;color:var(--muted);margin-top:3px}
+.s-status.rec{color:var(--rec)}
+.pdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--rec);margin-right:5px;animation:pdot 1s ease-in-out infinite}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+
+.freq-disp{text-align:center;padding:12px 0 4px}
+.freq-n{font-size:68px;font-weight:900;letter-spacing:-4px;font-variant-numeric:tabular-nums;background:linear-gradient(135deg,var(--al),var(--tl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.freq-u{font-size:18px;font-weight:500;color:var(--muted)}
+.freq-l{font-size:11px;color:var(--muted);margin-top:2px}
+
+.viz-panel{padding:0 16px;margin-top:6px}
+.viz-tabs{display:flex;gap:2px;background:var(--surface2);border-radius:10px 10px 0 0;padding:3px;border:1px solid var(--border);border-bottom:none}
+.vt{flex:1;padding:5px 4px;background:none;border:none;border-radius:8px;font-family:inherit;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;letter-spacing:.04em}
+.vt.active{background:var(--surface);color:var(--al)}
+#spec{width:100%;height:160px;border-radius:0 0 12px 12px;display:block;background:#07091a;border:1px solid var(--border);border-top:none}
+.fp-card{margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px}
+#fp-c{width:100%;aspect-ratio:1;display:block;max-height:240px}
+
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;margin:6px 0 0}
+.g-dev{font-size:17px;font-weight:700;text-align:center;min-height:24px}
+#gauge{width:200px;height:108px}
+.g-info{font-size:11px;color:var(--muted);text-align:center;margin-top:2px}
+
+.met-row{display:flex;gap:8px;padding:0 16px;margin-top:8px}
+.met{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center}
+.met-v{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.met-l{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
+
+.rec-wrap{display:flex;justify-content:center;margin:14px 0 6px}
+.rec-btn{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#7c3aed);border:4px solid rgba(124,58,237,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s;box-shadow:0 0 0 0 rgba(124,58,237,.4)}
+.rec-btn.go{background:linear-gradient(135deg,#b91c1c,#dc2626);border-color:rgba(220,38,38,.3);animation:rpulse 2s ease-in-out infinite}
+@keyframes rpulse{0%{box-shadow:0 0 0 0 rgba(220,38,38,.45)}70%{box-shadow:0 0 0 18px rgba(220,38,38,0)}100%{box-shadow:0 0 0 0 rgba(220,38,38,0)}}
+.rec-btn:active{transform:scale(.92)}
+.rec-btn svg{width:30px;height:30px}
+.rec-lbl{text-align:center;font-size:11px;color:var(--muted);margin-top:5px}
+
+.tip{text-align:center;font-size:12px;color:var(--muted);padding:0 24px;line-height:1.6;margin-top:4px}
+
+/* ── RESULTS ── */
+.res-hero{text-align:center;padding:20px 20px 12px}
+.ring-wrap{width:140px;height:140px;margin:0 auto 14px;position:relative}
+#score-c{width:140px;height:140px;display:block}
+.ring-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.ring-n{font-size:38px;font-weight:900;line-height:1}
+.ring-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.res-t{font-size:20px;font-weight:800;margin-bottom:3px}
+.res-s{font-size:12px;color:var(--muted)}
+
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px;margin-top:4px}
+.ri{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px}
+.ri-v{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.ri-l{font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+
+/* ── BREATH JOURNAL ── */
+.btog{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;cursor:pointer;transition:border-color .2s}
+.btog:hover{border-color:var(--teal)}
+.btog-lbl{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600}
+.btog-ico{width:34px;height:34px;border-radius:10px;background:rgba(13,148,136,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.barr{color:var(--muted);transition:transform .2s}
+.barr.open{transform:rotate(180deg)}
+
+.bjour{display:none;padding:0 16px;margin-top:8px}
+.bjour.open{display:block}
+.bjour-note{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.55}
+
+.bbgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.bb{padding:16px;border-radius:14px;border:2px solid transparent;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:transform .15s;display:flex;flex-direction:column;align-items:center;gap:3px;background:var(--surface)}
+.bb.inh{background:rgba(13,148,136,.1);border-color:rgba(45,212,191,.25);color:var(--tl)}
+.bb.exh{background:rgba(124,58,237,.1);border-color:rgba(167,139,250,.25);color:var(--al)}
+.bb.hld{width:100%;margin-bottom:8px;flex-direction:row;justify-content:center;background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.25);color:#fcd34d;gap:8px;padding:13px}
+.bb-sub{font-size:10px;font-weight:400;opacity:.65}
+.bb:active{transform:scale(.94)}
+
+.btl{background:var(--surface2);border-radius:12px;padding:12px}
+.btl-lbl{font-size:10px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em}
+#bvis{width:100%;height:48px;border-radius:8px;margin-bottom:8px;display:block}
+.bevts{display:flex;flex-wrap:wrap;gap:5px}
+.be{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.be.inh{background:rgba(45,212,191,.15);color:var(--tl);border:1px solid rgba(45,212,191,.3)}
+.be.exh{background:rgba(167,139,250,.15);color:var(--al);border:1px solid rgba(167,139,250,.3)}
+.be.hld{background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+
+.bclear{width:100%;margin-top:6px;padding:9px;background:none;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-family:inherit;font-size:12px;cursor:pointer;transition:all .15s}
+.bclear:hover{border-color:var(--danger);color:var(--danger)}
+
+.save-btn{width:calc(100% - 32px);margin:12px 16px 0;padding:16px;background:linear-gradient(135deg,#5b21b6,#7c3aed);border:none;border-radius:14px;color:#fff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:transform .15s,background .3s}
+.save-btn:active{transform:scale(.98)}
+.save-btn.saved{background:var(--ok)}
+.back-btn{width:calc(100% - 32px);margin:8px 16px 0;padding:14px;background:none;border:1px solid var(--border);border-radius:14px;color:var(--muted);font-family:inherit;font-size:14px;cursor:pointer;transition:border-color .2s}
+.back-btn:hover{border-color:var(--muted)}
+
+/* ── HISTORY ── */
+.hhd{padding:20px 20px 0}
+.hhd h2{font-size:22px;font-weight:800}
+.hhd p{font-size:12px;color:var(--muted);margin-top:2px}
+#hchart{width:100%;height:180px;display:block}
+.slist{padding:0}
+.si{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border)}
+.si:last-child{border-bottom:none}
+.si-d{font-size:13px;font-weight:600}
+.si-m{font-size:11px;color:var(--muted);margin-top:2px}
+.si-s{font-size:20px;font-weight:900;color:var(--al)}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty svg{width:44px;height:44px;margin-bottom:12px;opacity:.3;stroke:currentColor;fill:none;stroke-width:1.5}
+.empty p{font-size:13px;line-height:1.7}
+
+/* ── PERM OVERLAY ── */
+#perm{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center}
+#perm.show{display:flex}
+.perm-btn{width:100%;max-width:280px;padding:16px;background:linear-gradient(135deg,#5b21b6,#7c3aed);border:none;border-radius:14px;color:#fff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;margin-top:28px}
+
+/* ── SETTINGS MODAL ── */
+#smodal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:150;align-items:flex-end;justify-content:center}
+#smodal.show{display:flex}
+.sm-body{background:var(--surface);border-radius:24px 24px 0 0;padding:24px;width:100%;max-width:480px}
+.sm-body label{display:block;font-size:13px;color:var(--muted);margin:16px 0 6px}
+.sm-body label:first-of-type{margin-top:0}
+.sm-in{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:18px;font-weight:700;padding:12px 16px}
+.sm-in:focus{outline:none;border-color:var(--accent)}
+.sm-note{font-size:11px;color:var(--muted);margin-top:4px}
+.sm-danger{width:100%;padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;color:var(--danger);font-family:inherit;font-size:13px;cursor:pointer;margin-top:16px}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:74px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:9px 18px;font-size:13px;font-weight:500;opacity:0;transition:opacity .25s,transform .25s;z-index:300;white-space:nowrap;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── EXPORTS ── */
+.export-row{display:flex;gap:8px;margin-top:10px}
+.exp-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.exp-btn:hover{border-color:var(--al);color:var(--al)}
+.exp-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.exp-section-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-top:16px;margin-bottom:6px;display:block}
+.hist-export-row{display:flex;gap:6px;padding:8px 16px 0}
+.hist-exp-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
+.hist-exp-btn:hover{border-color:var(--al);color:var(--al)}
+.hist-exp-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* ── MOOD PICKER ── */
+.mood-row{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 16px 0}
+.mood-lbl{font-size:11px;color:var(--muted);text-align:center;margin-bottom:5px}
+.mood-btns{display:flex;gap:8px;justify-content:center}
+.mb2{width:44px;height:44px;border-radius:12px;background:var(--surface2);border:2px solid transparent;font-size:20px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.mb2:hover{background:var(--surface);border-color:var(--border)}
+.mb2.sel{border-color:var(--al);background:rgba(124,58,237,.15);transform:scale(1.1)}
+.mood-section{margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px}
+
+/* ── MOOD SHIFT ── */
+.mood-shift{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:16px;margin:10px 16px 0}
+.ms-mood{text-align:center}
+.ms-emoji{font-size:28px;line-height:1}
+.ms-name{font-size:10px;color:var(--muted);margin-top:2px}
+.ms-arrow{font-size:20px;color:var(--muted)}
+.ms-delta{font-size:11px;color:var(--ok);font-weight:600;text-align:center;margin-top:6px}
+
+/* ── PROGRAMS ── */
+.prog-list{padding:10px 16px 0;display:flex;flex-direction:column;gap:12px}
+.prog-card{border-radius:18px;overflow:hidden;border:1px solid var(--border);background:var(--surface);transition:border-color .2s}
+.prog-card:hover{border-color:rgba(124,58,237,.4)}
+.prog-banner{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:relative;overflow:hidden}
+.prog-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.25),transparent)}
+.prog-emoji{font-size:36px;position:relative;z-index:1}
+.prog-dur-pill{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:#fff;position:relative;z-index:1;letter-spacing:.04em}
+.prog-body{padding:14px 16px}
+.prog-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.prog-title{font-size:16px;font-weight:700}
+.prog-fav{background:none;border:none;font-size:20px;cursor:pointer;padding:0 0 0 6px;line-height:1;transition:transform .15s;color:var(--muted)}
+.prog-fav.active{color:#f472b6}
+.prog-fav:active{transform:scale(1.3)}
+.prog-desc{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:10px}
+.prog-stats{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted)}
+.prog-stat{display:flex;align-items:center;gap:4px}
+.prog-stat-n{font-weight:700;color:var(--text)}
+.prog-expand{width:100%;margin-top:10px;padding:8px;background:none;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-family:inherit;font-size:12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.prog-expand:hover{border-color:var(--al);color:var(--al)}
+.prog-detail{display:none;margin-top:10px}
+.prog-detail.open{display:block}
+.prog-instructions{list-style:none;margin-bottom:12px}
+.prog-instructions li{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.5}
+.prog-instructions li:last-child{border-bottom:none}
+.prog-step-n{width:20px;height:20px;border-radius:6px;background:rgba(124,58,237,.2);color:var(--al);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.prog-guidance{background:rgba(45,212,191,.06);border:1px solid rgba(45,212,191,.2);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--tl);line-height:1.55;margin-bottom:12px}
+.prog-start{width:100%;padding:14px;background:linear-gradient(135deg,#5b21b6,#7c3aed);border:none;border-radius:12px;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:transform .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.prog-start:active{transform:scale(.97)}
+/* program countdown bar on session screen */
+.prog-countdown{margin:0 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;display:none}
+.prog-cd-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.prog-cd-name{font-size:12px;font-weight:700;color:var(--al)}
+.prog-cd-time{font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.prog-cd-track{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.prog-cd-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--tl));border-radius:3px;transition:width .5s linear}
+/* banner color variants */
+.pb-purple{background:linear-gradient(135deg,#5b21b6,#7c3aed)}
+.pb-teal{background:linear-gradient(135deg,#0f766e,#0d9488)}
+.pb-amber{background:linear-gradient(135deg,#b45309,#d97706)}
+.pb-indigo{background:linear-gradient(135deg,#3730a3,#4f46e5)}
+.pb-rose{background:linear-gradient(135deg,#9f1239,#be185d)}
+
+/* ── ACHIEVEMENTS ── */
+.ach-section{margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px}
+.ach-header{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer}
+.ach-header-left{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.ach-count-pill{padding:2px 9px;border-radius:10px;font-size:10px;font-weight:800;background:rgba(124,58,237,.18);color:var(--al)}
+.ach-chevron{color:var(--muted);transition:transform .2s;flex-shrink:0}
+.ach-chevron.open{transform:rotate(180deg)}
+.ach-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 12px}
+.ach-badge{border-radius:14px;padding:12px;border:1.5px solid var(--border);background:var(--surface2);transition:border-color .2s;position:relative;overflow:hidden}
+.ach-badge.unlocked{background:var(--surface)}
+.ach-badge.common.unlocked{border-color:rgba(205,133,63,.55)}
+.ach-badge.rare.unlocked{border-color:rgba(96,165,250,.55)}
+.ach-badge.epic.unlocked{border-color:rgba(167,139,250,.65);box-shadow:0 0 12px rgba(124,58,237,.2)}
+.ach-icon-wrap{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:7px;background:var(--surface2)}
+.ach-badge.common.unlocked .ach-icon-wrap{background:rgba(205,133,63,.15)}
+.ach-badge.rare.unlocked   .ach-icon-wrap{background:rgba(96,165,250,.15)}
+.ach-badge.epic.unlocked   .ach-icon-wrap{background:rgba(167,139,250,.18)}
+.ach-badge.locked .ach-icon-wrap{opacity:.35}
+.ach-title{font-size:12px;font-weight:700;line-height:1.3;margin-bottom:3px}
+.ach-badge.locked .ach-title{color:var(--muted)}
+.ach-sub{font-size:10px;color:var(--muted);line-height:1.4}
+.ach-date{font-size:9px;font-weight:600;margin-top:4px;opacity:.7}
+.ach-badge.common.unlocked .ach-date{color:#cd853f}
+.ach-badge.rare.unlocked   .ach-date{color:#60a5fa}
+.ach-badge.epic.unlocked   .ach-date{color:#a78bfa}
+.ach-prog-wrap{margin-top:5px}
+.ach-prog-row{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:3px}
+.ach-prog-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.ach-prog-fill{height:100%;border-radius:2px;background:var(--accent);opacity:.6;transition:width .4s}
+/* rarity pip in corner */
+.ach-badge::after{content:'';position:absolute;top:8px;right:8px;width:6px;height:6px;border-radius:50%}
+.ach-badge.common.unlocked::after{background:#cd853f}
+.ach-badge.rare.unlocked::after{background:#60a5fa}
+.ach-badge.epic.unlocked::after{background:#a78bfa;box-shadow:0 0 5px rgba(167,139,250,.8)}
+
+/* ── ACHIEVEMENT UNLOCK OVERLAY ── */
+#ach-unlock{position:fixed;inset:0;z-index:400;display:flex;align-items:flex-end;justify-content:center;padding:0 20px 90px;pointer-events:none;opacity:0;transition:opacity .35s}
+#ach-unlock.show{opacity:1}
+.ach-un-card{width:100%;max-width:380px;background:var(--surface);border-radius:20px;padding:20px;text-align:center;transform:translateY(30px) scale(.94);transition:transform .35s cubic-bezier(.34,1.56,.64,1);border:1px solid var(--border);box-shadow:0 24px 60px rgba(0,0,0,.6)}
+#ach-unlock.show .ach-un-card{transform:translateY(0) scale(1)}
+.ach-un-kicker{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:10px}
+.ach-un-icon{font-size:44px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 14px rgba(167,139,250,.5))}
+.ach-un-name{font-size:20px;font-weight:800;margin-bottom:4px}
+.ach-un-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.ach-un-rarity{display:inline-block;margin-top:10px;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:.05em}
+.ach-un-rarity.common{background:rgba(205,133,63,.15);color:#cd853f;border:1px solid rgba(205,133,63,.35)}
+.ach-un-rarity.rare{background:rgba(96,165,250,.15);color:#60a5fa;border:1px solid rgba(96,165,250,.35)}
+.ach-un-rarity.epic{background:rgba(167,139,250,.18);color:#a78bfa;border:1px solid rgba(167,139,250,.4)}
+
+/* ── SESSION COMPARISON ── */
+.cmp-card{margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.cmp-tabs{display:flex;border-bottom:1px solid var(--border)}
+.cmp-tab{flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;font-family:inherit;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;letter-spacing:.04em;text-transform:uppercase;transition:all .15s;margin-bottom:-1px}
+.cmp-tab.active{color:var(--al);border-bottom-color:var(--al)}
+.cmp-tab:hover:not(.active){color:var(--text)}
+.cmp-body{padding:12px 14px 14px}
+.cmp-ref-lbl{font-size:10px;color:var(--muted);margin-bottom:10px;font-style:italic}
+.cmp-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.cmp-row:last-child{border-bottom:none;padding-bottom:0}
+.cmp-name{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;flex:1}
+.cmp-cur{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;text-align:right;min-width:42px}
+.cmp-sep{width:1px;height:14px;background:var(--border);margin:0 8px;flex-shrink:0}
+.cmp-arrow{font-size:15px;font-weight:900;width:18px;text-align:center;flex-shrink:0}
+.cmp-delta{font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
+.cmp-ref-v{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+.up{color:var(--ok)}.dn{color:var(--danger)}.eq{color:var(--muted)}
+.cmp-na{padding:18px;text-align:center;font-size:12px;color:var(--muted);line-height:1.6}
+
+/* ── SESSION NOTES ── */
+.notes-card{margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px}
+.notes-prompt{font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px}
+.notes-ta{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:13px;line-height:1.6;padding:10px 12px;resize:none;min-height:72px;transition:border-color .2s}
+.notes-ta:focus{outline:none;border-color:var(--accent)}
+.notes-ta::placeholder{color:var(--muted)}
+.tags-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:10px 0 6px}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.tag-btn{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:none;color:var(--muted);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.tag-btn:hover{border-color:var(--al);color:var(--al)}
+.tag-btn.sel{border-color:var(--al);background:rgba(124,58,237,.18);color:var(--al)}
+/* history note display */
+.si-note{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;font-style:italic}
+.si-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.si-tag{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;background:rgba(124,58,237,.14);color:var(--al);border:1px solid rgba(124,58,237,.25)}
+
+/* ── SEARCH & FILTER ── */
+.search-wrap{padding:10px 16px 0;position:relative}
+.search-in{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:13px;padding:9px 12px 9px 36px;transition:border-color .2s}
+.search-in:focus{outline:none;border-color:var(--accent)}
+.search-ico{position:absolute;left:28px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-top:5px}
+.filter-row{display:flex;gap:6px;padding:8px 16px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.ftag{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:none;color:var(--muted);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.ftag:hover{border-color:var(--al);color:var(--al)}
+.ftag.active{border-color:var(--al);background:rgba(124,58,237,.18);color:var(--al)}
+.no-results{text-align:center;padding:24px;font-size:13px;color:var(--muted)}
+
+/* ── RESONANCE CARD ── */
+.res-card{margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px}
+.harm-bars{display:flex;align-items:flex-end;gap:5px;height:52px;margin:8px 0}
+.hb{flex:1;border-radius:4px 4px 0 0;min-height:3px;transition:height .3s}
+.hb.f0{background:var(--al)}
+.hb.h2{background:#818cf8}
+.hb.h3{background:#60a5fa}
+.hb.h4{background:var(--tl)}
+.hb.h5{background:#34d399}
+.hb.h6{background:#a3e635;opacity:.8}
+.hb.h7{background:#facc15;opacity:.7}
+.hb.h8{background:#fb923c;opacity:.6}
+.harm-label{font-size:9px;color:var(--muted);text-align:center;margin-top:2px}
+.res-scores{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+.rs-item{background:var(--surface2);border-radius:10px;padding:10px;text-align:center}
+.rs-val{font-size:18px;font-weight:800;line-height:1}
+.rs-lbl{font-size:9px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
+.hnr-bar-wrap{margin-top:10px}
+.hnr-track{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-top:4px}
+.hnr-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--tl));transition:width .5s}
+
+/* ── LIVE RESONANCE (session) ── */
+.harm-live{display:flex;align-items:flex-end;gap:3px;height:32px;margin-top:4px}
+.hlb{width:8px;border-radius:2px 2px 0 0;min-height:2px;transition:height .15s}
+
+/* ── RECORDING BADGE ── */
+.rec-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--rec);letter-spacing:.04em;margin-left:8px;opacity:0;transition:opacity .3s}
+.rec-badge.show{opacity:1}
+.rec-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--rec);animation:pdot 1s ease-in-out infinite}
+.seg-badge{display:inline-flex;align-items:center;font-size:11px;font-weight:700;letter-spacing:.03em;margin-left:8px;padding:2px 7px;border-radius:20px;transition:all .3s}
+.seg-badge.seg-hum{color:#2dd4bf;background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.25)}
+.seg-badge.seg-pause{color:#94a3b8;background:rgba(148,163,184,.1);border:1px solid rgba(148,163,184,.2)}
+
+/* ── AUTH OVERLAY ── */
+.auth-overlay{position:fixed;inset:0;z-index:9000;background:#07091a;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px}
+.auth-card{width:100%;max-width:360px;text-align:center}
+.auth-logo{font-size:52px;margin-bottom:12px;filter:drop-shadow(0 0 18px rgba(167,139,250,.5))}
+.auth-app{font-size:28px;font-weight:900;letter-spacing:-.02em;color:var(--al)}
+.auth-tagline{font-size:13px;color:var(--muted);margin-top:4px;margin-bottom:32px}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:11px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-skip{margin-top:24px;font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.auth-skip:hover{color:var(--text)}
+.auth-features{display:flex;flex-direction:column;gap:8px;margin-bottom:28px;text-align:left}
+.auth-feat{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--muted);line-height:1.4}
+.auth-feat-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+
+/* ── USER CHIP ── */
+.user-chip{position:fixed;top:12px;right:12px;z-index:800;display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 11px 5px 5px;cursor:pointer;transition:border-color .2s;max-width:160px}
+.user-chip:hover{border-color:var(--accent)}
+.user-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--teal));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden}
+.user-avatar img{width:100%;height:100%;object-fit:cover}
+.user-name{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-chip-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);flex-shrink:0}
+
+/* ── CLOUD SYNC STATUS ── */
+.cloud-status{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;transition:all .4s;letter-spacing:.02em}
+.cloud-status.syncing{color:#f59e0b;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25)}
+.cloud-status.synced {color:var(--ok);background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25)}
+.cloud-status.failed {color:var(--danger);background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2)}
+
+/* ── SHARE MODAL ── */
+.share-modal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:14px}
+.share-canvas-wrap{border-radius:16px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.7);max-width:100%;max-height:65vh;display:flex}
+.share-canvas-wrap canvas{max-width:100%;max-height:65vh;object-fit:contain}
+.share-actions{display:flex;gap:10px}
+.share-btn-primary{background:linear-gradient(135deg,#5b21b6,#0d9488);border:none;border-radius:12px;color:#fff;font-family:inherit;font-size:14px;font-weight:700;padding:12px 24px;cursor:pointer}
+.share-btn-secondary{background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:14px;font-weight:600;padding:12px 20px;cursor:pointer}
+.share-modal-close{position:absolute;top:16px;right:16px;background:var(--surface2);border:1px solid var(--border);border-radius:50%;width:32px;height:32px;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* ── HUM TIMELINE ── */
+.ht-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin:10px 16px 0}
+.ht-summary{font-size:12px;margin-bottom:10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ht-bar{display:flex;height:22px;border-radius:6px;overflow:hidden;gap:2px}
+.ht-seg{border-radius:4px;min-width:2px;transition:opacity .15s;cursor:default}
+.ht-seg.hum{background:linear-gradient(90deg,#6d28d9,#2dd4bf)}
+.ht-seg.pause{background:repeating-linear-gradient(90deg,#1a1f30 0,#1a1f30 3px,#0f1320 3px,#0f1320 6px);border:1px solid rgba(255,255,255,.06)}
+.ht-seg.hum:hover{opacity:.82}
+.ht-seg.pause:hover{opacity:.7}
+.ht-labels{display:flex;gap:2px;margin-top:5px}
+.ht-lbl{font-size:9px;font-weight:600;text-align:center;overflow:hidden;white-space:nowrap;letter-spacing:.01em}
+.ht-lbl.hum{color:#2dd4bf}
+.ht-lbl.pause{color:#4e627a}
+.ht-detail{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.ht-chip{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:10px;line-height:1.4;min-width:0}
+.ht-chip-n{font-size:16px;font-weight:800;line-height:1}
+.ht-chip-l{color:var(--muted);margin-top:1px}
+.rec-info-card{margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.ric-icon{width:32px;height:32px;border-radius:9px;background:rgba(220,38,38,.12);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ric-text{flex:1;font-size:12px;color:var(--muted);line-height:1.5}
+.ric-text strong{color:var(--text);display:block;font-size:13px;margin-bottom:1px}
+
+/* ── PLAYBACK CONTROLS ── */
+.pb-wrap{background:var(--surface2);border-radius:12px;padding:10px 12px;margin-top:8px}
+.pb-wvfm{width:100%;height:40px;border-radius:6px;display:block;background:#0a0f1e;margin-bottom:8px;cursor:pointer}
+.pb-row{display:flex;align-items:center;gap:6px}
+.pb-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.pb-btn:hover{border-color:var(--al);color:var(--al)}
+.pb-btn.active{background:rgba(124,58,237,.2);border-color:var(--al);color:var(--al)}
+.pb-btn.del{color:var(--muted);margin-left:auto}
+.pb-btn.del:hover{border-color:var(--danger);color:var(--danger)}
+.pb-time{font-size:11px;font-variant-numeric:tabular-nums;color:var(--muted);min-width:36px}
+.pb-meta{font-size:10px;color:var(--muted);margin-left:auto;margin-right:4px}
+.pb-load{font-size:11px;color:var(--muted);padding:4px 0;text-align:center}
+/* history item expands when recording present */
+.si.has-rec{flex-direction:column;align-items:stretch;gap:0}
+.si-top{display:flex;align-items:center;justify-content:space-between}
+.si-rec-toggle{font-size:10px;color:var(--muted);cursor:pointer;padding:2px 6px;border-radius:6px;border:1px solid var(--border);background:none;font-family:inherit;margin-left:8px;transition:all .15s;white-space:nowrap}
+.si-rec-toggle:hover{border-color:var(--al);color:var(--al)}
+
+/* ── AI INSIGHTS ── */
+.insight-card{margin:10px 16px 0;background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(13,148,136,.06));border:1px solid rgba(124,58,237,.2);border-radius:16px;padding:16px}
+.insight-item{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.insight-item:last-child{border-bottom:none;padding-bottom:0}
+.insight-item:first-child{padding-top:0}
+.ins-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:1px}
+.ins-text{font-size:12px;color:var(--text);line-height:1.55;flex:1}
+.ins-text strong{color:var(--al)}
+</style>
+</head>
+<body>
+
+<!-- AUTH OVERLAY -->
+<div id="auth-overlay" class="auth-overlay" style="display:none">
+  <div class="auth-card">
+    <div class="auth-logo">🎵</div>
+    <div class="auth-app">Hmm</div>
+    <div class="auth-tagline">Vocal Wellness · Track · Improve · Share</div>
+
+    <div class="auth-features">
+      <div class="auth-feat"><span class="auth-feat-icon">☁️</span>Sessions saved to your Google Sheet for rich analytics</div>
+      <div class="auth-feat"><span class="auth-feat-icon">📈</span>Track voice profile, resonance & wellness over time</div>
+      <div class="auth-feat"><span class="auth-feat-icon">📤</span>Generate beautiful session cards to share</div>
+    </div>
+
+    <div id="g-signin-btn" style="display:flex;justify-content:center;min-height:44px"></div>
+
+    <div class="auth-divider">or</div>
+
+    <div class="auth-skip" onclick="skipAuth()">Continue without account · data stays local only</div>
+  </div>
+</div>
+
+<!-- USER CHIP (top-right, shown when logged in) -->
+<div id="user-chip" class="user-chip" style="display:none" onclick="showUserMenu()">
+  <div class="user-avatar" id="user-avatar-el">?</div>
+  <span class="user-name" id="user-name-el">—</span>
+  <div class="user-chip-dot" id="user-sync-dot"></div>
+</div>
+
+<!-- USER MENU (dropdown) -->
+<div id="user-menu" style="display:none;position:fixed;top:46px;right:12px;z-index:810;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:6px;min-width:170px;box-shadow:0 12px 32px rgba(0,0,0,.5)">
+  <div id="um-email" style="font-size:10px;color:var(--muted);padding:6px 10px 8px;border-bottom:1px solid var(--border)"></div>
+  <button onclick="closeUserMenu();nav('history')" style="width:100%;background:none;border:none;color:var(--text);font-family:inherit;font-size:13px;font-weight:500;padding:9px 10px;text-align:left;cursor:pointer;border-radius:8px">📋 My History</button>
+  <button onclick="logoutUser()" style="width:100%;background:none;border:none;color:var(--danger);font-family:inherit;font-size:13px;font-weight:500;padding:9px 10px;text-align:left;cursor:pointer;border-radius:8px">↩ Sign Out</button>
+</div>
+
+<!-- SHARE MODAL -->
+<div id="share-modal" class="share-modal" style="display:none" onclick="closeShareModal(event)">
+  <button class="share-modal-close" onclick="closeShareModal()">✕</button>
+  <div class="share-canvas-wrap" id="share-canvas-wrap"></div>
+  <div class="share-actions">
+    <button class="share-btn-primary" id="share-btn-native" onclick="nativeShare()">📤 Share</button>
+    <button class="share-btn-secondary" onclick="downloadShareCard()">⬇ Save</button>
+  </div>
+</div>
+
+<!-- PERMISSION -->
+<div id="perm">
+  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:20px">
+    <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+    <line x1="12" y1="19" x2="12" y2="22"/>
+    <line x1="8" y1="22" x2="16" y2="22"/>
+  </svg>
+  <h2 style="font-size:22px;font-weight:800;margin-bottom:8px">Microphone Access</h2>
+  <p style="color:var(--muted);font-size:14px;line-height:1.65;max-width:300px">Hmm needs your microphone to analyze vocal frequencies. Audio is processed locally and never stored or sent anywhere.</p>
+  <button class="perm-btn" onclick="requestMic()">Allow Microphone</button>
+  <p id="perm-err" style="color:var(--danger);font-size:13px;margin-top:14px;display:none">Microphone access denied. Please allow it in browser settings.</p>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="smodal" onclick="if(event.target===this)closeSM()">
+  <div class="sm-body">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <span style="font-size:18px;font-weight:700">Settings</span>
+      <button onclick="closeSM()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1">✕</button>
+    </div>
+    <label>Target Frequency (Hz)</label>
+    <input class="sm-in" type="number" id="sm-hz" min="50" max="600" value="136" onchange="setHz(this.value)">
+    <p class="sm-note">Om = 136 Hz · Bhramari typical range: 100–250 Hz</p>
+    <span class="exp-section-lbl">Export Data</span>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px" id="sm-export-summary">No sessions yet</div>
+    <div class="export-row">
+      <button class="exp-btn" onclick="exportJSON()">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+        JSON
+      </button>
+      <button class="exp-btn" onclick="exportCSV()">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+        CSV
+      </button>
+      <button class="exp-btn" onclick="exportNotes()">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+        Notes
+      </button>
+    </div>
+    <button class="sm-danger" onclick="clearAll()">Clear All History</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ACHIEVEMENT UNLOCK OVERLAY -->
+<div id="ach-unlock">
+  <div class="ach-un-card">
+    <div class="ach-un-kicker">Achievement Unlocked</div>
+    <div class="ach-un-icon" id="ach-un-icon">🏆</div>
+    <div class="ach-un-name" id="ach-un-name"></div>
+    <div class="ach-un-desc" id="ach-un-desc"></div>
+    <div class="ach-un-rarity" id="ach-un-rarity"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:flex;flex-direction:column;height:100%;overflow:hidden">
+
+  <!-- ── HOME ── -->
+  <div id="s-home" class="screen active">
+    <div class="ph">
+      <div>
+        <div class="pt">Hmm 🐝</div>
+        <div class="ps" id="hdate">Today's Practice</div>
+      </div>
+      <button onclick="openSM()" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:6px;border-radius:8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="row">
+      <div class="chip"><div class="chip-n" id="h-streak">0</div><div class="chip-l">Day Streak 🔥</div></div>
+      <div class="chip"><div class="chip-n" id="h-today" style="color:var(--tl)">0</div><div class="chip-l">Sessions Today</div></div>
+      <div class="chip"><div class="chip-n" id="h-avg" style="font-size:20px;color:var(--warn)">—</div><div class="chip-l">Avg Score</div></div>
+    </div>
+
+    <button class="start-btn" onclick="goSession()">
+      <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+      Begin Practice
+    </button>
+
+    <div class="hz-row">
+      <span>Target:</span>
+      <input class="hz-in" type="number" id="h-hz" value="136" min="50" max="600" onchange="setHz(this.value)">
+      <span>Hz</span>
+      <span style="font-size:10px;opacity:.5">(Om = 136)</span>
+    </div>
+
+    <div class="card">
+      <div class="clabel">7-Day Wellness Trend</div>
+      <div class="bars-wrap" id="wbars"></div>
+      <div class="day-ls" id="wlabels"></div>
+    </div>
+
+    <div class="card" id="last-card" style="display:none">
+      <div class="clabel">Last Session</div>
+      <div id="last-info" style="font-size:14px"></div>
+    </div>
+
+    <div class="insight-card" id="insights-card" style="display:none">
+      <div class="clabel" style="margin-bottom:6px">✦ AI Insights</div>
+      <div id="insights-body"></div>
+    </div>
+
+    <!-- ACHIEVEMENTS -->
+    <div class="ach-section" id="ach-section">
+      <div class="ach-header" onclick="toggleAchSection()">
+        <div class="ach-header-left">
+          🏅 Achievements
+          <span class="ach-count-pill" id="ach-count">0 / 10</span>
+        </div>
+        <svg class="ach-chevron" id="ach-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div id="ach-grid-wrap" style="display:none">
+        <div class="ach-grid" id="ach-grid"></div>
+      </div>
+    </div>
+
+    <div class="card" style="background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.18)">
+      <div style="font-size:12px;color:var(--muted);line-height:1.65">
+        <strong style="color:var(--al)">Bhramari (Bee Breath)</strong> — Close your eyes, plug your ears with your thumbs, and hum continuously like a bee. The sustained vibration calms the nervous system and cultivates inner stillness. Aim for 2–5 minutes daily.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SESSION ── -->
+  <div id="s-sess" class="screen">
+    <div class="sess-hd">
+      <div class="s-timer" id="stimer">0:00</div>
+      <div style="display:flex;align-items:center;justify-content:center">
+        <div class="s-status" id="sstatus">Ready to begin</div>
+        <span class="rec-badge" id="rec-badge">REC</span>
+        <span class="seg-badge" id="seg-status"></span>
+      </div>
+    </div>
+
+    <div class="freq-disp">
+      <span class="freq-n" id="fdisp">—</span><span class="freq-u" id="funit" style="display:none"> Hz</span>
+      <div class="freq-l">Dominant Frequency &nbsp;<span id="fnote" style="color:var(--tl);font-weight:700"></span></div>
+    </div>
+
+    <div class="viz-panel">
+      <div class="viz-tabs">
+        <button class="vt active" onclick="switchViz(this,'spectrum')">Spectrum</button>
+        <button class="vt"        onclick="switchViz(this,'heatmap')">Heatmap</button>
+        <button class="vt"        onclick="switchViz(this,'wave')">Wave</button>
+      </div>
+      <canvas id="spec"></canvas>
+    </div>
+
+    <div class="gauge-wrap">
+      <div class="g-dev" id="gdev" style="color:var(--muted)">— Hz from target</div>
+      <canvas id="gauge"></canvas>
+      <div class="g-info">Deviation from <span id="gtgt">136</span> Hz target</div>
+    </div>
+
+    <div class="met-row">
+      <div class="met"><div class="met-v" id="m-dyn" style="color:var(--tl)">—</div><div class="met-l">Dynamics</div></div>
+      <div class="met"><div class="met-v" id="m-stab" style="color:var(--al)">—</div><div class="met-l">Stability</div></div>
+      <div class="met"><div class="met-v" id="m-acc" style="color:var(--warn)">—</div><div class="met-l">Pitch Acc.</div></div>
+      <div class="met">
+        <div class="met-v" id="m-harm" style="color:var(--ok)">—</div>
+        <div class="harm-live" id="harm-live"></div>
+        <div class="met-l">Harmonics</div>
+      </div>
+    </div>
+
+    <!-- Program countdown (shown when started from a program) -->
+    <div class="prog-countdown" id="prog-countdown">
+      <div class="prog-cd-row">
+        <span class="prog-cd-name" id="pcd-name"></span>
+        <span class="prog-cd-time" id="pcd-time"></span>
+      </div>
+      <div class="prog-cd-track"><div class="prog-cd-fill" id="pcd-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="rec-wrap">
+      <div style="text-align:center">
+        <button class="rec-btn" id="rbtn" onclick="toggleRec()">
+          <svg id="ricon" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8" fill="white"/>
+          </svg>
+        </button>
+        <div class="rec-lbl" id="rlbl">Tap to start humming</div>
+      </div>
+    </div>
+
+    <div id="pre-mood-wrap">
+      <div class="mood-lbl" style="margin-top:10px">How are you feeling right now?</div>
+      <div class="mood-btns" id="pre-mood-btns">
+        <button class="mb2" onclick="setPreMood(1)" title="Tense">😰</button>
+        <button class="mb2" onclick="setPreMood(2)" title="Low">😔</button>
+        <button class="mb2" onclick="setPreMood(3)" title="Neutral">😐</button>
+        <button class="mb2" onclick="setPreMood(4)" title="Calm">😌</button>
+        <button class="mb2" onclick="setPreMood(5)" title="Joyful">😊</button>
+      </div>
+    </div>
+
+    <div class="tip" id="rtip">Close eyes · Plug ears gently · Hum from the chest</div>
+  </div>
+
+  <!-- ── RESULTS ── -->
+  <div id="s-res" class="screen">
+    <div class="res-hero">
+      <div class="ring-wrap">
+        <canvas id="score-c" width="280" height="280"></canvas>
+        <div class="ring-inner">
+          <div class="ring-n" id="rscore">0</div>
+          <div class="ring-l">Wellness</div>
+        </div>
+      </div>
+      <div class="res-t" id="rtitle">Practice Complete</div>
+      <div class="res-s" id="rsub">Here's your session analysis</div>
+      <div id="voice-profile-badge" style="display:none;margin-top:10px;display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:20px;font-size:12px;font-weight:700;border:1px solid transparent">
+        <span id="vp-icon">◉</span>
+        <span id="vp-label">—</span>
+        <span id="vp-range" style="font-weight:400;opacity:.7"></span>
+      </div>
+    </div>
+
+    <div class="res-grid">
+      <div class="ri"><div class="ri-v" id="r-dur" style="color:var(--text)">—</div><div class="ri-l">Duration</div></div>
+      <div class="ri"><div class="ri-v" id="r-avg" style="color:var(--al)">— Hz</div><div class="ri-l">Avg Frequency</div></div>
+      <div class="ri"><div class="ri-v" id="r-stab" style="color:var(--tl)">—%</div><div class="ri-l">Pitch Stability</div></div>
+      <div class="ri"><div class="ri-v" id="r-acc" style="color:var(--warn)">—%</div><div class="ri-l">Pitch Accuracy</div></div>
+      <div class="ri"><div class="ri-v" id="r-peak" style="color:var(--text)">— Hz</div><div class="ri-l">Peak Frequency</div></div>
+      <div class="ri"><div class="ri-v" id="r-res" style="color:var(--ok)">—</div><div class="ri-l">Resonance Quality</div></div>
+    </div>
+
+    <!-- HUM PATTERN TIMELINE -->
+    <div class="ht-card" id="hum-timeline-card" style="display:none">
+      <div class="clabel">Hum Pattern</div>
+      <div class="ht-summary" id="ht-summary"></div>
+      <div class="ht-bar"    id="ht-bar"></div>
+      <div class="ht-labels" id="ht-labels"></div>
+      <div class="ht-detail" id="ht-detail"></div>
+    </div>
+
+    <!-- RECORDING INFO -->
+    <div class="rec-info-card" id="rec-info-card" style="display:none">
+      <div class="ric-icon">🎙</div>
+      <div class="ric-text">
+        <strong id="ric-title">Session recorded</strong>
+        <span id="ric-meta">Saved with session</span>
+      </div>
+    </div>
+
+    <!-- RESONANCE ANALYSIS CARD -->
+    <div class="res-card" id="res-card">
+      <div class="clabel">Resonance Analysis</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+        <div style="flex:1">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Harmonic Overtones</div>
+          <div class="harm-bars" id="r-harm-bars"></div>
+          <div style="display:flex;gap:5px" id="r-harm-labels"></div>
+        </div>
+      </div>
+      <div class="hnr-bar-wrap">
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-size:11px;color:var(--muted)">Harmonic-to-Noise Ratio</span>
+          <span style="font-size:11px;font-weight:700;color:var(--al)" id="r-hnr-val">0%</span>
+        </div>
+        <div class="hnr-track"><div class="hnr-fill" id="r-hnr-fill" style="width:0%"></div></div>
+      </div>
+      <div class="res-scores">
+        <div class="rs-item"><div class="rs-val" id="rs-harm" style="color:var(--ok)">0</div><div class="rs-lbl">Overtones</div></div>
+        <div class="rs-item"><div class="rs-val" id="rs-hnr" style="color:var(--tl)">0%</div><div class="rs-lbl">HNR</div></div>
+        <div class="rs-item"><div class="rs-val" id="rs-res" style="color:var(--al)">—</div><div class="rs-lbl">Quality</div></div>
+      </div>
+      <div id="vp-insight" style="display:none;margin-top:10px;font-size:11px;padding:8px 10px;border-radius:8px;line-height:1.5"></div>
+    </div>
+
+    <!-- VOICE FINGERPRINT -->
+    <div class="fp-card" id="fp-card" style="display:none">
+      <div class="clabel">Voice Fingerprint</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Your unique resonance profile for this session</div>
+      <canvas id="fp-c"></canvas>
+    </div>
+
+    <!-- POST-SESSION MOOD -->
+    <div class="mood-section" id="post-mood-section">
+      <div class="mood-lbl">How do you feel now?</div>
+      <div class="mood-btns" id="post-mood-btns">
+        <button class="mb2" onclick="setPostMood(1)" title="Tense">😰</button>
+        <button class="mb2" onclick="setPostMood(2)" title="Low">😔</button>
+        <button class="mb2" onclick="setPostMood(3)" title="Neutral">😐</button>
+        <button class="mb2" onclick="setPostMood(4)" title="Calm">😌</button>
+        <button class="mb2" onclick="setPostMood(5)" title="Joyful">😊</button>
+      </div>
+      <div id="mood-shift-display" style="display:none">
+        <div class="mood-shift" style="margin:8px 0 0">
+          <div class="ms-mood"><div class="ms-emoji" id="ms-pre">😐</div><div class="ms-name">Before</div></div>
+          <div class="ms-arrow">→</div>
+          <div class="ms-mood"><div class="ms-emoji" id="ms-post">😊</div><div class="ms-name">After</div></div>
+        </div>
+        <div class="ms-delta" id="ms-delta"></div>
+      </div>
+    </div>
+
+    <!-- SESSION COMPARISON -->
+    <div class="cmp-card" id="cmp-card" style="display:none">
+      <div class="cmp-tabs">
+        <button class="cmp-tab active" data-mode="previous" onclick="switchCmp(this)">Previous</button>
+        <button class="cmp-tab"        data-mode="best"     onclick="switchCmp(this)">Best Session</button>
+        <button class="cmp-tab"        data-mode="weekly"   onclick="switchCmp(this)">Weekly Avg</button>
+      </div>
+      <div class="cmp-body" id="cmp-body"></div>
+    </div>
+
+    <!-- BREATH JOURNAL TOGGLE -->
+    <div class="btog" id="btog" onclick="toggleBJ()">
+      <div class="btog-lbl">
+        <div class="btog-ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tl)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22a8 8 0 0 1-8-8c0-2.1.8-4 2.2-5.4L12 3l5.8 5.6A8 8 0 0 1 20 14a8 8 0 0 1-8 8z"/>
+          </svg>
+        </div>
+        Post-Practice Breath Log
+      </div>
+      <svg class="barr" id="barr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+
+    <div class="bjour" id="bjour">
+      <p class="bjour-note">Tap each time your breath phase changes. Timestamps are relative to session end — this helps you observe your natural recovery breath rhythm.</p>
+      <div class="bbgrid">
+        <button class="bb inh" onclick="logB('inh')">↑ Inhale<span class="bb-sub">Breathing in</span></button>
+        <button class="bb exh" onclick="logB('exh')">↓ Exhale<span class="bb-sub">Breathing out</span></button>
+      </div>
+      <button class="bb hld" onclick="logB('hld')">⏸ Breath Retention / Hold</button>
+      <div class="btl">
+        <div class="btl-lbl">Breath Timeline</div>
+        <canvas id="bvis"></canvas>
+        <div class="bevts" id="bevts"><span style="font-size:11px;color:var(--muted)">No events yet — tap above to log</span></div>
+      </div>
+      <button class="bclear" onclick="clearBL()">Clear Log</button>
+    </div>
+
+    <!-- SESSION NOTES -->
+    <div class="notes-card">
+      <div class="notes-prompt">✍️ How did this session feel?</div>
+      <textarea class="notes-ta" id="sess-note" placeholder="Add a reflection… what did you notice? Any sensations, emotions, or observations?" maxlength="500"></textarea>
+      <div class="tags-label">Quick Tags</div>
+      <div class="tags-wrap" id="sess-tags">
+        <button class="tag-btn" data-tag="Calm"      onclick="toggleTag(this)">😌 Calm</button>
+        <button class="tag-btn" data-tag="Focused"   onclick="toggleTag(this)">🎯 Focused</button>
+        <button class="tag-btn" data-tag="Energized" onclick="toggleTag(this)">⚡ Energized</button>
+        <button class="tag-btn" data-tag="Relaxed"   onclick="toggleTag(this)">🌊 Relaxed</button>
+        <button class="tag-btn" data-tag="Emotional" onclick="toggleTag(this)">💧 Emotional</button>
+        <button class="tag-btn" data-tag="Sleepy"    onclick="toggleTag(this)">😴 Sleepy</button>
+        <button class="tag-btn" data-tag="Grounded"  onclick="toggleTag(this)">🌿 Grounded</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;padding:10px 16px 0;align-items:center">
+      <button class="save-btn" id="savebtn" onclick="saveS()" style="flex:1;margin:0">Save Session</button>
+      <button onclick="openShareCard()" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;color:var(--text);font-family:inherit;font-size:14px;font-weight:600;padding:14px 18px;cursor:pointer;flex-shrink:0" title="Share this session">📤</button>
+    </div>
+    <div style="display:flex;justify-content:center;padding:8px 16px 0">
+      <span class="cloud-status" id="cloud-status" style="display:none"></span>
+    </div>
+    <button class="back-btn" onclick="goSession()" style="border-color:rgba(124,58,237,.35);color:var(--al)">↻ New Session</button>
+    <button class="back-btn" onclick="nav('home')">← Back to Home</button>
+  </div>
+
+  <!-- ── PROGRAMS ── -->
+  <div id="s-prog" class="screen">
+    <div class="ph">
+      <div>
+        <div class="pt">Programs</div>
+        <div class="ps" id="prog-sub">Choose a guided practice</div>
+      </div>
+    </div>
+    <div class="prog-list" id="prog-list"></div>
+    <div style="height:8px"></div>
+  </div>
+
+  <!-- ── HISTORY ── -->
+  <div id="s-hist" class="screen">
+    <div class="hhd" style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div>
+        <h2>Progress History</h2>
+        <p id="hsub">Your vocal wellness journey</p>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:4px">
+        <button class="hist-exp-btn" onclick="exportJSON()" title="Export JSON">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+          JSON
+        </button>
+        <button class="hist-exp-btn" onclick="exportCSV()" title="Export CSV">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+          CSV
+        </button>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <svg class="search-ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-in" id="hist-search" type="text" placeholder="Search notes, tags, or frequency…" oninput="filterHist()">
+    </div>
+    <div class="filter-row" id="filter-row">
+      <button class="ftag active" data-filter="all"       onclick="setTagFilter(this)">All</button>
+      <button class="ftag"        data-filter="Calm"      onclick="setTagFilter(this)">😌 Calm</button>
+      <button class="ftag"        data-filter="Focused"   onclick="setTagFilter(this)">🎯 Focused</button>
+      <button class="ftag"        data-filter="Energized" onclick="setTagFilter(this)">⚡ Energized</button>
+      <button class="ftag"        data-filter="Relaxed"   onclick="setTagFilter(this)">🌊 Relaxed</button>
+      <button class="ftag"        data-filter="Emotional" onclick="setTagFilter(this)">💧 Emotional</button>
+      <button class="ftag"        data-filter="Sleepy"    onclick="setTagFilter(this)">😴 Sleepy</button>
+      <button class="ftag"        data-filter="Grounded"  onclick="setTagFilter(this)">🌿 Grounded</button>
+    </div>
+    <div class="card" style="padding:12px 12px 8px">
+      <div class="clabel">Wellness Score — Last 14 Days</div>
+      <canvas id="hchart"></canvas>
+    </div>
+    <div class="card">
+      <div class="clabel" id="slist-label">Sessions</div>
+      <div class="slist" id="slist"></div>
+      <div class="empty" id="hempty" style="display:none">
+        <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+        <p>No sessions yet.<br>Complete your first practice<br>to see history here.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <button class="nb active" id="nb-home" onclick="nav('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </button>
+    <button class="nb" id="nb-sess" onclick="goSession()">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+      Practice
+    </button>
+    <button class="nb" id="nb-prog" onclick="nav('programs')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Programs
+    </button>
+    <button class="nb" id="nb-hist" onclick="nav('history')">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      History
+    </button>
+  </nav>
+</div>
+
+<script>
+// ════════════════════════════════════
+//  STATE
+// ════════════════════════════════════
+const MOODS = ['','😰','😔','😐','😌','😊'];
+const MOOD_NAMES = ['','Tense','Low','Neutral','Calm','Joyful'];
+
+// ════════════════════════════════════
+//  PROGRAMS DATA
+// ════════════════════════════════════
+const PROGRAMS = [
+  {
+    id: 'beginner-bhramari',
+    title: 'Beginner Bhramari',
+    emoji: '🐝',
+    banner: 'pb-purple',
+    duration: 180,
+    targetHz: 150,
+    description: 'A gentle introduction to the bee humming breath. Perfect for first-timers — no experience needed.',
+    instructions: [
+      'Find a comfortable seated position with spine tall',
+      'Close your eyes and take 3 slow, deep breaths to settle',
+      'Place your thumbs gently over your ears to block external sound',
+      'Inhale slowly and deeply through the nose',
+      'On the exhale, produce a steady humming sound — like a bee',
+      'Feel the vibration resonating in your skull, face, and chest',
+      'Keep the hum smooth and effortless until the session ends',
+    ],
+    guidance: 'Don\'t worry about pitch. Focus entirely on the physical vibration — that\'s where the healing happens.',
+  },
+  {
+    id: 'deep-calm',
+    title: 'Deep Calm',
+    emoji: '🌊',
+    banner: 'pb-teal',
+    duration: 300,
+    targetHz: 136,
+    description: 'A 5-minute immersive session targeting the 136 Hz Om frequency. Activates the parasympathetic nervous system.',
+    instructions: [
+      'Sit in a quiet space — dim the lights if possible',
+      'Rest your hands on your knees, palms upward',
+      'Breathe in for 4 counts, hold for 2, then begin your hum',
+      'Aim for a low, chest-centred resonance around 136 Hz',
+      'Let each exhale be long — try to make hums last 15–20 seconds',
+      'Between hums, breathe naturally without rushing',
+      'After the session, sit in silence for one full minute',
+    ],
+    guidance: 'Let the sound dissolve stress with each exhale. Deeper pitch = deeper calm.',
+  },
+  {
+    id: 'focus-concentration',
+    title: 'Focus & Concentration',
+    emoji: '🎯',
+    banner: 'pb-amber',
+    duration: 420,
+    targetHz: 180,
+    description: 'A 7-minute energising practice using higher-frequency humming to sharpen mental clarity and presence.',
+    instructions: [
+      'Sit upright — this posture signals alertness to the brain',
+      'Take 5 quick, sharp nasal breaths to activate your energy',
+      'Set a clear intention: what do you want to focus on next?',
+      'Begin humming at a slightly higher pitch than usual (~180 Hz)',
+      'On each exhale, mentally repeat your intention',
+      'Keep the hum bright and forward — feel it in your forehead',
+      'Finish with eyes open, look at one point, hold for 10 seconds',
+    ],
+    guidance: 'Higher pitch activates frontal brain regions. Feel the vibration between your eyes.',
+  },
+  {
+    id: 'sleep-preparation',
+    title: 'Sleep Preparation',
+    emoji: '🌙',
+    banner: 'pb-indigo',
+    duration: 600,
+    targetHz: 110,
+    description: 'A 10-minute wind-down practice using slow, low-frequency humming to prepare the nervous system for deep sleep.',
+    instructions: [
+      'Lie down or sit in a reclined position',
+      'Turn off all screens — darkness helps',
+      'Take 5 slow breaths, making each exhale twice as long as the inhale',
+      'Begin humming very softly — barely above a whisper',
+      'Use the lowest comfortable pitch you can sustain (~110 Hz)',
+      'Let hums become slower and quieter as the session progresses',
+      'Allow your eyes to feel heavy — it\'s okay to drift',
+      'After the session, do not check your phone',
+    ],
+    guidance: 'Low-frequency vibration activates the vagus nerve. Let go of controlling the sound — surrender is the goal.',
+  },
+  {
+    id: 'extended-om',
+    title: 'Extended Om Practice',
+    emoji: '🕉',
+    banner: 'pb-rose',
+    duration: 900,
+    targetHz: 136,
+    description: 'A 15-minute traditional Om meditation for experienced practitioners. Builds deep resonance and inner stillness.',
+    instructions: [
+      'Adopt a formal meditation posture — seated, spine erect',
+      'Perform 5 minutes of silent breath observation before humming',
+      'Begin with a full A-U-M sound, transitioning into sustained hum',
+      'Allow each Om to arise naturally — don\'t force duration',
+      'Rest in the silence between each Om — silence is part of the practice',
+      'Stay with any emotions or sensations that arise without judgment',
+      'After the final hum, sit in meditation for 5 full minutes',
+      'Journal any insights or experiences afterward',
+    ],
+    guidance: 'This is a practice of surrender, not performance. Let the sound practice you.',
+  },
+];
+
+let _progData = JSON.parse(localStorage.getItem('hmm_prog') || '{"completions":{},"favorites":[],"lastCompleted":{}}');
+function savePD() { localStorage.setItem('hmm_prog', JSON.stringify(_progData)); }
+
+const S = {
+  screen: 'home',
+  targetHz: parseInt(localStorage.getItem('hmm_hz') || '136'),
+  recording: false,
+  t0: 0,
+  sdata: { freqs: [], amps: [], ts: [], harmonics: [], hnr: [] },
+  result: null,
+  blog: [],
+  bjOpen: false,
+  preMood: 0,
+  postMood: 0,
+  notes: '',
+  tags: [],
+  activeProgram: null,
+  hist: JSON.parse(localStorage.getItem('hmm_hist') || '[]'),
+
+  // ─── Hum / Pause segment tracking ──────────────────────────────────────────
+  segments: [],   // [{ type:'hum'|'pause', startTime, endTime, duration, avgFrequency, avgResonance, avgStability }]
+  _humDetect: {
+    state:        'idle',  // 'idle' | 'humming' | 'pause'
+    voicedFrames: 0,       // debounce: frames of voiced signal before starting a hum
+    silentFrames: 0,       // debounce: frames of silence before ending a hum
+    silentSince:  null,    // ms-from-t0 when silence began (for accurate end-time)
+    segStart:     0,       // ms-from-t0 when current segment started
+    freqs:        [],      // frequency accumulator for current hum
+    amps:         [],      // amplitude accumulator
+    hnrs:         [],      // HNR accumulator (resonance proxy)
+  },
+};
+
+// ════════════════════════════════════
+//  AUDIO ENGINE
+// ════════════════════════════════════
+let ACtx, AN, src, stream, raf;
+let sfq = 0, srms = 0;
+const FFT = 8192;
+let fdat, tdat;
+let rtwin = []; // real-time stability window
+
+async function initAudio() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+    });
+    ACtx = new (window.AudioContext || window.webkitAudioContext)();
+    AN = ACtx.createAnalyser();
+    AN.fftSize = FFT;
+    AN.smoothingTimeConstant = 0.82;
+    src = ACtx.createMediaStreamSource(stream);
+    src.connect(AN);
+    fdat = new Uint8Array(AN.frequencyBinCount);
+    tdat = new Uint8Array(FFT);
+    return true;
+  } catch (e) {
+    document.getElementById('perm-err').style.display = 'block';
+    return false;
+  }
+}
+
+function getDomFreq() {
+  AN.getByteFrequencyData(fdat);
+  const sr = ACtx.sampleRate, bHz = sr / FFT;
+  const lo = Math.floor(60 / bHz), hi = Math.floor(550 / bHz);
+  let mx = 0, mi = lo;
+  for (let i = lo; i <= hi; i++) { if (fdat[i] > mx) { mx = fdat[i]; mi = i; } }
+  if (mx < 18) return 0;
+  // quadratic interpolation
+  const y1 = mi > 0 ? fdat[mi-1] : 0, y2 = fdat[mi], y3 = mi < fdat.length-1 ? fdat[mi+1] : 0;
+  const d = y1 - 2*y2 + y3;
+  const ip = d !== 0 ? mi - .5*(y3-y1)/d : mi;
+  return ip * bHz;
+}
+
+function getRMS() {
+  AN.getByteTimeDomainData(tdat);
+  let s = 0;
+  for (let i = 0; i < tdat.length; i++) { const v = (tdat[i]-128)/128; s += v*v; }
+  return Math.sqrt(s/tdat.length);
+}
+
+function getHarmonics(f0) {
+  // Returns { count, hnr, series[] } — series has level 0-255 for each harmonic
+  if (!f0 || f0 < 20 || !AN) return { count: 0, hnr: 0, series: [] };
+  const sr = ACtx.sampleRate, bHz = sr / FFT;
+  const series = [];
+  let harmE = 0;
+
+  for (let h = 1; h <= 8; h++) {
+    const center = f0 * h;
+    if (center > sr * 0.48) break;
+    const bin = Math.round(center / bHz);
+    const win = Math.max(2, Math.round(f0 * 0.06 / bHz));
+    let peak = 0;
+    for (let b = Math.max(0, bin - win); b <= Math.min(fdat.length - 1, bin + win); b++) {
+      if (fdat[b] > peak) peak = fdat[b];
+    }
+    series.push({ hz: Math.round(center), level: peak });
+    harmE += peak * peak;
+  }
+
+  // Total energy in 60–3000 Hz voice range
+  const lo = Math.floor(60 / bHz), hi = Math.min(fdat.length - 1, Math.floor(3000 / bHz));
+  let totE = 0;
+  for (let i = lo; i <= hi; i++) totE += fdat[i] * fdat[i];
+
+  const hnr = totE > 0 ? Math.min(100, Math.round(harmE / totE * 100)) : 0;
+  const thresh = Math.max(20, (series[0]?.level || 0) * 0.12);
+  const count = series.filter(s => s.level >= thresh).length;
+
+  return { count, hnr, series };
+}
+
+// ════════════════════════════════════
+//  INDEXEDDB  (blob storage)
+// ════════════════════════════════════
+let _db = null;
+async function getDB() {
+  if (_db) return _db;
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('hmm_recs', 1);
+    r.onupgradeneeded = e => e.target.result.createObjectStore('recs', { keyPath: 'id' });
+    r.onsuccess = e => { _db = e.target.result; res(_db); };
+    r.onerror   = () => rej(r.error);
+  });
+}
+async function dbPut(rec)  { const db=await getDB(); return new Promise((res,rej)=>{ const tx=db.transaction('recs','readwrite'); tx.objectStore('recs').put(rec); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); }
+async function dbGet(id)   { const db=await getDB(); return new Promise((res,rej)=>{ const tx=db.transaction('recs','readonly'); const r=tx.objectStore('recs').get(id); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+async function dbDel(id)   { const db=await getDB(); return new Promise((res,rej)=>{ const tx=db.transaction('recs','readwrite'); tx.objectStore('recs').delete(id); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); }
+
+// ════════════════════════════════════
+//  MEDIA RECORDER
+// ════════════════════════════════════
+let mediaRec = null, recChunks = [];
+let _pendingBlob = null, _pendingMime = '';
+
+function startMR() {
+  if (!stream) return;
+  recChunks = [];
+  _pendingBlob = null;
+  const mime = ['audio/webm;codecs=opus','audio/webm','audio/ogg','audio/mp4']
+    .find(m => MediaRecorder.isTypeSupported(m)) || '';
+  try {
+    mediaRec = new MediaRecorder(stream, { mimeType: mime, audioBitsPerSecond: 128000 });
+    _pendingMime = mime || mediaRec.mimeType;
+    mediaRec.ondataavailable = e => { if (e.data?.size > 0) recChunks.push(e.data); };
+    mediaRec.start(200);
+  } catch(e) { console.warn('MediaRecorder unavailable:', e); mediaRec = null; }
+}
+
+function stopMR() {
+  return new Promise(resolve => {
+    if (!mediaRec || mediaRec.state === 'inactive') { resolve(null); return; }
+    mediaRec.onstop = () => {
+      _pendingBlob = recChunks.length ? new Blob(recChunks, { type: _pendingMime }) : null;
+      resolve(_pendingBlob);
+    };
+    mediaRec.requestData(); // flush last chunk
+    mediaRec.stop();
+  });
+}
+
+function fmtSize(bytes) {
+  if (!bytes) return '—';
+  return bytes < 1024*1024 ? Math.round(bytes/1024)+' KB' : (bytes/1024/1024).toFixed(1)+' MB';
+}
+
+// ════════════════════════════════════
+//  VIZ BUFFERS
+// ════════════════════════════════════
+const HM_COLS = 200, HM_ROWS = 64;
+let _hmBuf   = [];              // array of Uint8Array(HM_ROWS)
+const WAVE_N = 300;
+let _waveBuf = new Float32Array(WAVE_N);
+let _wavePos = 0;
+let _vizMode = 'spectrum';
+let _vizTick = 0;
+
+function initVizBuffers() {
+  _hmBuf   = [];
+  _waveBuf = new Float32Array(WAVE_N);
+  _wavePos = 0;
+  _vizTick = 0;
+}
+
+function tickVizBuffers(rms) {
+  _vizTick++;
+  // Heatmap: sample every 2nd frame for smooth scroll
+  if (_vizTick % 2 === 0 && fdat && ACtx) {
+    const bHz = ACtx.sampleRate / FFT;
+    const lo  = Math.floor(60  / bHz);
+    const hi  = Math.floor(700 / bHz);
+    const step = (hi - lo) / HM_ROWS;
+    const row  = new Uint8Array(HM_ROWS);
+    for (let i = 0; i < HM_ROWS; i++) {
+      const b = Math.min(Math.round(lo + i * step), fdat.length - 1);
+      row[i]  = fdat[b] || 0;
+    }
+    _hmBuf.push(row);
+    if (_hmBuf.length > HM_COLS) _hmBuf.shift();
+  }
+  // Breathing wave: every frame
+  _waveBuf[_wavePos % WAVE_N] = rms;
+  _wavePos++;
+}
+
+function switchViz(btn, mode) {
+  _vizMode = mode;
+  document.querySelectorAll('.vt').forEach(b => b.classList.toggle('active', b === btn));
+  if (!S.recording) drawVizIdle();
+}
+
+function drawVizIdle() {
+  if (_vizMode === 'heatmap') drawHeatmapIdle();
+  else if (_vizMode === 'wave') drawWaveIdle();
+  else drawSpecIdle();
+}
+
+// ════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════
+const screenMap = { home:'s-home', session:'s-sess', results:'s-res', programs:'s-prog', history:'s-hist' };
+const navMap    = { home:'nb-home', session:'nb-sess', programs:'nb-prog', history:'nb-hist' };
+
+function nav(id) {
+  document.querySelectorAll('.screen').forEach(e => e.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(e => e.classList.remove('active'));
+  document.getElementById(screenMap[id]).classList.add('active');
+  const nb = document.getElementById(navMap[id]);
+  if (nb) nb.classList.add('active');
+  S.screen = id;
+  if (id === 'home')     refreshHome();
+  if (id === 'programs') renderPrograms();
+  if (id === 'history')  refreshHist();
+}
+
+// ════════════════════════════════════
+//  SESSION
+// ════════════════════════════════════
+let timerIv;
+
+async function goSession(prog) {
+  if (S.recording) return;
+  S.activeProgram = prog || null;
+  if (!ACtx) {
+    document.getElementById('perm').classList.add('show');
+    const ok = await initAudio();
+    if (!ok) return;
+    document.getElementById('perm').classList.remove('show');
+  }
+  if (ACtx.state === 'suspended') await ACtx.resume();
+  nav('session');
+  resetSessUI();
+}
+
+async function startProgram(id) {
+  const prog = PROGRAMS.find(p => p.id === id);
+  if (!prog) return;
+  // Set target Hz to program's recommended frequency
+  setHz(prog.targetHz);
+  await goSession(prog);
+}
+
+function resetSessUI() {
+  document.getElementById('stimer').textContent = '0:00';
+  document.getElementById('sstatus').textContent = 'Ready to begin';
+  document.getElementById('rec-badge').classList.remove('show');
+  document.getElementById('sstatus').className = 's-status';
+  const _sb = document.getElementById('seg-status');
+  if (_sb) { _sb.textContent = ''; _sb.className = 'seg-badge'; }
+  // Reset viz to spectrum tab
+  _vizMode = 'spectrum';
+  document.querySelectorAll('.vt').forEach((b,i) => b.classList.toggle('active', i===0));
+  document.getElementById('fdisp').textContent = '—';
+  document.getElementById('funit').style.display = 'none';
+  document.getElementById('fnote').textContent = '';
+  document.getElementById('gdev').textContent = '— Hz from target';
+  document.getElementById('gdev').style.color = 'var(--muted)';
+  document.getElementById('gtgt').textContent = S.targetHz;
+  ['m-dyn','m-stab','m-acc','m-harm'].forEach(id => document.getElementById(id).textContent = '—');
+  document.getElementById('harm-live').innerHTML = '';
+  const rb = document.getElementById('rbtn');
+  rb.className = 'rec-btn';
+  document.getElementById('ricon').innerHTML = '<circle cx="12" cy="12" r="8" fill="white"/>';
+  document.getElementById('rlbl').textContent = 'Tap to start humming';
+  document.getElementById('rtip').style.display = '';
+  // Countdown bar
+  const cd = document.getElementById('prog-countdown');
+  if (S.activeProgram) {
+    cd.style.display = '';
+    document.getElementById('pcd-name').textContent = S.activeProgram.title;
+    document.getElementById('pcd-time').textContent = fmtDur(S.activeProgram.duration);
+    document.getElementById('pcd-fill').style.width = '0%';
+    document.getElementById('rtip').textContent =
+      `${S.activeProgram.title} · ${fmtDur(S.activeProgram.duration)} · ${S.activeProgram.targetHz} Hz`;
+  } else {
+    cd.style.display = 'none';
+    document.getElementById('rtip').textContent = 'Close eyes · Plug ears gently · Hum from the chest';
+  }
+
+  drawSpecIdle();
+  drawGauge(0, false);
+}
+
+function fmtDur(sec) {
+  const m = Math.floor(sec/60), s = sec%60;
+  return s === 0 ? `${m} min` : `${m}m ${s}s`;
+}
+
+function toggleRec() {
+  S.recording ? stopRec() : startRec();
+}
+
+function startRec() {
+  S.recording = true;
+  S.t0 = Date.now();
+  S.sdata = { freqs: [], amps: [], ts: [], harmonics: [], hnr: [] };
+  S.postMood = 0;
+  rtwin = [];
+  sfq = 0; srms = 0;
+
+  // Reset segment tracking
+  S.segments = [];
+  S._humDetect = { state:'idle', voicedFrames:0, silentFrames:0, silentSince:null, segStart:0, freqs:[], amps:[], hnrs:[] };
+  const segBadge = document.getElementById('seg-status');
+  if (segBadge) { segBadge.textContent = ''; segBadge.className = 'seg-badge'; }
+
+  const rb = document.getElementById('rbtn');
+  rb.className = 'rec-btn go';
+  document.getElementById('ricon').innerHTML = '<rect x="6" y="6" width="12" height="12" rx="2" fill="white"/>';
+  document.getElementById('rlbl').textContent = 'Tap to stop';
+  document.getElementById('rtip').style.display = 'none';
+  document.getElementById('sstatus').innerHTML = '<span class="pdot"></span>Recording';
+  document.getElementById('sstatus').className = 's-status rec';
+
+  initVizBuffers();
+  startMR();
+  document.getElementById('rec-badge').classList.add('show');
+
+  timerIv = setInterval(() => {
+    const e = Math.floor((Date.now()-S.t0)/1000);
+    const m = Math.floor(e/60), s = e%60;
+    document.getElementById('stimer').textContent = `${m}:${String(s).padStart(2,'0')}`;
+    // Countdown for active program
+    if (S.activeProgram) {
+      const target = S.activeProgram.duration;
+      const pct    = Math.min(100, (e/target)*100);
+      const remain = Math.max(0, target - e);
+      document.getElementById('pcd-fill').style.width = pct + '%';
+      document.getElementById('pcd-time').textContent = remain > 0
+        ? `${Math.floor(remain/60)}:${String(remain%60).padStart(2,'0')} left`
+        : '✓ Complete!';
+      // Gentle nudge when target reached
+      if (e === target) toast(`${S.activeProgram.title} complete — tap stop when ready`);
+    }
+  }, 1000);
+
+  loop();
+}
+
+function loop() {
+  if (!S.recording) return;
+  const rawF = getDomFreq(), rawR = getRMS();
+  const a = .14;
+  if (rawF > 0) sfq = sfq === 0 ? rawF : sfq*(1-a) + rawF*a;
+  srms = srms*.82 + rawR*.18;
+
+  const voiced = rawR > 0.008 && rawF > 0;
+  const harm = voiced ? getHarmonics(sfq) : { count: 0, hnr: 0, series: [] };
+  if (voiced && harm.series.length) S._lastHarmSeries = harm.series;
+  tickVizBuffers(srms);
+  if (voiced) {
+    S.sdata.freqs.push(sfq);
+    S.sdata.amps.push(srms);
+    S.sdata.ts.push(Date.now()-S.t0);
+    S.sdata.harmonics.push(harm.count);
+    S.sdata.hnr.push(harm.hnr);
+    rtwin.push(sfq);
+    if (rtwin.length > 40) rtwin.shift();
+  }
+
+  updateSegments(voiced, sfq, srms, harm, Date.now() - S.t0);
+  updateSessUI(sfq, srms, voiced, harm);
+  raf = requestAnimationFrame(loop);
+}
+
+// ─── Hum / Pause detection state machine ────────────────────────────────────
+// How many rAF frames (~60 fps) of voiced/silent signal to confirm a transition
+const HUM_ON_FRAMES  = 8;   // ~130 ms voiced  → open a Hum segment
+const HUM_OFF_FRAMES = 20;  // ~330 ms silence  → close Hum, open Pause
+
+function updateSegments(voiced, freq, rms, harm, now) {
+  const d = S._humDetect;
+
+  if (d.state === 'idle' || d.state === 'pause') {
+    if (voiced) {
+      d.voicedFrames++;
+      d.silentFrames = 0;
+      if (d.voicedFrames >= HUM_ON_FRAMES) {
+        // Close any open pause segment
+        if (S.segments.length > 0) {
+          const last = S.segments[S.segments.length - 1];
+          if (last.type === 'pause' && last.endTime === null) {
+            last.endTime  = now;
+            last.duration = last.endTime - last.startTime;
+          }
+        }
+        // Open a new hum segment
+        d.state        = 'humming';
+        d.voicedFrames = 0;
+        d.silentFrames = 0;
+        d.silentSince  = null;
+        d.segStart     = now;
+        d.freqs        = [freq];
+        d.amps         = [rms];
+        d.hnrs         = [harm.hnr];
+        _refreshSegBadge();
+      }
+    } else {
+      d.voicedFrames = 0;
+    }
+
+  } else if (d.state === 'humming') {
+    if (voiced) {
+      d.silentFrames = 0;
+      d.silentSince  = null;
+      d.freqs.push(freq);
+      d.amps.push(rms);
+      d.hnrs.push(harm.hnr);
+    } else {
+      if (d.silentSince === null) d.silentSince = now;
+      d.silentFrames++;
+      if (d.silentFrames >= HUM_OFF_FRAMES) {
+        // Close hum segment — end time is when silence actually began
+        const humEnd    = d.silentSince;
+        const avgFreq   = d.freqs.length ? d.freqs.reduce((a,b)=>a+b,0)/d.freqs.length : 0;
+        const sd        = avgFreq > 0
+          ? Math.sqrt(d.freqs.reduce((a,b)=>a+(b-avgFreq)**2,0)/d.freqs.length)
+          : 0;
+        const avgStability  = avgFreq > 0 ? Math.max(0, Math.round(100-(sd/avgFreq)*290)) : 0;
+        const avgResonance  = d.hnrs.length
+          ? Math.round(d.hnrs.reduce((a,b)=>a+b,0)/d.hnrs.length)
+          : 0;
+
+        S.segments.push({
+          type:         'hum',
+          startTime:    d.segStart,
+          endTime:      humEnd,
+          duration:     Math.max(0, humEnd - d.segStart),
+          avgFrequency: Math.round(avgFreq),
+          avgResonance,
+          avgStability,
+        });
+
+        // Open a pause segment
+        d.state        = 'pause';
+        d.voicedFrames = 0;
+        d.silentFrames = 0;
+        d.silentSince  = null;
+        d.segStart     = humEnd;
+        S.segments.push({ type:'pause', startTime: humEnd, endTime: null, duration: null });
+        _refreshSegBadge();
+      }
+    }
+  }
+}
+
+// Close whatever segment is open when recording stops
+function closeOpenSegment(now) {
+  const d = S._humDetect;
+  if (d.state === 'humming' && d.freqs.length > 0) {
+    const avgFreq  = d.freqs.reduce((a,b)=>a+b,0)/d.freqs.length;
+    const sd       = Math.sqrt(d.freqs.reduce((a,b)=>a+(b-avgFreq)**2,0)/d.freqs.length);
+    const avgStab  = avgFreq > 0 ? Math.max(0, Math.round(100-(sd/avgFreq)*290)) : 0;
+    const avgRes   = d.hnrs.length ? Math.round(d.hnrs.reduce((a,b)=>a+b,0)/d.hnrs.length) : 0;
+    S.segments.push({
+      type:'hum', startTime: d.segStart, endTime: now, duration: Math.max(0, now - d.segStart),
+      avgFrequency: Math.round(avgFreq), avgResonance: avgRes, avgStability: avgStab,
+    });
+  } else if (d.state === 'pause') {
+    const last = S.segments.length > 0 ? S.segments[S.segments.length-1] : null;
+    if (last && last.type === 'pause' && last.endTime === null) {
+      last.endTime  = now;
+      last.duration = Math.max(0, last.endTime - last.startTime);
+    }
+  }
+  d.state = 'idle';
+}
+
+// Update the live segment badge next to the status text
+function _refreshSegBadge() {
+  const badge = document.getElementById('seg-status');
+  if (!badge) return;
+  const d       = S._humDetect;
+  const humsDone = S.segments.filter(s => s.type === 'hum').length;
+  if (d.state === 'humming') {
+    badge.textContent = `🎵 Hum ${humsDone + 1}`;
+    badge.className   = 'seg-badge seg-hum';
+  } else if (d.state === 'pause') {
+    const pausesDone = S.segments.filter(s => s.type === 'pause').length;
+    badge.textContent = `💨 Pause ${pausesDone}`;
+    badge.className   = 'seg-badge seg-pause';
+  }
+}
+
+function updateSessUI(freq, rms, voiced, harm) {
+  if (voiced && freq > 0) {
+    document.getElementById('fdisp').textContent = Math.round(freq);
+    document.getElementById('funit').style.display = '';
+    document.getElementById('fnote').textContent = hzToNote(freq);
+  }
+  if      (_vizMode === 'heatmap') drawHeatmap();
+  else if (_vizMode === 'wave')    drawBreathingWave();
+  else                             drawSpec();
+  const dev = voiced ? freq - S.targetHz : 0;
+  drawGauge(dev, voiced);
+  if (voiced) {
+    const sg = dev >= 0 ? '+' : '';
+    document.getElementById('gdev').textContent = `${sg}${Math.round(dev)} Hz from target`;
+    const c = Math.abs(dev) < 5 ? 'var(--ok)' : Math.abs(dev) < 20 ? 'var(--warn)' : 'var(--danger)';
+    document.getElementById('gdev').style.color = c;
+  }
+  const dyn = Math.min(100, Math.round(rms*480));
+  document.getElementById('m-dyn').textContent = voiced ? `${dyn}%` : '—';
+  if (rtwin.length > 6) {
+    const mn = rtwin.reduce((a,b)=>a+b,0)/rtwin.length;
+    const sd = Math.sqrt(rtwin.reduce((a,b)=>a+(b-mn)**2,0)/rtwin.length);
+    const stab = Math.max(0, Math.round(100 - (sd/mn)*280));
+    document.getElementById('m-stab').textContent = `${stab}%`;
+    const acc = Math.round(rtwin.filter(f=>Math.abs(f-S.targetHz)<10).length/rtwin.length*100);
+    document.getElementById('m-acc').textContent = `${acc}%`;
+  }
+  // Live harmonics
+  document.getElementById('m-harm').textContent = voiced ? harm.count : '—';
+  const hlWrap = document.getElementById('harm-live');
+  hlWrap.innerHTML = '';
+  const hColors = ['var(--al)','#818cf8','#60a5fa','var(--tl)','#34d399','#a3e635','#facc15','#fb923c'];
+  (harm.series || []).forEach((s, i) => {
+    const b = document.createElement('div');
+    b.className = 'hlb';
+    b.style.cssText = `background:${hColors[i]};height:${Math.max(2, (s.level/255)*32)}px`;
+    hlWrap.appendChild(b);
+  });
+}
+
+async function stopRec() {
+  S.recording = false;
+  cancelAnimationFrame(raf);
+  clearInterval(timerIv);
+  document.getElementById('rec-badge').classList.remove('show');
+  const duration = Date.now() - S.t0;
+  closeOpenSegment(duration);   // finalise any open hum or pause segment
+  const blob = await stopMR(); // await MediaRecorder flush
+  if (S.sdata.freqs.length < 8) {
+    toast('Hum for at least 5 seconds to get analysis');
+    resetSessUI();
+    return;
+  }
+  S.result = calcResult(duration);
+  S._pendingBlob = blob;
+  S.blog = [];
+  showResults(S.result);
+}
+
+// ════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════
+function hzToNote(hz) {
+  if (!hz || hz < 20) return '';
+  const notes = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  const semis = Math.round(12 * Math.log2(hz / 440)) + 69;
+  const oct = Math.floor(semis / 12) - 1;
+  return notes[((semis % 12) + 12) % 12] + oct;
+}
+
+// ════════════════════════════════════
+//  VOICE PROFILE
+// ════════════════════════════════════
+/**
+ * Classify acoustic voice profile from frequency history.
+ * Uses a weighted blend of the current session average and stored session
+ * history so the estimate stabilises over time without locking in too fast.
+ *
+ * Ranges are based purely on acoustic fundamentals:
+ *   Low    : 80 – 165 Hz
+ *   Medium : 165 – 255 Hz
+ *   High   : 255 + Hz
+ *
+ * Returns { profile, label, range, color, pitchWindow, resonanceExpect }
+ */
+function detectVoiceProfile(sessionAvgHz) {
+  // Pull historic session averages for a stable estimate
+  const histAvgs = S.hist.filter(s => s.avg > 60 && s.avg < 900).map(s => s.avg);
+
+  // Weight: 60% history (if enough data), 40% current session
+  let blended = sessionAvgHz;
+  if (histAvgs.length >= 3) {
+    const histMean = histAvgs.reduce((a,b)=>a+b,0) / histAvgs.length;
+    blended = histMean * 0.6 + sessionAvgHz * 0.4;
+  } else if (histAvgs.length > 0) {
+    const histMean = histAvgs.reduce((a,b)=>a+b,0) / histAvgs.length;
+    blended = histMean * 0.35 + sessionAvgHz * 0.65;
+  }
+
+  if (blended < 165) {
+    return {
+      profile:         'low',
+      label:           'Low Voice',
+      range:           '80–165 Hz',
+      color:           '#60a5fa',          // blue
+      // pitch-accuracy window: ±14 Hz counts as "on target"
+      pitchWindow:     14,
+      // low voices produce richer lower harmonics — resonance bar set higher
+      resonanceExpect: 1.10,
+      // insight hint for the UI
+      insight:         'Low voices resonate strongly through the chest cavity.',
+    };
+  } else if (blended < 255) {
+    return {
+      profile:         'medium',
+      label:           'Medium Voice',
+      range:           '165–255 Hz',
+      color:           '#a78bfa',          // violet
+      pitchWindow:     11,
+      resonanceExpect: 1.00,
+      insight:         'Medium voices balance chest and head resonance well.',
+    };
+  } else {
+    return {
+      profile:         'high',
+      label:           'High Voice',
+      range:           '255+ Hz',
+      color:           '#34d399',          // emerald
+      // higher fundamentals have tighter overtone spacing — wider tolerance
+      pitchWindow:     9,
+      // higher fundamentals capture fewer harmonics in the 60-550 Hz window
+      resonanceExpect: 0.88,
+      insight:         'High voices resonate prominently in the head and nasal cavities.',
+    };
+  }
+}
+
+// ════════════════════════════════════
+//  ANALYSIS
+// ════════════════════════════════════
+function calcResult(dur) {
+  const fs = S.sdata.freqs, as_ = S.sdata.amps;
+  const hs = S.sdata.harmonics, hnrs = S.sdata.hnr;
+
+  // Pitch metrics
+  const avg  = fs.reduce((a,b)=>a+b,0)/fs.length;
+  const peak = Math.max(...fs);
+  const sd   = Math.sqrt(fs.reduce((a,b)=>a+(b-avg)**2,0)/fs.length);
+  const stab = Math.max(0, Math.min(100, Math.round(100-(sd/avg)*290)));
+
+  // ── Voice profile (drives pitch window + resonance expectations) ───────────
+  const vp  = detectVoiceProfile(avg);
+
+  // Pitch accuracy: fraction of frames within profile-adjusted window of target
+  const acc = Math.round(
+    fs.filter(f => Math.abs(f - S.targetHz) < vp.pitchWindow).length / fs.length * 100
+  );
+
+  // Amplitude consistency
+  const aa  = as_.reduce((a,b)=>a+b,0)/as_.length;
+  const asd = Math.sqrt(as_.reduce((a,b)=>a+(b-aa)**2,0)/as_.length);
+  const ampCons = Math.max(0, Math.min(100, Math.round(100-(asd/(aa+.001))*190)));
+
+  // Resonance / harmonic metrics — scaled by profile expectation
+  const avgHarm  = hs.length ? Math.round(hs.reduce((a,b)=>a+b,0)/hs.length*10)/10 : 0;
+  const avgHNR   = hnrs.length ? Math.round(hnrs.reduce((a,b)=>a+b,0)/hnrs.length) : 0;
+  const harmScore = Math.min(100, Math.round(avgHarm * 14));
+  const resRaw    = Math.round(harmScore*.45 + avgHNR*.3 + ampCons*.25);
+  // Apply profile factor: low voices get slight boost, high voices slight normalise
+  const res    = Math.min(100, Math.round(resRaw * vp.resonanceExpect));
+  const resLbl = res > 80 ? 'Excellent' : res > 62 ? 'Good' : res > 42 ? 'Fair' : 'Developing';
+
+  // Duration score — rewards longer sessions (cap at 5 min = 100)
+  const ds       = Math.floor(dur/1000);
+  const durScore = Math.min(100, Math.round(ds/300*100));
+
+  // Composite wellness score
+  const score = Math.round(stab*.32 + acc*.22 + res*.28 + durScore*.18);
+
+  const durStr = ds >= 60 ? `${Math.floor(ds/60)}m ${ds%60}s` : `${ds}s`;
+
+  const lastHarmSeries = S._lastHarmSeries || [];
+
+  // Segment summary
+  const humSegs   = S.segments.filter(s => s.type === 'hum');
+  const pauseSegs = S.segments.filter(s => s.type === 'pause');
+
+  return {
+    ts: Date.now(), dur, durStr,
+    avg: Math.round(avg), peak: Math.round(peak),
+    stab, acc, ampCons,
+    avgHarm, avgHNR, harmScore, res, resLbl,
+    durScore, score,
+    tgt: S.targetHz,
+    harmSeries: lastHarmSeries,
+    preMood: S.preMood, postMood: 0,
+    // Voice profile
+    voiceProfile: vp.profile,
+    voiceLabel:   vp.label,
+    voiceRange:   vp.range,
+    voiceColor:   vp.color,
+    voiceInsight: vp.insight,
+    // Hum / Pause segments
+    segments:     S.segments.slice(),
+    humCount:     humSegs.length,
+    pauseCount:   pauseSegs.length,
+    totalHumMs:   humSegs.reduce((a,s) => a+(s.duration||0), 0),
+    totalPauseMs: pauseSegs.reduce((a,s) => a+(s.duration||0), 0),
+  };
+}
+
+// ════════════════════════════════════
+//  HUM TIMELINE
+// ════════════════════════════════════
+function renderHumTimeline(r) {
+  const card = document.getElementById('hum-timeline-card');
+  if (!r.segments || r.segments.length === 0) { card.style.display = 'none'; return; }
+  card.style.display = '';
+
+  const total    = r.dur;  // ms
+  const bar      = document.getElementById('ht-bar');
+  const labelsEl = document.getElementById('ht-labels');
+  const summaryEl= document.getElementById('ht-summary');
+  const detailEl = document.getElementById('ht-detail');
+  bar.innerHTML = labelsEl.innerHTML = summaryEl.innerHTML = detailEl.innerHTML = '';
+
+  // ── Bar + label strip ──────────────────────────────────────────────────────
+  r.segments.forEach(seg => {
+    const pct = Math.max(0.4, (seg.duration / total) * 100);
+
+    // bar block
+    const block = document.createElement('div');
+    block.className = `ht-seg ${seg.type}`;
+    block.style.flex = `${pct} 0 0`;
+    const sec = (seg.duration / 1000).toFixed(1);
+    block.title = seg.type === 'hum'
+      ? `Hum: ${sec}s · ${seg.avgFrequency} Hz · res ${seg.avgResonance}% · stab ${seg.avgStability}%`
+      : `Pause: ${sec}s`;
+    bar.appendChild(block);
+
+    // label beneath
+    const lbl = document.createElement('div');
+    lbl.className = `ht-lbl ${seg.type}`;
+    lbl.style.flex = `${pct} 0 0`;
+    lbl.textContent = pct > 6 ? `${sec}s` : '';
+    labelsEl.appendChild(lbl);
+  });
+
+  // ── Summary line ──────────────────────────────────────────────────────────
+  const humSegs   = r.segments.filter(s => s.type === 'hum');
+  const pauseSegs = r.segments.filter(s => s.type === 'pause');
+  const humSec    = ((r.totalHumMs  || 0) / 1000).toFixed(1);
+  const pauseSec  = ((r.totalPauseMs|| 0) / 1000).toFixed(1);
+
+  summaryEl.innerHTML =
+    `<span style="color:var(--tl);font-weight:700">${humSegs.length} hum${humSegs.length!==1?'s':''}</span>` +
+    `<span style="color:var(--muted)">·</span>` +
+    `<span style="color:var(--muted)">${pauseSegs.length} pause${pauseSegs.length!==1?'s':''}</span>` +
+    `<span style="color:var(--muted)">·</span>` +
+    `<span style="color:var(--al);font-weight:700">${humSec}s humming</span>` +
+    (pauseSegs.length ? `<span style="color:var(--muted)">·</span><span style="color:var(--muted)">${pauseSec}s paused</span>` : '');
+
+  // ── Per-hum detail chips ──────────────────────────────────────────────────
+  humSegs.forEach((seg, i) => {
+    const sec  = (seg.duration / 1000).toFixed(1);
+    const chip = document.createElement('div');
+    chip.className = 'ht-chip';
+    chip.innerHTML =
+      `<div class="ht-chip-n" style="color:var(--tl)">${sec}s</div>` +
+      `<div class="ht-chip-l">Hum ${i+1}</div>` +
+      `<div style="font-size:9px;color:var(--muted);margin-top:2px">${seg.avgFrequency} Hz · stab ${seg.avgStability}%</div>`;
+    detailEl.appendChild(chip);
+  });
+}
+
+// ════════════════════════════════════
+//  RESULTS
+// ════════════════════════════════════
+function showResults(r) {
+  document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(e=>e.classList.remove('active'));
+  document.getElementById('s-res').classList.add('active');
+  S.screen = 'results';
+
+  document.getElementById('rscore').textContent = r.score;
+  document.getElementById('r-dur').textContent  = r.durStr;
+  document.getElementById('r-avg').textContent  = `${r.avg} Hz · ${hzToNote(r.avg)}`;
+  document.getElementById('r-stab').textContent = `${r.stab}%`;
+  document.getElementById('r-acc').textContent  = `${r.acc}%`;
+  document.getElementById('r-peak').textContent = `${r.peak} Hz`;
+  document.getElementById('r-res').textContent  = r.resLbl;
+
+  const badges = [[90,'Transcendent! 🌟','Exceptional resonance achieved'],
+                  [75,'Excellent! ✨','Strong frequency stability'],
+                  [60,'Great Session 💫','Solid foundation building'],
+                  [45,'Good Effort 🌿','Keep showing up'],
+                  [0,'Practice Complete 🎵','Consistency is everything']];
+  const [,t,s] = badges.find(([th])=>r.score>=th);
+  document.getElementById('rtitle').textContent = t;
+  document.getElementById('rsub').textContent   = s;
+
+  // Voice profile badge
+  const vpBadge = document.getElementById('voice-profile-badge');
+  if (r.voiceLabel) {
+    vpBadge.style.display  = 'inline-flex';
+    vpBadge.style.color    = r.voiceColor;
+    vpBadge.style.borderColor = r.voiceColor + '55';
+    vpBadge.style.background  = r.voiceColor + '15';
+    document.getElementById('vp-label').textContent = r.voiceLabel;
+    document.getElementById('vp-range').textContent = r.voiceRange;
+  } else {
+    vpBadge.style.display = 'none';
+  }
+
+  drawScoreRing(r);
+  renderHumTimeline(r);
+  // Voice fingerprint
+  const fpCard = document.getElementById('fp-card');
+  fpCard.style.display = '';
+  requestAnimationFrame(() => drawVoiceFingerprint(r));
+  populateResonanceCard(r);
+  populateMoodSection(r);
+
+  // Comparison — reset tabs to "previous" then render
+  document.querySelectorAll('.cmp-tab').forEach((t,i) => t.classList.toggle('active', i===0));
+  renderComparison('previous');
+
+  // Recording info
+  const ric = document.getElementById('rec-info-card');
+  if (S._pendingBlob) {
+    ric.style.display = '';
+    document.getElementById('ric-title').textContent = 'Session recorded';
+    document.getElementById('ric-meta').textContent =
+      `${r.durStr} · ${fmtSize(S._pendingBlob.size)} · Saved with session`;
+  } else {
+    ric.style.display = 'none';
+  }
+
+  S.bjOpen = false;
+  document.getElementById('bjour').classList.remove('open');
+  document.getElementById('barr').classList.remove('open');
+  document.getElementById('bevts').innerHTML = '<span style="font-size:11px;color:var(--muted)">No events yet — tap above to log</span>';
+  drawBVis();
+
+  document.getElementById('savebtn').textContent = 'Save Session';
+  document.getElementById('savebtn').className = 'save-btn';
+
+  // Reset notes
+  S.notes = ''; S.tags = [];
+  document.getElementById('sess-note').value = '';
+  document.querySelectorAll('#sess-tags .tag-btn').forEach(b => b.classList.remove('sel'));
+}
+
+// ════════════════════════════════════
+//  RESONANCE CARD
+// ════════════════════════════════════
+function populateResonanceCard(r) {
+  document.getElementById('rs-harm').textContent = r.avgHarm.toFixed(1);
+  document.getElementById('rs-hnr').textContent  = `${r.avgHNR}%`;
+  document.getElementById('rs-res').textContent  = r.resLbl;
+  document.getElementById('r-hnr-val').textContent = `${r.avgHNR}%`;
+  document.getElementById('r-hnr-fill').style.width = `${r.avgHNR}%`;
+
+  // Voice profile insight
+  const insightEl = document.getElementById('vp-insight');
+  if (r.voiceInsight && r.voiceColor) {
+    insightEl.style.display    = '';
+    insightEl.style.color      = r.voiceColor;
+    insightEl.style.background = r.voiceColor + '12';
+    insightEl.style.border     = `1px solid ${r.voiceColor}30`;
+    insightEl.textContent      = r.voiceInsight;
+  } else {
+    insightEl.style.display = 'none';
+  }
+
+  // Harmonic bars
+  const barsEl   = document.getElementById('r-harm-bars');
+  const labelsEl = document.getElementById('r-harm-labels');
+  barsEl.innerHTML = '';
+  labelsEl.innerHTML = '';
+  const hColors  = ['hb f0','hb h2','hb h3','hb h4','hb h5','hb h6','hb h7','hb h8'];
+  const series   = r.harmSeries.length ? r.harmSeries : Array.from({length:4},(_,i)=>({hz:0,level:0}));
+  series.forEach((s, i) => {
+    const bar = document.createElement('div');
+    bar.className = hColors[i] || 'hb';
+    bar.style.height = `${Math.max(3, (s.level/255)*52)}px`;
+    barsEl.appendChild(bar);
+    const lbl = document.createElement('div');
+    lbl.className = 'harm-label';
+    lbl.textContent = i === 0 ? 'f₀' : `${i+1}×`;
+    labelsEl.appendChild(lbl);
+  });
+}
+
+// ════════════════════════════════════
+//  NOTES & TAGS
+// ════════════════════════════════════
+function toggleTag(btn) {
+  const tag = btn.dataset.tag;
+  if (btn.classList.toggle('sel')) {
+    if (!S.tags.includes(tag)) S.tags.push(tag);
+  } else {
+    S.tags = S.tags.filter(t => t !== tag);
+  }
+}
+
+// ════════════════════════════════════
+//  MOOD
+// ════════════════════════════════════
+function setPreMood(v) {
+  S.preMood = v;
+  document.querySelectorAll('#pre-mood-btns .mb2').forEach((b,i) => b.classList.toggle('sel', i+1===v));
+}
+
+function setPostMood(v) {
+  S.postMood = v;
+  if (S.result) S.result.postMood = v;
+  document.querySelectorAll('#post-mood-btns .mb2').forEach((b,i) => b.classList.toggle('sel', i+1===v));
+  updateMoodShift();
+}
+
+function updateMoodShift() {
+  const pre = S.result?.preMood || 0, post = S.postMood;
+  const shiftEl = document.getElementById('mood-shift-display');
+  if (!pre || !post) { shiftEl.style.display = 'none'; return; }
+  shiftEl.style.display = '';
+  document.getElementById('ms-pre').textContent  = MOODS[pre];
+  document.getElementById('ms-post').textContent = MOODS[post];
+  const delta = post - pre;
+  const deltaEl = document.getElementById('ms-delta');
+  if (delta > 0)      deltaEl.textContent = `+${delta} mood shift after practice ✨`;
+  else if (delta < 0) deltaEl.textContent = `${delta} mood shift — that's okay, rest helps`;
+  else                deltaEl.textContent = 'Mood held steady through practice';
+  deltaEl.style.color = delta > 0 ? 'var(--ok)' : delta < 0 ? 'var(--muted)' : 'var(--tl)';
+}
+
+function populateMoodSection(r) {
+  // Reset post-mood buttons
+  document.querySelectorAll('#post-mood-btns .mb2').forEach(b => b.classList.remove('sel'));
+  document.getElementById('mood-shift-display').style.display = 'none';
+  // If pre-mood was set, show which one
+  if (r.preMood) {
+    document.querySelectorAll('#pre-mood-btns .mb2').forEach((b,i) => b.classList.toggle('sel', i+1===r.preMood));
+  }
+}
+
+function resetPreMood() {
+  S.preMood = 0;
+  document.querySelectorAll('#pre-mood-btns .mb2').forEach(b => b.classList.remove('sel'));
+}
+
+// ════════════════════════════════════
+//  CANVAS: SPECTRUM
+// ════════════════════════════════════
+// ── Canvas helper ────────────────────────────────────────────────────────
+function _cvSetup(id) {
+  const cv = document.getElementById(id);
+  if (!cv) return null;
+  const dpr = devicePixelRatio || 1;
+  const r   = cv.getBoundingClientRect();
+  if (!r.width) return null;
+  if (cv.width !== Math.round(r.width * dpr)) {
+    cv.width  = Math.round(r.width  * dpr);
+    cv.height = Math.round(r.height * dpr);
+  }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w: r.width, h: r.height };
+}
+
+// ── Idle states ──────────────────────────────────────────────────────────
+function drawSpecIdle() {
+  const cv = document.getElementById('spec');
+  if (!cv) return;
+  const dpr = devicePixelRatio || 1;
+  const r   = cv.getBoundingClientRect();
+  cv.width  = Math.round(r.width  * dpr);
+  cv.height = Math.round(r.height * dpr);
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const w = r.width, h = r.height;
+  ctx.fillStyle = '#07091a';
+  ctx.fillRect(0, 0, w, h);
+  const n = 80, bw = w / n;
+  for (let i = 0; i < n; i++) {
+    const bh = 3 + Math.sin(i * 0.45) * 2.5;
+    ctx.fillStyle = '#131b30';
+    ctx.fillRect(i * bw, h - bh, bw - 1, bh);
+  }
+}
+
+function drawHeatmapIdle() {
+  const s = _cvSetup('spec');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.fillStyle = '#07091a';
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = '#1c2840';
+  ctx.font = '11px Inter,sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Begin humming to see resonance heatmap', w / 2, h / 2 + 4);
+}
+
+function drawWaveIdle() {
+  const s = _cvSetup('spec');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.fillStyle = '#07091a';
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = '#131b30';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, h / 2);
+  ctx.lineTo(w, h / 2);
+  ctx.stroke();
+}
+
+// ── Heat colour map ──────────────────────────────────────────────────────
+function heatColor(v) {
+  if (v < 0.18) return `rgba(50,10,90,${(v/0.18).toFixed(2)})`;
+  if (v < 0.42) { const t=(v-0.18)/0.24; return `rgb(${Math.round(50+t*74)},${Math.round(10+t*28)},${Math.round(90+t*147)})`; }
+  if (v < 0.68) { const t=(v-0.42)/0.26; return `rgb(${Math.round(124-t*79)},${Math.round(38+t*174)},${Math.round(237-t*46)})`; }
+  const t=(v-0.68)/0.32;
+  return `rgb(${Math.round(45+t*210)},${Math.round(212+t*43)},${Math.round(191+t*64)})`;
+}
+
+// ── 1. Harmonic Spectrum ─────────────────────────────────────────────────
+function drawSpec() {
+  if (!AN) return;
+  const s = _cvSetup('spec');
+  if (!s) return;
+  const { ctx, w, h } = s;
+
+  AN.getByteFrequencyData(fdat);
+  ctx.fillStyle = '#07091a';
+  ctx.fillRect(0, 0, w, h);
+
+  const sr = ACtx.sampleRate, bHz = sr / FFT;
+  const maxHz = 800, maxBin = Math.floor(maxHz / bHz);
+  const N = 110;
+
+  // Build smoothed heights
+  const ht = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    const bs = Math.floor(i * maxBin / N), be = Math.floor((i+1) * maxBin / N);
+    let mx = 0;
+    for (let b = bs; b < be && b < fdat.length; b++) mx = Math.max(mx, fdat[b]);
+    ht[i] = (mx / 255) * h * 0.9;
+  }
+
+  // Gradient fill
+  const fg = ctx.createLinearGradient(0, 0, w, 0);
+  fg.addColorStop(0,   'rgba(109,40,217,.55)');
+  fg.addColorStop(0.5, 'rgba(45,212,191,.45)');
+  fg.addColorStop(1,   'rgba(96,165,250,.4)');
+
+  ctx.beginPath();
+  ctx.moveTo(0, h);
+  for (let i = 0; i < N; i++) ctx.lineTo(i * w / N + w / N / 2, h - ht[i]);
+  ctx.lineTo(w, h);
+  ctx.closePath();
+  ctx.fillStyle = fg;
+  ctx.fill();
+
+  // Smooth top edge line
+  const lg = ctx.createLinearGradient(0, 0, w, 0);
+  lg.addColorStop(0, '#a78bfa'); lg.addColorStop(.5, '#2dd4bf'); lg.addColorStop(1, '#60a5fa');
+  ctx.beginPath();
+  ctx.moveTo(0, h - ht[0]);
+  for (let i = 1; i < N; i++) {
+    const x0 = (i-1) * w/N + w/N/2, x1 = i * w/N + w/N/2;
+    ctx.quadraticCurveTo(x0, h-ht[i-1], (x0+x1)/2, h-(ht[i-1]+ht[i])/2);
+  }
+  ctx.lineTo(w, h - ht[N-1]);
+  ctx.strokeStyle = lg; ctx.lineWidth = 2.5; ctx.stroke();
+
+  // Harmonic peak markers
+  if (sfq > 0) {
+    const hCols  = ['#a78bfa','#60a5fa','#2dd4bf','#10b981','#f59e0b','#f472b6'];
+    const hNames = ['f₀','2×','3×','4×','5×','6×'];
+    for (let hi2 = 1; hi2 <= 6; hi2++) {
+      const hz = sfq * hi2;
+      if (hz > maxHz) break;
+      const x  = (hz / maxHz) * w;
+      const bi = Math.round((hz / maxHz) * N);
+      const bh = bi < N ? ht[bi] : 0;
+      if (bh < 6) continue;
+      const col = hCols[hi2 - 1];
+      ctx.beginPath();
+      ctx.arc(x, h - bh - 4, 5, 0, Math.PI * 2);
+      ctx.fillStyle = col;
+      ctx.shadowColor = col; ctx.shadowBlur = 10;
+      ctx.fill(); ctx.shadowBlur = 0;
+      ctx.fillStyle = col;
+      ctx.font = 'bold 9px Inter,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(hNames[hi2 - 1], x, h - bh - 13);
+    }
+  }
+
+  // Target frequency dashed line
+  const tx = (S.targetHz / maxHz) * w;
+  ctx.strokeStyle = 'rgba(45,212,191,.45)'; ctx.lineWidth = 1;
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(tx, 0); ctx.lineTo(tx, h); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(45,212,191,.65)';
+  ctx.font = '9px Inter,sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText(`${S.targetHz} Hz`, tx + 3, 11);
+}
+
+// ── 2. Resonance Heatmap ─────────────────────────────────────────────────
+function drawHeatmap() {
+  const s = _cvSetup('spec');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.fillStyle = '#07091a'; ctx.fillRect(0, 0, w, h);
+
+  if (!_hmBuf.length) { drawHeatmapIdle(); return; }
+
+  const cols = _hmBuf.length;
+  const cw   = w / HM_COLS;
+  const ch   = (h - 12) / HM_ROWS;
+
+  for (let t = 0; t < cols; t++) {
+    const x = w - (cols - t) * cw;
+    for (let f = 0; f < HM_ROWS; f++) {
+      const v = _hmBuf[t][f] / 255;
+      if (v < 0.04) continue;
+      const y = (h - 12) - (f + 1) * ch;
+      ctx.fillStyle = heatColor(v);
+      ctx.fillRect(x, y, cw + 0.5, ch + 0.5);
+    }
+  }
+
+  // Freq labels on Y axis
+  if (ACtx) {
+    const lo = 60, hi2 = 700;
+    ctx.font = '8px Inter,sans-serif'; ctx.textAlign = 'left';
+    [100, 200, 300, 500].forEach(hz => {
+      const frac = (hz - lo) / (hi2 - lo);
+      const y    = (h - 12) - frac * (h - 12);
+      ctx.fillStyle = '#2d3a5a';
+      ctx.fillText(hz + ' Hz', 2, y - 1);
+    });
+    // Target Hz horizontal line
+    const tf = (S.targetHz - lo) / (hi2 - lo);
+    const ty = (h - 12) - tf * (h - 12);
+    ctx.strokeStyle = 'rgba(45,212,191,.5)'; ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(0, ty); ctx.lineTo(w, ty); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(45,212,191,.7)';
+    ctx.fillText(`${S.targetHz}`, w - 28, ty - 2);
+  }
+}
+
+// ── 3. Breathing Wave ────────────────────────────────────────────────────
+function drawBreathingWave() {
+  const s = _cvSetup('spec');
+  if (!s) return;
+  const { ctx, w, h } = s;
+  ctx.fillStyle = '#07091a'; ctx.fillRect(0, 0, w, h);
+
+  const n = Math.min(_wavePos, WAVE_N);
+  if (n < 2) { drawWaveIdle(); return; }
+
+  const samp = [];
+  for (let i = 0; i < n; i++) samp.push(_waveBuf[(_wavePos - n + i + WAVE_N) % WAVE_N]);
+
+  const mid    = h / 2;
+  const maxAmp = Math.max(...samp, 0.005);
+  const scale  = (h * 0.44) / maxAmp;
+  const xStep  = w / (WAVE_N - 1);
+
+  const lg = ctx.createLinearGradient(0, 0, w, 0);
+  lg.addColorStop(0, 'rgba(124,58,237,.2)');
+  lg.addColorStop(.5, 'rgba(45,212,191,.65)');
+  lg.addColorStop(1, 'rgba(124,58,237,.2)');
+
+  // Filled envelope
+  ctx.beginPath();
+  ctx.moveTo(0, mid);
+  samp.forEach((v, i) => ctx.lineTo((_wavePos - n + i) % WAVE_N * 0 || i * xStep, mid - v * scale));
+  for (let i = samp.length - 1; i >= 0; i--) ctx.lineTo(i * xStep, mid + samp[i] * scale);
+  ctx.closePath();
+  ctx.fillStyle = lg; ctx.fill();
+
+  // Top edge
+  const eg = ctx.createLinearGradient(0, 0, w, 0);
+  eg.addColorStop(0, '#7c3aed'); eg.addColorStop(.5, '#2dd4bf'); eg.addColorStop(1, '#7c3aed');
+  ctx.beginPath();
+  samp.forEach((v, i) => { const x = i * xStep, y = mid - v * scale; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+  ctx.strokeStyle = eg; ctx.lineWidth = 2; ctx.stroke();
+
+  // Mirror (subtle)
+  ctx.beginPath();
+  samp.forEach((v, i) => { const x = i * xStep, y = mid + v * scale; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+  ctx.globalAlpha = 0.4; ctx.strokeStyle = eg; ctx.lineWidth = 1; ctx.stroke(); ctx.globalAlpha = 1;
+
+  // Centre baseline
+  ctx.strokeStyle = 'rgba(255,255,255,.05)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(w, mid); ctx.stroke();
+}
+
+// ── 4. Voice Fingerprint (results) ───────────────────────────────────────
+function drawVoiceFingerprint(result) {
+  const cv = document.getElementById('fp-c');
+  if (!cv || !result) return;
+  const dpr  = devicePixelRatio || 1;
+  const SIZE = Math.min(cv.clientWidth || 240, 240);
+  cv.width   = SIZE * dpr; cv.height = SIZE * dpr;
+  cv.style.height = SIZE + 'px';
+  const ctx  = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cx = SIZE / 2, cy = SIZE / 2, maxR = SIZE * 0.35;
+
+  const axes = [
+    { label:'Stability',  v: result.stab ?? 0,                          c:'#a78bfa' },
+    { label:'Accuracy',   v: result.acc  ?? 0,                          c:'#f59e0b' },
+    { label:'Resonance',  v: result.res  ?? 0,                          c:'#2dd4bf' },
+    { label:'Harmonics',  v: Math.min(100,(result.avgHarm??0)*12.5),     c:'#10b981' },
+    { label:'HNR',        v: result.avgHNR ?? 0,                        c:'#60a5fa' },
+    { label:'Duration',   v: result.durScore ?? 0,                      c:'#f472b6' },
+  ];
+  const N    = axes.length;
+  const step = (Math.PI * 2) / N;
+  const ang  = i => -Math.PI / 2 + i * step;
+  const px   = (i, r) => cx + Math.cos(ang(i)) * r;
+  const py   = (i, r) => cy + Math.sin(ang(i)) * r;
+
+  // Background rings
+  ctx.strokeStyle = '#1c2840'; ctx.lineWidth = 1;
+  [25, 50, 75, 100].forEach(pct => {
+    const r = maxR * pct / 100;
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) i ? ctx.lineTo(px(i,r), py(i,r)) : ctx.moveTo(px(i,r), py(i,r));
+    ctx.closePath(); ctx.stroke();
+  });
+
+  // Axis spokes
+  axes.forEach((_, i) => {
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px(i, maxR), py(i, maxR));
+    ctx.strokeStyle = '#2d3a5a'; ctx.lineWidth = 1; ctx.stroke();
+  });
+
+  // Data polygon
+  ctx.beginPath();
+  axes.forEach((a, i) => { const r = maxR * a.v / 100; i ? ctx.lineTo(px(i,r), py(i,r)) : ctx.moveTo(px(i,r), py(i,r)); });
+  ctx.closePath();
+  const pg = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
+  pg.addColorStop(0, 'rgba(124,58,237,.6)'); pg.addColorStop(1, 'rgba(45,212,191,.2)');
+  ctx.fillStyle = pg; ctx.fill();
+  ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Data-point dots + labels
+  axes.forEach((a, i) => {
+    const r = maxR * a.v / 100;
+    ctx.beginPath(); ctx.arc(px(i,r), py(i,r), 4, 0, Math.PI*2);
+    ctx.fillStyle = a.c; ctx.shadowColor = a.c; ctx.shadowBlur = 8; ctx.fill(); ctx.shadowBlur = 0;
+
+    const lr = maxR + 18;
+    ctx.fillStyle = a.c; ctx.font = 'bold 9px Inter,sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(a.label, px(i, lr), py(i, lr) + 3);
+    ctx.fillStyle = '#94a3b8'; ctx.font = '8px Inter,sans-serif';
+    ctx.fillText(Math.round(a.v) + '%', px(i, r > 18 ? r - 12 : r + 14), py(i, r > 18 ? r - 10 : r + 12));
+  });
+}
+
+// ── 5. Multi-segment Wellness Ring ───────────────────────────────────────
+function drawScoreRing(result) {
+  const cv   = document.getElementById('score-c');
+  const dpr  = devicePixelRatio || 1;
+  const sz   = 280;
+  cv.width   = sz * dpr; cv.height = sz * dpr;
+  cv.style.width = '140px'; cv.style.height = '140px';
+  const ctx  = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cx = sz/2, cy = sz/2, R = 110;
+  const sa = Math.PI * 0.75, totalArc = Math.PI * 1.5;
+
+  // Track
+  ctx.beginPath(); ctx.arc(cx, cy, R, sa, sa + totalArc);
+  ctx.strokeStyle = '#1c2840'; ctx.lineWidth = 20; ctx.lineCap = 'round'; ctx.stroke();
+
+  // Accept either a score number (legacy) or a result object
+  const score = typeof result === 'number' ? result : (result?.score ?? 0);
+  const r     = typeof result === 'object' ? result : null;
+
+  if (score <= 0) return;
+
+  if (r) {
+    // Segmented ring: Stability / Resonance / Accuracy / Duration
+    const segs = [
+      { key:'stab',     w:0.32, c:'#a78bfa' },
+      { key:'res',      w:0.28, c:'#2dd4bf' },
+      { key:'acc',      w:0.22, c:'#f59e0b' },
+      { key:'durScore', w:0.18, c:'#60a5fa' },
+    ];
+    const scoreArc = totalArc * (score / 100);
+    const GAP      = 0.05;
+    let   angle    = sa;
+    segs.forEach(seg => {
+      const contrib = ((r[seg.key] ?? 0) * seg.w) / score;
+      const arc     = scoreArc * contrib - GAP;
+      if (arc <= 0) return;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, angle + GAP/2, angle + arc + GAP/2);
+      ctx.strokeStyle = seg.c; ctx.lineWidth = 20; ctx.lineCap = 'round';
+      ctx.shadowColor = seg.c; ctx.shadowBlur = 12;
+      ctx.stroke(); ctx.shadowBlur = 0;
+      angle += arc + GAP;
+    });
+  } else {
+    // Fallback single-colour arc
+    const end = sa + totalArc * (score / 100);
+    const g   = ctx.createLinearGradient(cx-R, cy-R, cx+R, cy+R);
+    g.addColorStop(0, '#7c3aed'); g.addColorStop(1, '#2dd4bf');
+    ctx.beginPath(); ctx.arc(cx, cy, R, sa, end);
+    ctx.strokeStyle = g; ctx.lineWidth = 20; ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(124,58,237,.5)'; ctx.shadowBlur = 20;
+    ctx.stroke(); ctx.shadowBlur = 0;
+  }
+}
+
+// ════════════════════════════════════
+//  CANVAS: GAUGE
+// ════════════════════════════════════
+function drawGauge(dev, active) {
+  const cv = document.getElementById('gauge');
+  const dpr = devicePixelRatio||1;
+  const W=200, H=108;
+  cv.width=W*dpr; cv.height=H*dpr;
+  cv.style.width=W+'px'; cv.style.height=H+'px';
+  const ctx=cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const cx=W/2, cy=H-8, R=82;
+
+  // track
+  ctx.beginPath(); ctx.arc(cx,cy,R,Math.PI,2*Math.PI);
+  ctx.strokeStyle='#1c2840'; ctx.lineWidth=13; ctx.lineCap='round'; ctx.stroke();
+
+  // zones
+  const Z=[[0,.14,'#10b981'],[.14,.33,'#f59e0b'],[.33,.5,'#ef4444']];
+  for(const[a,b,c] of Z){
+    for(const s of [-1,1]){
+      ctx.beginPath();
+      ctx.arc(cx,cy,R, Math.PI+Math.PI*a*s, Math.PI+Math.PI*b*s, s<0);
+      ctx.strokeStyle=c+'35'; ctx.lineWidth=13; ctx.stroke();
+    }
+  }
+
+  // labels
+  ctx.fillStyle='#2d3a5a'; ctx.font='9px Inter,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('LOW', cx-72, cy-4);
+  ctx.fillText('HIGH', cx+72, cy-4);
+  ctx.fillText('TARGET', cx, cy-R+18);
+
+  // needle
+  if(active){
+    const maxD=55, cd=Math.max(-maxD,Math.min(maxD,dev));
+    const ang = Math.PI + (cd/maxD)*(Math.PI/2);
+    const nc = Math.abs(dev)<5?'#10b981': Math.abs(dev)<22?'#f59e0b':'#ef4444';
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(ang);
+    ctx.beginPath(); ctx.moveTo(0,4); ctx.lineTo(0,-(R-16));
+    ctx.strokeStyle=nc; ctx.lineWidth=3; ctx.lineCap='round';
+    ctx.shadowColor=nc; ctx.shadowBlur=9; ctx.stroke(); ctx.shadowBlur=0;
+    ctx.restore();
+    ctx.beginPath(); ctx.arc(cx,cy,6,0,Math.PI*2);
+    ctx.fillStyle=nc; ctx.shadowColor=nc; ctx.shadowBlur=8; ctx.fill(); ctx.shadowBlur=0;
+  } else {
+    ctx.beginPath(); ctx.moveTo(cx,cy+4); ctx.lineTo(cx,cy-(R-16));
+    ctx.strokeStyle='#2d3a5a'; ctx.lineWidth=3; ctx.lineCap='round'; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,6,0,Math.PI*2);
+    ctx.fillStyle='#2d3a5a'; ctx.fill();
+  }
+}
+
+// ════════════════════════════════════
+//  BREATH LOG
+// ════════════════════════════════════
+let bStart = null;
+
+function toggleBJ() {
+  S.bjOpen = !S.bjOpen;
+  document.getElementById('bjour').classList.toggle('open', S.bjOpen);
+  document.getElementById('barr').classList.toggle('open', S.bjOpen);
+  if(S.bjOpen && !bStart) bStart = Date.now();
+  if(S.bjOpen) drawBVis();
+}
+
+function logB(type) {
+  if(!bStart) bStart = Date.now();
+  const t = Math.round((Date.now()-bStart)/1000);
+  S.blog.push({type, t});
+  const evts = document.getElementById('bevts');
+  const lbl = {inh:'↑ Inhale', exh:'↓ Exhale', hld:'⏸ Hold'};
+  const ts = `${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
+  if(evts.querySelector('span')) evts.innerHTML='';
+  const el=document.createElement('div');
+  el.className=`be ${type}`;
+  el.textContent=`${lbl[type]} ${ts}`;
+  el.style.opacity='0'; el.style.transform='scale(.8)';
+  evts.appendChild(el);
+  requestAnimationFrame(()=>{ el.style.transition='all .2s'; el.style.opacity='1'; el.style.transform='scale(1)'; });
+  drawBVis();
+  toast(`${lbl[type]} logged at ${ts}`);
+}
+
+function clearBL() {
+  S.blog=[]; bStart=null;
+  document.getElementById('bevts').innerHTML='<span style="font-size:11px;color:var(--muted)">No events yet — tap above to log</span>';
+  drawBVis();
+}
+
+function drawBVis() {
+  const cv=document.getElementById('bvis');
+  if(!cv) return;
+  const dpr=devicePixelRatio||1;
+  const wr=cv.getBoundingClientRect();
+  const w = wr.width || cv.parentElement?.offsetWidth || 300, h=48;
+  cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr);
+  cv.style.height=h+'px';
+  const ctx=cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.fillStyle='#0e1628'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#1c2840'; ctx.fillRect(0,h/2-1,w,2);
+  if(!S.blog.length) return;
+  const tot=Math.max(...S.blog.map(e=>e.t))+4;
+  const C={inh:'#2dd4bf',exh:'#a78bfa',hld:'#fcd34d'};
+  for(let i=0;i<S.blog.length;i++){
+    const e=S.blog[i], nx=i+1<S.blog.length?S.blog[i+1].t:tot;
+    const x=(e.t/tot)*w, x2=(nx/tot)*w;
+    ctx.fillStyle=C[e.type]+'38';
+    ctx.fillRect(x, e.type==='inh'?3:h/2+1, x2-x, h/2-5);
+    ctx.beginPath(); ctx.arc(x,h/2,4,0,Math.PI*2);
+    ctx.fillStyle=C[e.type]; ctx.fill();
+  }
+}
+
+// ════════════════════════════════════
+//  PLAYBACK ENGINE
+// ════════════════════════════════════
+let _pbAudio = null, _pbRaf = null, _pbActiveId = null, _pbObjUrl = null;
+
+async function playRec(recId, btnEl) {
+  // Stop any existing playback
+  if (_pbAudio) { _pbAudio.pause(); _pbAudio = null; }
+  if (_pbRaf)   { cancelAnimationFrame(_pbRaf); _pbRaf = null; }
+  if (_pbObjUrl){ URL.revokeObjectURL(_pbObjUrl); _pbObjUrl = null; }
+  document.querySelectorAll('.pb-btn.active').forEach(b => b.classList.remove('active'));
+
+  // If same track — just stopped it
+  if (_pbActiveId === recId) { _pbActiveId = null; return; }
+  _pbActiveId = recId;
+
+  const wvEl  = document.getElementById('wv-'  + recId);
+  const timeEl= document.getElementById('pt-'  + recId);
+  btnEl.classList.add('active');
+  if (wvEl) { const c=wvEl.getContext('2d'); c.fillStyle='#0a0f1e'; c.fillRect(0,0,wvEl.width,wvEl.height); }
+
+  let rec;
+  try { rec = await dbGet(recId); } catch(e) { toast('Recording not found'); return; }
+  if (!rec) { toast('Recording not found'); return; }
+
+  _pbObjUrl = URL.createObjectURL(rec.blob);
+  _pbAudio  = new Audio(_pbObjUrl);
+  _pbAudio.volume = 1;
+
+  // Decode for static waveform
+  try {
+    const arrBuf = await rec.blob.arrayBuffer();
+    const tmpCtx = new AudioContext();
+    const decoded = await tmpCtx.decodeAudioData(arrBuf);
+    if (wvEl) drawStaticWaveform(decoded, wvEl);
+    tmpCtx.close();
+  } catch(e) { /* waveform optional */ }
+
+  _pbAudio.ontimeupdate = () => {
+    if (timeEl) {
+      const t = Math.floor(_pbAudio.currentTime);
+      timeEl.textContent = `${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
+    }
+    if (wvEl) drawPlayhead(wvEl, _pbAudio.currentTime / (_pbAudio.duration || 1));
+  };
+  _pbAudio.onended = () => {
+    btnEl.classList.remove('active');
+    _pbActiveId = null;
+    if (timeEl) timeEl.textContent = '0:00';
+    if (wvEl) drawPlayhead(wvEl, 0);
+  };
+  _pbAudio.play().catch(() => toast('Playback failed'));
+}
+
+function pausePB() {
+  if (!_pbAudio) return;
+  if (_pbAudio.paused) { _pbAudio.play(); }
+  else                 { _pbAudio.pause(); }
+}
+
+function stopPB() {
+  if (!_pbAudio) return;
+  _pbAudio.pause();
+  _pbAudio.currentTime = 0;
+  _pbAudio = null;
+  document.querySelectorAll('.pb-btn.active').forEach(b => b.classList.remove('active'));
+  const timeEl = document.getElementById('pt-' + _pbActiveId);
+  if (timeEl) timeEl.textContent = '0:00';
+  _pbActiveId = null;
+  if (_pbObjUrl) { URL.revokeObjectURL(_pbObjUrl); _pbObjUrl = null; }
+}
+
+async function deleteRec(recId, sessIdx) {
+  if (!confirm('Delete this recording? The session data is kept.')) return;
+  try { await dbDel(recId); } catch(e) {}
+  // Remove from history entry
+  const idx = parseInt(sessIdx, 10);
+  if (!isNaN(idx) && S.hist[idx]) {
+    S.hist[idx].recordingId = null;
+    S.hist[idx].recSize = 0;
+    localStorage.setItem('hmm_hist', JSON.stringify(S.hist));
+  }
+  if (_pbActiveId === recId) stopPB();
+  toast('Recording deleted');
+  refreshHist();
+}
+
+function drawStaticWaveform(audioBuffer, canvas) {
+  const dpr = devicePixelRatio || 1;
+  const w = canvas.clientWidth || 280, h = 40;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.fillStyle = '#0a0f1e';
+  ctx.fillRect(0, 0, w, h);
+
+  const data    = audioBuffer.getChannelData(0);
+  const step    = Math.ceil(data.length / w);
+  const mid     = h / 2;
+  const grad    = ctx.createLinearGradient(0, 0, w, 0);
+  grad.addColorStop(0, '#7c3aed'); grad.addColorStop(1, '#2dd4bf');
+  ctx.fillStyle = grad;
+
+  for (let i = 0; i < w; i++) {
+    let max = 0;
+    for (let j = 0; j < step; j++) {
+      const v = Math.abs(data[i * step + j] || 0);
+      if (v > max) max = v;
+    }
+    const bh = Math.max(1, max * mid * 1.8);
+    ctx.fillRect(i, mid - bh, 1, bh * 2);
+  }
+  canvas._hasWaveform = true;
+}
+
+function drawPlayhead(canvas, pct) {
+  if (!canvas._hasWaveform) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = devicePixelRatio || 1;
+  const w = canvas.width / dpr, h = canvas.height / dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // Overlay semi-transparent scrim on played portion
+  ctx.fillStyle = 'rgba(10,15,30,.45)';
+  ctx.fillRect(0, 0, pct * w, h);
+  // Playhead line
+  ctx.fillStyle = 'rgba(255,255,255,.8)';
+  ctx.fillRect(pct * w - 1, 0, 2, h);
+}
+
+// ════════════════════════════════════
+//  ACHIEVEMENTS
+// ════════════════════════════════════
+const ACHIEVEMENTS = [
+  { id:'first-hum',          icon:'🐝', title:'First Hum',           desc:'Complete your first session',              rarity:'common' },
+  { id:'3-day-streak',       icon:'🔥', title:'3 Day Streak',         desc:'Practice 3 days in a row',                 rarity:'common' },
+  { id:'7-day-streak',       icon:'⚡', title:'7 Day Streak',         desc:'Practice 7 days in a row',                 rarity:'rare'   },
+  { id:'30-day-streak',      icon:'💎', title:'30 Day Streak',        desc:'Practice 30 days in a row',                rarity:'epic'   },
+  { id:'10-sessions',        icon:'🌱', title:'10 Sessions',          desc:'Complete 10 sessions',                     rarity:'common' },
+  { id:'50-sessions',        icon:'🌿', title:'50 Sessions',          desc:'Complete 50 sessions',                     rarity:'rare'   },
+  { id:'100-sessions',       icon:'🏆', title:'100 Sessions',         desc:'Complete 100 sessions',                    rarity:'epic'   },
+  { id:'500-minutes',        icon:'⏰', title:'500 Minutes',          desc:'Accumulate 500 minutes of practice',       rarity:'rare'   },
+  { id:'resonance-expert',   icon:'🔬', title:'Resonance Expert',     desc:'Achieve resonance score ≥ 80 in 5 sessions',rarity:'rare'  },
+  { id:'consistency-master', icon:'🌟', title:'Consistency Master',   desc:'Practice 20 of any 30 consecutive days',   rarity:'epic'   },
+];
+
+let _achData = JSON.parse(localStorage.getItem('hmm_ach') || '{"unlocked":{}}');
+function saveAchData() { localStorage.setItem('hmm_ach', JSON.stringify(_achData)); }
+
+function getAchConditions(hist) {
+  const streak      = calcStreak();
+  const total       = hist.length;
+  const totalMin    = hist.reduce((a,s) => a + (s.dur||0)/60000, 0);
+  const highRes     = hist.filter(s => (s.res||0) >= 80).length;
+  const days30      = new Set(hist.filter(s=>Date.now()-s.ts<30*86400000).map(s=>new Date(s.ts).toDateString())).size;
+  return {
+    'first-hum':          total >= 1,
+    '3-day-streak':       streak >= 3,
+    '7-day-streak':       streak >= 7,
+    '30-day-streak':      streak >= 30,
+    '10-sessions':        total >= 10,
+    '50-sessions':        total >= 50,
+    '100-sessions':       total >= 100,
+    '500-minutes':        totalMin >= 500,
+    'resonance-expert':   highRes >= 5,
+    'consistency-master': days30 >= 20,
+  };
+}
+
+function getAchProgress(id, hist) {
+  const streak   = calcStreak();
+  const total    = hist.length;
+  const totalMin = Math.round(hist.reduce((a,s)=>a+(s.dur||0)/60000,0));
+  const highRes  = hist.filter(s=>(s.res||0)>=80).length;
+  const days30   = new Set(hist.filter(s=>Date.now()-s.ts<30*86400000).map(s=>new Date(s.ts).toDateString())).size;
+  const map = {
+    'first-hum':          [Math.min(1,total),1],
+    '3-day-streak':       [Math.min(3,streak),3],
+    '7-day-streak':       [Math.min(7,streak),7],
+    '30-day-streak':      [Math.min(30,streak),30],
+    '10-sessions':        [Math.min(10,total),10],
+    '50-sessions':        [Math.min(50,total),50],
+    '100-sessions':       [Math.min(100,total),100],
+    '500-minutes':        [Math.min(500,totalMin),500],
+    'resonance-expert':   [Math.min(5,highRes),5],
+    'consistency-master': [Math.min(20,days30),20],
+  };
+  return map[id] || [0,1];
+}
+
+function checkAchievements(hist) {
+  const conds = getAchConditions(hist);
+  const newly = [];
+  ACHIEVEMENTS.forEach(a => {
+    if (!_achData.unlocked[a.id] && conds[a.id]) {
+      _achData.unlocked[a.id] = Date.now();
+      newly.push(a);
+    }
+  });
+  if (newly.length) saveAchData();
+  return newly;
+}
+
+// ── Unlock animation queue ────────────────────────────────────────────────
+let _achQ = [], _achBusy = false;
+
+function queueAchUnlock(ach) {
+  _achQ.push(ach);
+  if (!_achBusy) _drainAch();
+}
+
+function _drainAch() {
+  if (!_achQ.length) { _achBusy = false; return; }
+  _achBusy = true;
+  const a   = _achQ.shift();
+  const el  = document.getElementById('ach-unlock');
+  const rar = a.rarity.charAt(0).toUpperCase() + a.rarity.slice(1);
+  document.getElementById('ach-un-icon').textContent  = a.icon;
+  document.getElementById('ach-un-name').textContent  = a.title;
+  document.getElementById('ach-un-desc').textContent  = a.desc;
+  const rEl = document.getElementById('ach-un-rarity');
+  rEl.textContent  = rar;
+  rEl.className    = 'ach-un-rarity ' + a.rarity;
+  el.classList.add('show');
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(_drainAch, 450);
+  }, 3200);
+}
+
+// ── Home screen render ────────────────────────────────────────────────────
+let _achOpen = false;
+
+function toggleAchSection() {
+  _achOpen = !_achOpen;
+  document.getElementById('ach-grid-wrap').style.display = _achOpen ? 'block' : 'none';
+  document.getElementById('ach-chevron').classList.toggle('open', _achOpen);
+  if (_achOpen) renderAchievements();
+}
+
+function renderAchievements() {
+  const grid   = document.getElementById('ach-grid');
+  const hist   = S.hist;
+  const unlocked = _achData.unlocked;
+  const count    = ACHIEVEMENTS.filter(a => unlocked[a.id]).length;
+  document.getElementById('ach-count').textContent = `${count} / ${ACHIEVEMENTS.length}`;
+
+  grid.innerHTML = ACHIEVEMENTS.map(a => {
+    const done  = !!unlocked[a.id];
+    const [cur, max] = getAchProgress(a.id, hist);
+    const pct   = Math.round(cur / max * 100);
+    const dateStr = done
+      ? new Date(unlocked[a.id]).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+      : null;
+
+    return `<div class="ach-badge ${a.rarity}${done?' unlocked':' locked'}">
+      <div class="ach-icon-wrap">${done ? a.icon : '🔒'}</div>
+      <div class="ach-title">${a.title}</div>
+      <div class="ach-sub">${a.desc}</div>
+      ${done
+        ? `<div class="ach-date">Unlocked ${dateStr}</div>`
+        : `<div class="ach-prog-wrap">
+             <div class="ach-prog-row"><span>${cur}</span><span>${max}</span></div>
+             <div class="ach-prog-track"><div class="ach-prog-fill" style="width:${pct}%"></div></div>
+           </div>`
+      }
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════
+//  SESSION COMPARISON
+// ════════════════════════════════════
+
+// Thresholds for "similar" (→) vs improved/declined
+const CMP_THR = { score:2, res:2, stab:2, acc:2, durSec:15 };
+
+function buildRef(mode) {
+  const h = S.hist; // saved sessions (current is not yet saved)
+  if (!h.length) return null;
+  if (mode === 'previous') return h[0];
+  if (mode === 'best')     return h.reduce((b,s) => s.score > b.score ? s : b, h[0]);
+  if (mode === 'weekly') {
+    const week = h.filter(s => Date.now() - s.ts < 7 * 86400000);
+    if (!week.length) return null;
+    // Synthetic average object
+    const avg = k => week.reduce((a,s) => a + (s[k] ?? 0), 0) / week.length;
+    return {
+      _isAvg: true, _n: week.length,
+      score: avg('score'), res: avg('res'),
+      stab:  avg('stab'),  acc: avg('acc'),
+      dur:   avg('dur'),
+    };
+  }
+  return null;
+}
+
+function cmpDelta(cur, ref, key, isDur) {
+  const cv = isDur ? cur.dur / 1000 : cur[key] ?? 0;
+  const rv = isDur ? ref.dur / 1000 : ref[key] ?? 0;
+  const d  = cv - rv;
+  const thr = isDur ? CMP_THR.durSec : CMP_THR[key];
+  const dir = d > thr ? 'up' : d < -thr ? 'dn' : 'eq';
+  return { d, dir };
+}
+
+function fmtVal(s, key) {
+  if (key === 'dur') {
+    const sec = Math.round((s.dur ?? 0) / 1000);
+    return sec >= 60 ? `${Math.floor(sec/60)}m ${sec%60}s` : `${sec}s`;
+  }
+  if (key === 'score') return String(Math.round(s[key] ?? 0));
+  return Math.round(s[key] ?? 0) + '%';
+}
+
+function fmtDelta(d, key) {
+  const rounded = key === 'dur' ? Math.round(d) : Math.round(d);
+  const unit    = key === 'dur' ? 's' : key === 'score' ? '' : '%';
+  return (d >= 0 ? '+' : '') + rounded + unit;
+}
+
+function renderComparison(mode) {
+  const card = document.getElementById('cmp-card');
+  const body = document.getElementById('cmp-body');
+  if (!S.result) { card.style.display = 'none'; return; }
+
+  const ref = buildRef(mode);
+  if (!ref) {
+    card.style.display = '';
+    body.innerHTML = `<div class="cmp-na">No ${mode === 'weekly' ? 'sessions this week' : 'previous sessions'} to compare yet.</div>`;
+    return;
+  }
+  card.style.display = '';
+
+  // Reference label
+  let refLabel;
+  if (mode === 'previous') {
+    refLabel = `vs previous session · ${new Date(ref.ts).toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
+  } else if (mode === 'best') {
+    refLabel = `vs best session (score ${Math.round(ref.score)}) · ${new Date(ref.ts).toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
+  } else {
+    refLabel = `vs 7-day average · ${ref._n} session${ref._n!==1?'s':''} included`;
+  }
+
+  const metrics = [
+    { key:'score', label:'Wellness',  color:'var(--al)'   },
+    { key:'res',   label:'Resonance', color:'var(--tl)'   },
+    { key:'stab',  label:'Stability', color:'var(--ok)'   },
+    { key:'acc',   label:'Accuracy',  color:'var(--warn)' },
+    { key:'dur',   label:'Duration',  color:'var(--text)', isDur:true },
+  ];
+
+  const rows = metrics.map(m => {
+    const { d, dir } = cmpDelta(S.result, ref, m.key, m.isDur);
+    const arrow = dir==='up' ? '↑' : dir==='dn' ? '↓' : '→';
+    const cls   = dir==='up' ? 'up' : dir==='dn' ? 'dn' : 'eq';
+    const curFmt = fmtVal(S.result, m.key);
+    const refFmt = fmtVal(ref, m.key);
+    const dFmt   = fmtDelta(d, m.key);
+    return `
+      <div class="cmp-row">
+        <span class="cmp-name">${m.label}</span>
+        <span class="cmp-cur" style="color:${m.color}">${curFmt}</span>
+        <span class="cmp-sep"></span>
+        <span class="cmp-arrow ${cls}">${arrow}</span>
+        <span class="cmp-delta ${cls}">${dFmt}</span>
+        <span class="cmp-ref-v">${refFmt}</span>
+      </div>`;
+  }).join('');
+
+  body.innerHTML = `<div class="cmp-ref-lbl">${refLabel}</div>${rows}`;
+}
+
+function switchCmp(btn) {
+  document.querySelectorAll('.cmp-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderComparison(btn.dataset.mode);
+}
+
+// ════════════════════════════════════
+//  PROGRAMS ENGINE
+// ════════════════════════════════════
+function renderPrograms() {
+  const list  = document.getElementById('prog-list');
+  const total = Object.values(_progData.completions).reduce((a,b)=>a+b,0);
+  const sub   = document.getElementById('prog-sub');
+  if (sub) sub.textContent = total > 0
+    ? `${total} program session${total!==1?'s':''} completed`
+    : 'Choose a guided practice';
+
+  list.innerHTML = '';
+  const favs = _progData.favorites || [];
+
+  PROGRAMS.forEach(p => {
+    const count   = _progData.completions[p.id] || 0;
+    const isFav   = favs.includes(p.id);
+    const lastTs  = _progData.lastCompleted[p.id];
+    const lastStr = lastTs
+      ? 'Last: ' + new Date(lastTs).toLocaleDateString('en-US',{month:'short',day:'numeric'})
+      : 'Not yet started';
+
+    const card = document.createElement('div');
+    card.className = 'prog-card';
+    card.id = 'pc-' + p.id;
+    card.innerHTML = `
+      <div class="prog-banner ${p.banner}">
+        <span class="prog-emoji">${p.emoji}</span>
+        <span class="prog-dur-pill">${fmtDur(p.duration)}</span>
+      </div>
+      <div class="prog-body">
+        <div class="prog-title-row">
+          <div class="prog-title">${p.title}</div>
+          <button class="prog-fav${isFav?' active':''}" data-id="${p.id}" title="Favourite" onclick="toggleFav('${p.id}',this)">${isFav?'♥':'♡'}</button>
+        </div>
+        <div class="prog-desc">${p.description}</div>
+        <div class="prog-stats">
+          <span class="prog-stat"><span class="prog-stat-n">${count}</span> completion${count!==1?'s':''}</span>
+          <span class="prog-stat">${lastStr}</span>
+        </div>
+        <button class="prog-expand" onclick="toggleProgCard('${p.id}',this)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="pcarr-${p.id}"><polyline points="6 9 12 15 18 9"/></svg>
+          Instructions &amp; Start
+        </button>
+        <div class="prog-detail" id="pd-${p.id}">
+          <ol class="prog-instructions">
+            ${p.instructions.map((s,i)=>`<li><span class="prog-step-n">${i+1}</span><span>${s}</span></li>`).join('')}
+          </ol>
+          <div class="prog-guidance">${p.guidance}</div>
+          <button class="prog-start" onclick="startProgram('${p.id}')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+            Start ${p.title}
+          </button>
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
+}
+
+function toggleProgCard(id, btn) {
+  const detail = document.getElementById('pd-' + id);
+  const arrow  = document.getElementById('pcarr-' + id);
+  const open   = detail.classList.toggle('open');
+  if (arrow) arrow.style.transform = open ? 'rotate(180deg)' : '';
+  btn.style.color = open ? 'var(--al)' : '';
+  btn.style.borderColor = open ? 'var(--al)' : '';
+}
+
+function toggleFav(id, btn) {
+  const favs = _progData.favorites || [];
+  const idx  = favs.indexOf(id);
+  if (idx === -1) { favs.push(id); btn.classList.add('active'); btn.textContent = '♥'; }
+  else            { favs.splice(idx,1); btn.classList.remove('active'); btn.textContent = '♡'; }
+  _progData.favorites = favs;
+  savePD();
+}
+
+// ════════════════════════════════════
+//  SAVE SESSION
+// ════════════════════════════════════
+async function saveS() {
+  if(!S.result) return;
+  S.notes = document.getElementById('sess-note').value.trim();
+  // Attach a stable sessionId if not already present
+  if (!S.result.sessionId) {
+    S.result.sessionId = `hmm_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`;
+  }
+  const entry = {...S.result, postMood: S.postMood, blog: S.blog,
+    notes: S.notes, tags: [...S.tags],
+    recordingId: null, recSize: 0};
+
+  // Save blob to IndexedDB if present
+  if (S._pendingBlob) {
+    const recId = `rec_${S.result.ts}`;
+    try {
+      await dbPut({ id: recId, blob: S._pendingBlob, mimeType: _pendingMime,
+        duration: S.result.dur, fileSize: S._pendingBlob.size });
+      entry.recordingId = recId;
+      entry.recSize = S._pendingBlob.size;
+    } catch(e) { console.warn('Failed to save recording:', e); }
+  }
+
+  // Track program completion (≥ 90% of target duration)
+  if (S.activeProgram) {
+    const prog = S.activeProgram;
+    entry.programId = prog.id;
+    if (S.result.dur >= prog.duration * 1000 * 0.9) {
+      _progData.completions[prog.id] = (_progData.completions[prog.id] || 0) + 1;
+      _progData.lastCompleted[prog.id] = Date.now();
+      savePD();
+    }
+  }
+
+  S.hist.unshift(entry);
+  localStorage.setItem('hmm_hist', JSON.stringify(S.hist));
+
+  // Check achievements after history is updated
+  const newAch = checkAchievements(S.hist);
+  newAch.forEach(a => queueAchUnlock(a));
+
+  const btn=document.getElementById('savebtn');
+  btn.textContent='✓ Saved!'; btn.className='save-btn saved';
+  toast('Session saved!');
+  refreshHome();
+
+  // Cloud sync (non-blocking — fires after local save completes)
+  syncToCloud(entry);
+}
+
+// ════════════════════════════════════
+//  HOME
+// ════════════════════════════════════
+function refreshHome() {
+  const today = new Date().toDateString();
+  document.getElementById('hdate').textContent =
+    new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+
+  const streak = calcStreak();
+  document.getElementById('h-streak').textContent = streak;
+
+  const tod = S.hist.filter(s=>new Date(s.ts).toDateString()===today);
+  document.getElementById('h-today').textContent = tod.length;
+
+  if(S.hist.length>0){
+    const avg=Math.round(S.hist.slice(0,10).reduce((a,b)=>a+b.score,0)/Math.min(10,S.hist.length));
+    document.getElementById('h-avg').textContent=avg;
+  }
+
+  if(S.hist.length>0){
+    const l=S.hist[0];
+    document.getElementById('last-card').style.display='';
+    document.getElementById('last-info').innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:16px;font-weight:700;color:var(--al)">${l.avg} Hz avg · Score ${l.score}</div>
+          <div style="font-size:11px;color:var(--muted)">${l.durStr} · Stability ${l.stab}%</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted)">${new Date(l.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>`;
+  }
+
+  document.getElementById('h-hz').value = S.targetHz;
+  renderWeekBars();
+  renderInsights();
+  // Always update pill count; re-render grid only if open
+  const unlockedCount = ACHIEVEMENTS.filter(a => _achData.unlocked[a.id]).length;
+  document.getElementById('ach-count').textContent = `${unlockedCount} / ${ACHIEVEMENTS.length}`;
+  if (_achOpen) renderAchievements();
+}
+
+function calcStreak() {
+  if(!S.hist.length) return 0;
+  const days=[...new Set(S.hist.map(s=>new Date(s.ts).toDateString()))];
+  let str=0;
+  for(let i=0;i<365;i++){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    if(days.includes(d.toDateString())) str++;
+    else if(i>0) break;
+  }
+  return str;
+}
+
+function renderWeekBars() {
+  const bw=document.getElementById('wbars'), lw=document.getElementById('wlabels');
+  bw.innerHTML=''; lw.innerHTML='';
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const ds=d.toDateString();
+    const ss=S.hist.filter(h=>new Date(h.ts).toDateString()===ds);
+    const bar=document.createElement('div'); bar.className='mb';
+    if(!ss.length){ bar.classList.add('nil'); bar.style.height='6px'; }
+    else {
+      const avg=ss.reduce((a,b)=>a+b.score,0)/ss.length;
+      bar.style.height=`${Math.max(6,(avg/100)*64)}px`;
+      if(i===0) bar.classList.add('today');
+    }
+    bw.appendChild(bar);
+    const lb=document.createElement('div'); lb.className='day-l';
+    lb.textContent=i===0?'T':d.toLocaleDateString('en-US',{weekday:'short'}).charAt(0);
+    lw.appendChild(lb);
+  }
+}
+
+// ════════════════════════════════════
+//  SEARCH & FILTER
+// ════════════════════════════════════
+let _activeTagFilter = 'all';
+
+function setTagFilter(btn) {
+  _activeTagFilter = btn.dataset.filter;
+  document.querySelectorAll('.ftag').forEach(b => b.classList.toggle('active', b === btn));
+  renderSessionList();
+}
+
+function filterHist() { renderSessionList(); }
+
+function getFilteredSessions() {
+  const q = (document.getElementById('hist-search')?.value || '').toLowerCase().trim();
+  return S.hist.filter(s => {
+    // Tag filter
+    if (_activeTagFilter !== 'all') {
+      if (!s.tags || !s.tags.includes(_activeTagFilter)) return false;
+    }
+    // Text search
+    if (q) {
+      const note   = (s.notes || '').toLowerCase();
+      const tags   = (s.tags || []).join(' ').toLowerCase();
+      const freqStr= String(s.avg || '');
+      const dur    = (s.durStr || '').toLowerCase();
+      if (!note.includes(q) && !tags.includes(q) && !freqStr.includes(q) && !dur.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function renderSessionList() {
+  const sl  = document.getElementById('slist');
+  const lbl = document.getElementById('slist-label');
+  if (!sl) return;
+  const sessions = getFilteredSessions();
+  const q        = (document.getElementById('hist-search')?.value || '').trim();
+  const filtered = _activeTagFilter !== 'all' || q;
+
+  if (lbl) lbl.textContent = filtered
+    ? `${sessions.length} result${sessions.length !== 1 ? 's' : ''}` : 'Sessions';
+
+  sl.innerHTML = '';
+  if (!sessions.length) {
+    sl.innerHTML = `<div class="no-results">${filtered ? 'No sessions match your search.' : 'No sessions yet.'}</div>`;
+    return;
+  }
+
+  sessions.slice(0, 25).forEach((s, listIdx) => {
+    // find real index in S.hist for delete/playback
+    const idx     = S.hist.indexOf(s);
+    const d       = new Date(s.ts);
+    const hasRec  = !!s.recordingId;
+    const el      = document.createElement('div');
+    el.className  = hasRec ? 'si has-rec' : 'si';
+    const moodStr = (s.preMood && s.postMood)
+      ? ` · ${MOODS[s.preMood]}→${MOODS[s.postMood]}`
+      : (s.postMood ? ` · ${MOODS[s.postMood]}` : '');
+    const sizeStr = hasRec ? fmtSize(s.recSize) : '';
+    const recId   = s.recordingId || '';
+
+    // highlight matching text
+    const noteText = s.notes
+      ? (q ? highlightMatch(s.notes, q) : escHtml(s.notes))
+      : '';
+
+    el.innerHTML = `
+      <div class="si-top">
+        <div style="flex:1;min-width:0">
+          <div class="si-d">${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})} · ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}${moodStr}</div>
+          <div class="si-m">${s.durStr} · ${s.avg} Hz · Stability ${s.stab}%${hasRec?' · 🎙 '+sizeStr:''}</div>
+          ${s.tags?.length ? `<div class="si-tags">${s.tags.map(t=>`<span class="si-tag">${t}</span>`).join('')}</div>` : ''}
+          ${noteText ? `<div class="si-note">"${noteText}"</div>` : ''}
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:6px;flex-shrink:0;padding-left:8px">
+          ${hasRec?`<button class="si-rec-toggle" data-rec-id="${recId}">▶ Play</button>`:''}
+          <div class="si-s">${s.score}</div>
+        </div>
+      </div>
+      ${hasRec?`
+      <div class="pb-wrap" id="pb-${recId}" style="display:none">
+        <canvas class="pb-wvfm" id="wv-${recId}"></canvas>
+        <div class="pb-row">
+          <button class="pb-btn" id="play-${recId}" title="Play">▶</button>
+          <button class="pb-btn" title="Pause/Resume" onclick="pausePB()">⏸</button>
+          <button class="pb-btn" title="Stop" onclick="stopPB()">⏹</button>
+          <span class="pb-time" id="pt-${recId}">0:00</span>
+          <span class="pb-meta">${sizeStr}</span>
+          <button class="pb-btn del" title="Delete recording" data-del-id="${recId}" data-idx="${idx}">🗑</button>
+        </div>
+      </div>`:''}`;
+
+    if (hasRec) {
+      el.querySelector('.si-rec-toggle').addEventListener('click', function() {
+        const wrap = document.getElementById('pb-' + recId);
+        const open = wrap.style.display !== 'none';
+        wrap.style.display = open ? 'none' : '';
+        this.textContent  = open ? '▶ Play' : '▼ Hide';
+      });
+      const playBtn = el.querySelector('#play-' + recId);
+      if (playBtn) playBtn.addEventListener('click', () => playRec(recId, playBtn));
+      const delBtn  = el.querySelector('[data-del-id]');
+      if (delBtn)  delBtn.addEventListener('click', () => deleteRec(delBtn.dataset.delId, delBtn.dataset.idx));
+    }
+    sl.appendChild(el);
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function highlightMatch(text, q) {
+  const safe = escHtml(text);
+  const re   = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+  return safe.replace(re, '<mark style="background:rgba(124,58,237,.3);color:var(--al);border-radius:2px">$1</mark>');
+}
+
+// ════════════════════════════════════
+//  HISTORY
+// ════════════════════════════════════
+function refreshHist() {
+  const sl=document.getElementById('slist'), em=document.getElementById('hempty');
+  const hc=document.getElementById('hchart');
+  if(!S.hist.length){
+    sl.style.display='none'; em.style.display='flex'; hc.style.display='none';
+    document.getElementById('hsub').textContent='Start your first session!';
+    return;
+  }
+  sl.style.display=''; em.style.display='none'; hc.style.display='';
+  document.getElementById('hsub').textContent=`${S.hist.length} session${S.hist.length!==1?'s':''} · ${calcStreak()} day streak`;
+  // Reset search/filter state
+  _activeTagFilter = 'all';
+  const si = document.getElementById('hist-search'); if (si) si.value = '';
+  document.querySelectorAll('.ftag').forEach(b => b.classList.toggle('active', b.dataset.filter==='all'));
+  drawHistChart();
+  renderSessionList();
+}
+
+function drawHistChart() {
+  const cv=document.getElementById('hchart');
+  const dpr=devicePixelRatio||1;
+  const wr=cv.getBoundingClientRect(), w=wr.width||300, h=180;
+  cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr);
+  cv.style.height=h+'px';
+  const ctx=cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.fillStyle='#0e1628'; ctx.fillRect(0,0,w,h);
+
+  const N=14, now=new Date();
+  const data=[];
+  for(let i=N-1;i>=0;i--){
+    const d=new Date(now); d.setDate(d.getDate()-i);
+    const ss=S.hist.filter(s=>new Date(s.ts).toDateString()===d.toDateString());
+    data.push(ss.length ? {v:ss.reduce((a,b)=>a+b.score,0)/ss.length, d} : {v:null,d});
+  }
+
+  const pad={t:16,r:12,b:28,l:30};
+  const pw=w-pad.l-pad.r, ph=h-pad.t-pad.b;
+
+  // grid
+  ctx.strokeStyle='#1c2840'; ctx.lineWidth=1;
+  for(const v of [0,25,50,75,100]){
+    const y=pad.t+ph-(v/100)*ph;
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(w-pad.r,y); ctx.stroke();
+    ctx.fillStyle='#2d3a5a'; ctx.font='9px Inter,sans-serif'; ctx.textAlign='right';
+    ctx.fillText(v,pad.l-4,y+3);
+  }
+
+  // day labels
+  ctx.fillStyle='#2d3a5a'; ctx.textAlign='center';
+  data.forEach((d,i)=>{
+    if(i%2===0){
+      const x=pad.l+(i/(N-1))*pw;
+      ctx.fillText(d.d.toLocaleDateString('en-US',{weekday:'short'}),x,h-6);
+    }
+  });
+
+  const pts=data.map((d,i)=>d.v!==null?{x:pad.l+(i/(N-1))*pw,y:pad.t+ph-(d.v/100)*ph}:null);
+  const valid=pts.filter(Boolean);
+  if(valid.length<1) return;
+
+  // area fill
+  if(valid.length>=2){
+    ctx.beginPath();
+    let fp=true;
+    pts.forEach(p=>{ if(!p){fp=true;return;} if(fp){ctx.moveTo(p.x,p.y);fp=false;}else ctx.lineTo(p.x,p.y); });
+    const lv=pts.filter(Boolean).pop(), fv=pts.find(Boolean);
+    ctx.lineTo(lv.x,pad.t+ph); ctx.lineTo(fv.x,pad.t+ph); ctx.closePath();
+    const g=ctx.createLinearGradient(0,pad.t,0,pad.t+ph);
+    g.addColorStop(0,'rgba(124,58,237,.35)'); g.addColorStop(1,'rgba(124,58,237,.02)');
+    ctx.fillStyle=g; ctx.fill();
+
+    // line
+    ctx.beginPath(); fp=true;
+    pts.forEach(p=>{ if(!p){fp=true;return;} if(fp){ctx.moveTo(p.x,p.y);fp=false;}else ctx.lineTo(p.x,p.y); });
+    ctx.strokeStyle='#7c3aed'; ctx.lineWidth=2.5; ctx.lineJoin='round'; ctx.stroke();
+  }
+
+  // dots
+  pts.forEach((p,i)=>{
+    if(!p) return;
+    ctx.beginPath(); ctx.arc(p.x,p.y,i===N-1?5:3,0,Math.PI*2);
+    ctx.fillStyle=i===N-1?'#2dd4bf':'#7c3aed';
+    if(i===N-1){ctx.shadowColor='#2dd4bf';ctx.shadowBlur=10;}
+    ctx.fill(); ctx.shadowBlur=0;
+  });
+}
+
+// ════════════════════════════════════
+//  EXPORT ENGINE
+// ════════════════════════════════════
+function _dateStamp() { return new Date().toISOString().slice(0,10); }
+
+function _dlFile(content, filename, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), { href:url, download:filename });
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function _csvEsc(v) {
+  const s = v === undefined || v === null ? '' : String(v);
+  return '"' + s.replace(/"/g, '""').replace(/\n/g, ' ') + '"';
+}
+
+function _sessionToFlat(s) {
+  const d = new Date(s.ts);
+  return {
+    date:            d.toLocaleDateString('en-US',{year:'numeric',month:'2-digit',day:'2-digit'}),
+    time:            d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),
+    duration:        s.durStr,
+    durationSec:     Math.round((s.dur||0)/1000),
+    wellnessScore:   s.score,
+    avgFrequencyHz:  s.avg,
+    peakFrequencyHz: s.peak,
+    pitchStability:  s.stab,
+    pitchAccuracy:   s.acc,
+    resonanceScore:  s.res ?? '',
+    resonanceQuality:s.resLbl ?? '',
+    harmonics:       s.avgHarm != null ? s.avgHarm.toFixed(1) : '',
+    hnrPct:          s.avgHNR ?? '',
+    preMood:         MOOD_NAMES[s.preMood||0] || '',
+    postMood:        MOOD_NAMES[s.postMood||0] || '',
+    moodShift:       (s.preMood && s.postMood) ? (s.postMood - s.preMood) : '',
+    tags:            (s.tags||[]).join('; '),
+    notes:           s.notes || '',
+    program:         s.programId || '',
+    targetHz:        s.tgt || '',
+  };
+}
+
+function exportJSON() {
+  if (!S.hist.length) { toast('No sessions to export'); return; }
+  const totalMin = Math.round(S.hist.reduce((a,s)=>a+(s.dur||0)/60000, 0));
+  const payload  = {
+    app:          'Hmm Vocal Wellness',
+    exported:     new Date().toISOString(),
+    version:      1,
+    summary: {
+      totalSessions: S.hist.length,
+      totalMinutes:  totalMin,
+      streak:        calcStreak(),
+    },
+    sessions: S.hist.map(_sessionToFlat),
+  };
+  _dlFile(JSON.stringify(payload, null, 2), `hmm-full-${_dateStamp()}.json`, 'application/json');
+  toast(`Exported ${S.hist.length} sessions as JSON`);
+  closeSM();
+}
+
+function exportCSV() {
+  if (!S.hist.length) { toast('No sessions to export'); return; }
+  const flat    = S.hist.map(_sessionToFlat);
+  const headers = Object.keys(flat[0]);
+  const rows    = flat.map(r => headers.map(k => _csvEsc(r[k])).join(','));
+  _dlFile([headers.join(','), ...rows].join('\r\n'), `hmm-full-${_dateStamp()}.csv`, 'text/csv;charset=utf-8');
+  toast(`Exported ${S.hist.length} sessions as CSV`);
+  closeSM();
+}
+
+function exportNotes() {
+  const withNotes = S.hist.filter(s => s.notes || (s.tags||[]).length);
+  if (!withNotes.length) { toast('No notes or tags to export'); return; }
+  const headers = ['date','time','duration','wellnessScore','tags','notes'];
+  const rows = withNotes.map(s => {
+    const d = new Date(s.ts);
+    return [
+      d.toLocaleDateString('en-US',{year:'numeric',month:'2-digit',day:'2-digit'}),
+      d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),
+      s.durStr, s.score,
+      (s.tags||[]).join('; '),
+      s.notes || '',
+    ].map(_csvEsc).join(',');
+  });
+  _dlFile([headers.join(','), ...rows].join('\r\n'), `hmm-notes-${_dateStamp()}.csv`, 'text/csv;charset=utf-8');
+  toast(`Exported ${withNotes.length} notes entries`);
+  closeSM();
+}
+
+// ════════════════════════════════════
+//  SETTINGS
+// ════════════════════════════════════
+function setHz(v) {
+  const hz=parseInt(v);
+  if(hz>=50&&hz<=600){
+    S.targetHz=hz;
+    document.getElementById('h-hz').value=hz;
+    document.getElementById('sm-hz').value=hz;
+    document.getElementById('gtgt').textContent=hz;
+    localStorage.setItem('hmm_hz',hz);
+  }
+}
+function openSM() {
+  document.getElementById('smodal').classList.add('show');
+  document.getElementById('sm-hz').value = S.targetHz;
+  const totalMin = Math.round(S.hist.reduce((a,s)=>a+(s.dur||0)/60000, 0));
+  const withNotes = S.hist.filter(s=>s.notes||(s.tags||[]).length).length;
+  document.getElementById('sm-export-summary').textContent =
+    S.hist.length
+      ? `${S.hist.length} session${S.hist.length!==1?'s':''} · ${totalMin} min total · ${withNotes} with notes`
+      : 'No sessions yet';
+}
+function closeSM(){ document.getElementById('smodal').classList.remove('show'); }
+function clearAll(){
+  if(confirm('Clear all session history? This cannot be undone.')){
+    S.hist=[]; localStorage.removeItem('hmm_hist');
+    closeSM(); refreshHome(); toast('History cleared');
+  }
+}
+
+// ════════════════════════════════════
+//  MIC
+// ════════════════════════════════════
+async function requestMic() {
+  const ok=await initAudio();
+  if(ok){ document.getElementById('perm').classList.remove('show'); goSession(); }
+}
+
+// ════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════
+let tto;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(tto); tto=setTimeout(()=>el.classList.remove('show'),2400);
+}
+
+// ════════════════════════════════════
+//  AI INSIGHTS ENGINE
+// ════════════════════════════════════
+function generateInsights() {
+  const h = S.hist;
+  if (!h.length) return [];
+
+  // ── Utilities ──────────────────────────────────────────────────────────
+  const A    = (arr, key) => arr.length ? arr.reduce((s,x) => s + (x[key] ?? 0), 0) / arr.length : 0;
+  const bold = s => `<strong>${s}</strong>`;
+  const sgn  = n => n >= 0 ? '+' : '';
+  const pct  = n => `${Math.round(n)}%`;
+  const now  = Date.now();
+
+  // Windows by recency (session count, not calendar days)
+  const L7  = h.slice(0, Math.min(7,  h.length));
+  const P7  = h.slice(7, Math.min(14, h.length));
+  const L14 = h.slice(0, Math.min(14, h.length));
+
+  // Calendar-day sets
+  const calDays = days => new Set(
+    h.filter(s => now - s.ts < days * 86400000).map(s => new Date(s.ts).toDateString())
+  ).size;
+
+  const cands = []; // { priority, icon, bg, text }
+  const push  = (priority, icon, bg, text) => cands.push({ priority, icon, bg, text });
+
+  // ── 1. WELLNESS SCORE: week-over-week ──────────────────────────────────
+  if (L7.length >= 2 && P7.length >= 2) {
+    const s1 = A(L7,'score'), s2 = A(P7,'score'), d = s1 - s2;
+    if (Math.abs(d) >= 2) push(
+      Math.abs(d) * 1.5,
+      d > 0 ? '📈' : '📉',
+      d > 0 ? 'rgba(16,185,129,.1)' : 'rgba(245,158,11,.1)',
+      `Wellness score averaged ${bold(Math.round(s1))} over your last 7 sessions — ` +
+      `${bold(sgn(d)+Math.abs(d).toFixed(0)+' pts')} vs the 7 before that (${Math.round(s2)}). ` +
+      `${d > 0 ? 'Your practice is measurably improving.' : 'Normal variation — keep showing up.'}`
+    );
+  }
+
+  // ── 2. PITCH STABILITY: week-over-week ────────────────────────────────
+  if (L7.length >= 2 && P7.length >= 2) {
+    const s1 = A(L7,'stab'), s2 = A(P7,'stab'), d = s1 - s2;
+    if (Math.abs(d) >= 2) push(
+      Math.abs(d) * 1.1,
+      d > 0 ? '📊' : '📊',
+      'rgba(45,212,191,.1)',
+      `Pitch stability ${d > 0 ? 'increased' : 'dipped'} ${bold(Math.abs(d).toFixed(0)+'%')} ` +
+      `compared to last week — ${bold(pct(s1))} this week vs ${pct(s2)} prior.`
+    );
+  }
+
+  // ── 3. RESONANCE: trending up or down ─────────────────────────────────
+  const withRes = L14.filter(s => s.res !== undefined);
+  if (withRes.length >= 4) {
+    const half = Math.ceil(withRes.length / 2);
+    const rNew = A(withRes.slice(0, half), 'res');
+    const rOld = A(withRes.slice(half),    'res');
+    const d    = rNew - rOld;
+    if (Math.abs(d) >= 2) push(
+      Math.abs(d) * 1.2,
+      '🔊',
+      'rgba(45,212,191,.1)',
+      `Average resonance is trending ${d > 0 ? bold('upward') : bold('downward')} — ` +
+      `${bold(Math.round(rNew))} in recent sessions vs ${bold(Math.round(rOld))} prior ` +
+      `(${sgn(d)}${Math.abs(d).toFixed(0)} pts across ${withRes.length} sessions).`
+    );
+  }
+
+  // ── 4. PITCH ACCURACY: week-over-week ─────────────────────────────────
+  if (L7.length >= 2 && P7.length >= 2) {
+    const a1 = A(L7,'acc'), a2 = A(P7,'acc'), d = a1 - a2;
+    if (Math.abs(d) >= 3) push(
+      Math.abs(d) * 0.9,
+      '🎯',
+      'rgba(96,165,250,.1)',
+      `Pitch accuracy ${d > 0 ? 'improved' : 'shifted'} from ${bold(pct(a2))} → ${bold(pct(a1))} ` +
+      `comparing last 7 vs prior 7 sessions (${sgn(d)}${Math.abs(d).toFixed(0)}%).`
+    );
+  }
+
+  // ── 5. SESSION DURATION TREND ─────────────────────────────────────────
+  if (L7.length >= 2 && P7.length >= 2) {
+    const d1 = A(L7,'dur') / 60000, d2 = A(P7,'dur') / 60000, d = d1 - d2;
+    if (Math.abs(d) >= 0.3) push(
+      Math.abs(d) * 7,
+      '⏱',
+      'rgba(124,58,237,.1)',
+      `Sessions averaged ${bold(d1.toFixed(1)+'m')} this week vs ${bold(d2.toFixed(1)+'m')} prior — ` +
+      `${d > 0 ? 'sessions are getting longer. Depth is building.' : 'sessions are getting shorter — try to hold for one more exhale.'}`
+    );
+  }
+
+  // ── 6. OPTIMAL FREQUENCY RANGE ────────────────────────────────────────
+  // Bin sessions by 15 Hz, find the bucket with best average resonance
+  const freqBins = {};
+  L14.forEach(s => {
+    if (!s.avg || s.res === undefined) return;
+    const bin = Math.round(s.avg / 15) * 15;
+    if (!freqBins[bin]) freqBins[bin] = [];
+    freqBins[bin].push(s.res);
+  });
+  const binList = Object.entries(freqBins)
+    .filter(([,v]) => v.length >= 2)
+    .map(([hz, scores]) => ({
+      hz: parseInt(hz),
+      avgRes: scores.reduce((a,b)=>a+b,0) / scores.length,
+      n: scores.length,
+    }))
+    .sort((a,b) => b.avgRes - a.avgRes);
+  if (binList.length >= 2) {
+    const best = binList[0];
+    const lo   = best.hz - 7, hi = best.hz + 7;
+    push(
+      17,
+      '🔬',
+      'rgba(167,139,250,.1)',
+      `Your strongest resonance occurs around ${bold(lo+'–'+hi+' Hz')} — ` +
+      `avg resonance score ${bold(Math.round(best.avgRes))} in that range ` +
+      `(${best.n} session${best.n!==1?'s':''}). ${best.hz <= 130 ? 'Deep chest resonance.' : best.hz >= 160 ? 'Bright head resonance.' : 'Balanced chest-head blend.'}`
+    );
+  }
+
+  // ── 7. MOOD × DURATION CORRELATION ───────────────────────────────────
+  const moodSess = h.filter(s => s.preMood && s.postMood && s.dur).slice(0, 25);
+  if (moodSess.length >= 5) {
+    let bestThresh = 0, bestGap = 0, bestLong = 0, bestShort = 0;
+    [90, 120, 180, 240, 300].forEach(thresh => {
+      const long  = moodSess.filter(s => s.dur >= thresh * 1000);
+      const short = moodSess.filter(s => s.dur <  thresh * 1000);
+      if (long.length < 2 || short.length < 2) return;
+      const ls = long.reduce((a,s)=>a+(s.postMood-s.preMood),0)/long.length;
+      const ss = short.reduce((a,s)=>a+(s.postMood-s.preMood),0)/short.length;
+      const gap = ls - ss;
+      if (gap > bestGap) { bestGap=gap; bestThresh=thresh; bestLong=ls; bestShort=ss; }
+    });
+    if (bestGap >= 0.4 && bestThresh > 0) {
+      const tLabel = bestThresh >= 60 ? `${bestThresh/60} min` : `${bestThresh}s`;
+      push(
+        bestGap * 22,
+        '🧘',
+        'rgba(124,58,237,.12)',
+        `Mood improves most after sessions longer than ${bold(tLabel)} — ` +
+        `avg shift ${bold(sgn(bestLong)+bestLong.toFixed(1))} vs ` +
+        `${sgn(bestShort)+bestShort.toFixed(1)} for shorter sessions ` +
+        `(${(bestGap).toFixed(1)} pt difference).`
+      );
+    }
+  }
+
+  // ── 8. CONSISTENCY (days-practiced windows) ───────────────────────────
+  const d7 = calDays(7), d14 = calDays(14);
+  if (d14 >= 2) {
+    const pct14 = Math.round(d14/14*100);
+    push(
+      d7 * 3.5,
+      d7 >= 6 ? '🔥' : d7 >= 4 ? '✨' : '📅',
+      d7 >= 6 ? 'rgba(239,68,68,.1)' : 'rgba(124,58,237,.1)',
+      `Practiced ${bold(d7+' of the last 7 days')} and ${bold(d14+'/14')} days (${pct14}% consistency). ` +
+      `${d14 >= 11 ? 'Elite-level regularity.' : d14 >= 7 ? 'Strong habit building.' : 'Good start — aim for 5+ days per week.'}`
+    );
+  }
+
+  // ── 9. BEST TIME OF DAY ───────────────────────────────────────────────
+  const tg = { Morning:[], Afternoon:[], Evening:[] };
+  h.slice(0,40).forEach(s => {
+    const hr = new Date(s.ts).getHours();
+    tg[hr < 12 ? 'Morning' : hr < 18 ? 'Afternoon' : 'Evening'].push(s.score);
+  });
+  const tgFull = Object.entries(tg).filter(([,v])=>v.length>=2)
+    .map(([k,v])=>({ k, avg: v.reduce((a,b)=>a+b,0)/v.length, n: v.length }))
+    .sort((a,b)=>b.avg-a.avg);
+  if (tgFull.length >= 2) {
+    const best = tgFull[0], worst = tgFull[tgFull.length-1];
+    const diff = best.avg - worst.avg;
+    if (diff >= 5) push(
+      diff * 0.8,
+      best.k==='Morning'?'🌅': best.k==='Afternoon'?'☀️':'🌙',
+      'rgba(245,158,11,.09)',
+      `${bold(best.k)} sessions score ${bold(Math.round(diff)+' pts higher')} on average ` +
+      `(${Math.round(best.avg)} vs ${Math.round(worst.avg)} ${worst.k}) across ${best.n} sessions analysed.`
+    );
+  }
+
+  // ── 10. HARMONIC DEPTH TREND ──────────────────────────────────────────
+  const withH = L14.filter(s => s.avgHarm !== undefined && s.avgHarm > 0);
+  if (withH.length >= 4) {
+    const half = Math.ceil(withH.length / 2);
+    const h1   = A(withH.slice(0, half), 'avgHarm');
+    const h2   = A(withH.slice(half),    'avgHarm');
+    const d    = h1 - h2;
+    if (Math.abs(d) >= 0.3) push(
+      Math.abs(d) * 9,
+      '🎶',
+      'rgba(167,139,250,.09)',
+      `Harmonic depth ${d > 0 ? 'increased' : 'decreased'} from ` +
+      `${bold(h2.toFixed(1))} → ${bold(h1.toFixed(1))} overtones on average. ` +
+      `${d > 0 ? 'Your vocal tract is opening up.' : 'Try a lower, slower exhale to recover richness.'}`
+    );
+  }
+
+  // ── 11. STREAK WITH SCORE AVERAGE ────────────────────────────────────
+  const streak = calcStreak();
+  if (streak >= 3) {
+    const inStreak = h.filter(s => now - s.ts < streak * 86400000);
+    const sAvg     = inStreak.length ? Math.round(A(inStreak, 'score')) : 0;
+    push(
+      streak * 2.8,
+      '🔥',
+      'rgba(239,68,68,.1)',
+      `${bold(streak+'-day streak')} — averaging ${bold(sAvg)} per session during this run. ` +
+      `${streak >= 14 ? 'Extraordinary consistency.' : streak >= 7 ? 'A week straight — neurological adaptation is underway.' : 'Keep the chain alive.'}`
+    );
+  }
+
+  // ── 12. FIRST-SESSION BASELINE ────────────────────────────────────────
+  if (h.length === 1) {
+    const s = h[0];
+    push(100, '🌱', 'rgba(52,211,153,.1)',
+      `First session logged — ${bold(s.durStr)}, ${bold(s.avg+' Hz ('+hzToNote(s.avg)+')')}, ` +
+      `stability ${bold(pct(s.stab))}, wellness score ${bold(s.score)}. This is your personal baseline.`
+    );
+  }
+
+  // ── Rank and return top 3–5 ───────────────────────────────────────────
+  cands.sort((a,b) => b.priority - a.priority);
+  // Deduplicate similar icons (avoid two 🔥 rows)
+  const seen = new Set();
+  const deduped = cands.filter(c => {
+    if (seen.has(c.icon)) return false;
+    seen.add(c.icon); return true;
+  });
+  return deduped.slice(0, 5);
+}
+
+function renderInsights() {
+  const card  = document.getElementById('insights-card');
+  const body  = document.getElementById('insights-body');
+  const items = generateInsights();
+  if (!items.length) { card.style.display = 'none'; return; }
+  card.style.display = '';
+  // Update label with session count
+  const lbl = card.querySelector('.clabel');
+  if (lbl) lbl.innerHTML =
+    `✦ AI Insights <span style="font-weight:400;opacity:.6;font-size:9px;letter-spacing:.04em">· ${S.hist.length} session${S.hist.length!==1?'s':''} analysed</span>`;
+  body.innerHTML = items.map(ins => `
+    <div class="insight-item">
+      <div class="ins-icon" style="background:${ins.bg}">${ins.icon}</div>
+      <div class="ins-text">${ins.text}</div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════
+//  INIT
+// ════════════════════════════════════
+document.getElementById('h-hz').value = S.targetHz;
+document.getElementById('sm-hz').value = S.targetHz;
+refreshHome();
+renderPrograms();
+drawSpecIdle();
+drawGauge(0,false);
+
+window.addEventListener('resize',()=>{
+  if(S.screen==='session'){ drawSpecIdle(); drawGauge(0,false); }
+  if(S.screen==='history') refreshHist();
+});
+
+// ════════════════════════════════════════════════════════════════════
+//  APP CONFIG  ← fill these in after deploying Apps Script
+// ════════════════════════════════════════════════════════════════════
+const APP_CONFIG = {
+  GOOGLE_CLIENT_ID:  '',   // e.g. '123456789.apps.googleusercontent.com'
+  APPS_SCRIPT_URL:   '',   // Apps Script Web App URL
+};
+
+// ════════════════════════════════════════════════════════════════════
+//  AUTH STATE
+// ════════════════════════════════════════════════════════════════════
+let currentUser = JSON.parse(localStorage.getItem('hmm_user') || 'null');
+
+function _parseJwt(token) {
+  try {
+    const b64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    return JSON.parse(atob(b64));
+  } catch { return {}; }
+}
+
+function handleCredentialResponse(response) {
+  const p = _parseJwt(response.credential);
+  currentUser = {
+    sub:     p.sub,
+    email:   p.email,
+    name:    p.given_name || p.name || p.email,
+    picture: p.picture || '',
+    loginTs: Date.now(),
+  };
+  localStorage.setItem('hmm_user', JSON.stringify(currentUser));
+  document.getElementById('auth-overlay').style.display = 'none';
+  updateUserChip();
+  toast(`Welcome, ${currentUser.name}! 🎵`);
+}
+
+function skipAuth() {
+  localStorage.setItem('hmm_auth_skipped', '1');
+  document.getElementById('auth-overlay').style.display = 'none';
+}
+
+function logoutUser() {
+  currentUser = null;
+  localStorage.removeItem('hmm_user');
+  localStorage.removeItem('hmm_auth_skipped');
+  closeUserMenu();
+  updateUserChip();
+  if (window.google?.accounts?.id) google.accounts.id.disableAutoSelect();
+  document.getElementById('auth-overlay').style.display = 'flex';
+  initGoogleAuth();
+  toast('Signed out');
+}
+
+function showUserMenu() {
+  const m = document.getElementById('user-menu');
+  m.style.display = m.style.display === 'none' ? '' : 'none';
+  if (m.style.display !== 'none') {
+    document.getElementById('um-email').textContent = currentUser?.email || '';
+  }
+}
+function closeUserMenu() { document.getElementById('user-menu').style.display = 'none'; }
+document.addEventListener('click', e => {
+  if (!e.target.closest('#user-chip') && !e.target.closest('#user-menu')) closeUserMenu();
+});
+
+function updateUserChip() {
+  const chip = document.getElementById('user-chip');
+  if (!currentUser) { chip.style.display = 'none'; return; }
+  chip.style.display = 'flex';
+  const av = document.getElementById('user-avatar-el');
+  if (currentUser.picture) {
+    av.innerHTML = `<img src="${currentUser.picture}" onerror="this.parentNode.textContent='${currentUser.name[0].toUpperCase()}'">`;
+  } else {
+    av.textContent = currentUser.name[0].toUpperCase();
+  }
+  document.getElementById('user-name-el').textContent = currentUser.name.split(' ')[0];
+}
+
+function initGoogleAuth() {
+  const btn = document.getElementById('g-signin-btn');
+  btn.innerHTML = '';
+  if (!window.google?.accounts?.id || !APP_CONFIG.GOOGLE_CLIENT_ID) {
+    // GIS not loaded yet or client ID not configured — show info text
+    btn.innerHTML = `<div style="font-size:11px;color:var(--muted);text-align:center;padding:8px">Add your Google Client ID in APP_CONFIG to enable sign-in.</div>`;
+    return;
+  }
+  google.accounts.id.initialize({
+    client_id: APP_CONFIG.GOOGLE_CLIENT_ID,
+    callback:  handleCredentialResponse,
+    auto_select: false,
+  });
+  google.accounts.id.renderButton(btn, {
+    theme: 'filled_black', size: 'large', width: 280, text: 'signin_with',
+  });
+}
+
+// Show auth overlay on first load if needed
+(function() {
+  const skipped = localStorage.getItem('hmm_auth_skipped');
+  if (!currentUser && !skipped) {
+    document.getElementById('auth-overlay').style.display = 'flex';
+  }
+  updateUserChip();
+  // Init GIS after it loads
+  if (window.google?.accounts?.id) {
+    initGoogleAuth();
+  } else {
+    window.addEventListener('load', () => {
+      setTimeout(initGoogleAuth, 800);
+    });
+  }
+})();
+
+// ════════════════════════════════════════════════════════════════════
+//  CLOUD SYNC (Google Sheets via Apps Script)
+// ════════════════════════════════════════════════════════════════════
+function _setCloudStatus(state, text) {
+  const el = document.getElementById('cloud-status');
+  if (!el) return;
+  el.style.display = '';
+  el.className = `cloud-status ${state}`;
+  el.textContent = text;
+}
+
+async function syncToCloud(entry) {
+  if (!APP_CONFIG.APPS_SCRIPT_URL || !currentUser) return false;
+  _setCloudStatus('syncing', '↑ Syncing…');
+  try {
+    await fetch(APP_CONFIG.APPS_SCRIPT_URL, {
+      method:  'POST',
+      mode:    'no-cors',    // Apps Script redirect; response is opaque but data is received
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action:   'saveSession',
+        user:     currentUser,
+        session:  entry,
+        segments: entry.segments || [],
+      }),
+    });
+    _setCloudStatus('synced', '✓ Synced to Sheets');
+    return true;
+  } catch (e) {
+    console.warn('Cloud sync failed:', e);
+    _setCloudStatus('failed', '✗ Sync failed — saved locally');
+    return false;
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  SESSION ID — attach to result so it's used by both local + cloud
+// ════════════════════════════════════════════════════════════════════
+// Patch calcResult to add a sessionId (called inside the existing function)
+const _origCalcResult = calcResult;  // keep original reference
+// We extend via the saveS() call-site instead (simpler than monkey-patching)
+
+// ════════════════════════════════════════════════════════════════════
+//  SHARE CARD  (canvas → PNG)
+// ════════════════════════════════════════════════════════════════════
+let _shareCanvas = null;
+
+function openShareCard() {
+  if (!S.result) { toast('Save your session first'); return; }
+  _shareCanvas = buildShareCanvas(S.result);
+  const wrap = document.getElementById('share-canvas-wrap');
+  wrap.innerHTML = '';
+  wrap.appendChild(_shareCanvas);
+  // Show/hide native share button based on support
+  document.getElementById('share-btn-native').style.display =
+    navigator.share ? '' : 'none';
+  document.getElementById('share-modal').style.display = 'flex';
+}
+
+function closeShareModal(e) {
+  if (e && e.target !== document.getElementById('share-modal')) return;
+  document.getElementById('share-modal').style.display = 'none';
+}
+
+async function nativeShare() {
+  if (!_shareCanvas) return;
+  try {
+    const blob = await new Promise(r => _shareCanvas.toBlob(r, 'image/png'));
+    const file = new File([blob], 'hmm-session.png', { type: 'image/png' });
+    await navigator.share({
+      title: `Hmm Vocal Wellness · Score ${S.result.score}`,
+      text:  `I just completed a ${S.result.durStr} vocal wellness session 🎵`,
+      files: [file],
+    });
+  } catch (e) {
+    if (e.name !== 'AbortError') downloadShareCard();
+  }
+}
+
+function downloadShareCard() {
+  if (!_shareCanvas) return;
+  const a = Object.assign(document.createElement('a'), {
+    download: `hmm-session-${new Date().toISOString().slice(0,10)}.png`,
+    href: _shareCanvas.toDataURL('image/png'),
+  });
+  a.click();
+}
+
+// ── Canvas renderer ──────────────────────────────────────────────────────────
+function buildShareCanvas(r) {
+  const DPR = 2;    // retina
+  const W   = 400, H = 740;
+  const cv  = document.createElement('canvas');
+  cv.width  = W * DPR; cv.height = H * DPR;
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  const c = cv.getContext('2d');
+  c.scale(DPR, DPR);
+
+  const PAD   = 22;
+  const COL   = { bg:'#050814', surface:'#0e1628', surface2:'#151e33', border:'#1c2840',
+                  accent:'#7c3aed', al:'#a78bfa', tl:'#2dd4bf',
+                  text:'#e2e8f0', muted:'#4e627a', ok:'#10b981', warn:'#f59e0b', danger:'#ef4444' };
+
+  function rr(x, y, w, h, r2) {  // filled rounded rect (path only, call fill/stroke after)
+    c.beginPath();
+    c.moveTo(x+r2,y); c.lineTo(x+w-r2,y); c.quadraticCurveTo(x+w,y,x+w,y+r2);
+    c.lineTo(x+w,y+h-r2); c.quadraticCurveTo(x+w,y+h,x+w-r2,y+h);
+    c.lineTo(x+r2,y+h); c.quadraticCurveTo(x,y+h,x,y+h-r2);
+    c.lineTo(x,y+r2); c.quadraticCurveTo(x,y,x+r2,y); c.closePath();
+  }
+  function txt(str, x, y, size, color, align='left', weight='600') {
+    c.font = `${weight} ${size}px Inter,sans-serif`;
+    c.fillStyle = color; c.textAlign = align;
+    c.fillText(str, x, y);
+  }
+
+  // Background
+  c.fillStyle = COL.bg;
+  c.fillRect(0, 0, W, H);
+
+  // ── Header bar ────────────────────────────────────────────────────
+  c.fillStyle = COL.surface;
+  c.fillRect(0, 0, W, 48);
+  txt('🎵  Hmm · Vocal Wellness', PAD, 31, 13, COL.al, 'left', '700');
+  txt(new Date(r.ts).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+      W-PAD, 31, 11, COL.muted, 'right', '500');
+
+  // ── Score ring ────────────────────────────────────────────────────
+  const cx  = W/2, cy = 128, R = 56;
+  const scoreColor = r.score >= 75 ? COL.tl : r.score >= 50 ? COL.warn : COL.danger;
+  // track
+  c.beginPath(); c.arc(cx, cy, R, 0, Math.PI*2);
+  c.strokeStyle = COL.surface2; c.lineWidth = 10; c.stroke();
+  // arc
+  const ang = (r.score/100) * Math.PI * 2 - Math.PI/2;
+  c.beginPath(); c.arc(cx, cy, R, -Math.PI/2, ang);
+  c.strokeStyle = scoreColor; c.lineWidth = 10; c.lineCap = 'round'; c.stroke();
+  c.lineCap = 'butt';
+  // score text
+  txt(String(r.score), cx, cy+10, 40, scoreColor, 'center', '900');
+  txt('WELLNESS SCORE', cx, cy+32, 9, COL.muted, 'center', '600');
+
+  // title
+  txt(r.score>=90?'Transcendent 🌟':r.score>=75?'Excellent ✨':r.score>=60?'Great Session 💫':r.score>=45?'Good Effort 🌿':'Practice Complete 🎵',
+      cx, cy+58, 15, COL.text, 'center', '700');
+
+  // ── Pills row (duration + voice profile) ──────────────────────────
+  let y = cy + 84;
+  const pillData = [
+    [`⏱ ${r.durStr}`, '#4e627a30', COL.text],
+    [r.voiceLabel ? `◉ ${r.voiceLabel}` : null, null, null],
+  ].filter(p=>p[0]);
+
+  let px = PAD;
+  pillData.forEach(([label, bg, color]) => {
+    c.font = '500 12px Inter,sans-serif';
+    const tw = c.measureText(label).width;
+    const ph = 24, pw = tw + 20, pr = 12;
+    rr(px, y-16, pw, ph, pr);
+    c.fillStyle = r.voiceColor ? r.voiceColor+'22' : '#1c284040'; c.fill();
+    c.strokeStyle = r.voiceColor ? r.voiceColor+'55' : COL.border; c.lineWidth=1; c.stroke();
+    txt(label, px+10, y, 12, r.voiceColor || COL.text, 'left', '600');
+    px += pw + 8;
+  });
+
+  // ── Section label helper ──────────────────────────────────────────
+  function sectionLabel(text, yy) {
+    txt(text, PAD, yy, 9, COL.muted, 'left', '700');
+    c.fillStyle = COL.border;
+    c.fillRect(PAD + c.measureText(text).width + 8, yy-4, W - PAD*2 - c.measureText(text).width - 8, 1);
+  }
+
+  // ── Hum Pattern ───────────────────────────────────────────────────
+  y += 28;
+  sectionLabel('HUM PATTERN', y);
+  y += 14;
+
+  if (r.segments && r.segments.length > 0) {
+    const barW = W - PAD*2, barH = 16, barY = y;
+    let bx = PAD;
+    r.segments.forEach(seg => {
+      const sw = Math.max(2, (seg.duration / r.dur) * barW);
+      if (seg.type === 'hum') {
+        const g = c.createLinearGradient(bx, 0, bx+sw, 0);
+        g.addColorStop(0, '#6d28d9'); g.addColorStop(1, '#2dd4bf');
+        rr(bx, barY, sw, barH, 4); c.fillStyle = g; c.fill();
+      } else {
+        rr(bx, barY, sw, barH, 4);
+        c.fillStyle = COL.surface2; c.fill();
+        c.strokeStyle = COL.border; c.lineWidth = 0.5; c.stroke();
+      }
+      bx += sw + 2;
+    });
+
+    // segment duration labels
+    bx = PAD;
+    c.font = '500 8px Inter,sans-serif';
+    r.segments.forEach(seg => {
+      const sw = Math.max(2, (seg.duration / r.dur) * barW);
+      const sec = (seg.duration/1000).toFixed(1);
+      c.fillStyle = seg.type === 'hum' ? COL.tl : COL.muted;
+      c.textAlign = 'center';
+      if (sw > 28) c.fillText(`${sec}s`, bx + sw/2, barY + barH + 12);
+      bx += sw + 2;
+    });
+
+    const humSegs   = r.segments.filter(s=>s.type==='hum');
+    const pauseSegs = r.segments.filter(s=>s.type==='pause');
+    y += barH + 20;
+    txt(`${humSegs.length} hum${humSegs.length!==1?'s':''} · ${pauseSegs.length} pause${pauseSegs.length!==1?'s':''} · ${((r.totalHumMs||0)/1000).toFixed(1)}s active`,
+        cx, y, 10, COL.muted, 'center', '500');
+    y += 16;
+  } else {
+    y += 36;
+  }
+
+  // ── Metrics grid ──────────────────────────────────────────────────
+  y += 10;
+  sectionLabel('SESSION METRICS', y); y += 14;
+
+  const metrics = [
+    { val: `${r.avg} Hz`,  label: 'Avg Freq',    color: COL.al },
+    { val: `${r.peak} Hz`, label: 'Peak',         color: COL.text },
+    { val: `${r.stab}%`,   label: 'Stability',    color: COL.tl },
+    { val: `${r.acc}%`,    label: 'Accuracy',     color: COL.warn },
+    { val: `${r.avgHNR}%`, label: 'HNR',          color: '#818cf8' },
+    { val: r.resLbl,       label: 'Resonance',    color: COL.ok },
+    { val: r.avgHarm.toFixed(1), label:'Harmonics', color: COL.ok },
+    { val: `${r.ampCons||0}%`, label:'Amp Cons.',  color: COL.warn },
+  ];
+
+  const cols = 4, cellW = (W - PAD*2) / cols, cellH = 54;
+  metrics.forEach((m, i) => {
+    const row = Math.floor(i/cols), col = i%cols;
+    const mx = PAD + col*cellW, my = y + row*cellH;
+    rr(mx+2, my, cellW-4, cellH-4, 8);
+    c.fillStyle = COL.surface; c.fill();
+    txt(m.val,   mx + cellW/2, my + 22, 15, m.color, 'center', '800');
+    txt(m.label, mx + cellW/2, my + 38, 9,  COL.muted, 'center', '600');
+  });
+  y += Math.ceil(metrics.length/cols) * cellH + 10;
+
+  // ── Score formula ──────────────────────────────────────────────────
+  y += 6;
+  sectionLabel('WELLNESS SCORE FORMULA', y); y += 14;
+
+  const factors = [
+    { label:'Stability', weight:32, val:r.stab,     color:'#2dd4bf' },
+    { label:'Accuracy',  weight:22, val:r.acc,      color:'#f59e0b' },
+    { label:'Resonance', weight:28, val:r.res,      color:'#a78bfa' },
+    { label:'Duration',  weight:18, val:r.durScore, color:'#60a5fa' },
+  ];
+  const fBarW = W - PAD*2, fBarH = 18;
+  let fx = PAD;
+  factors.forEach(f => {
+    const fw = (f.weight/100) * fBarW;
+    rr(fx, y, fw, fBarH, 4); c.fillStyle = f.color+'44'; c.fill();
+    c.strokeStyle = f.color+'88'; c.lineWidth = 1; c.stroke();
+    c.font = '700 9px Inter,sans-serif'; c.fillStyle = f.color; c.textAlign = 'center';
+    if (fw > 34) c.fillText(`${f.weight}%`, fx + fw/2, y+12);
+    fx += fw;
+  });
+  y += fBarH + 10;
+
+  const fcols = 4, fcw = fBarW / fcols;
+  factors.forEach((f, i) => {
+    const fx2 = PAD + i*fcw;
+    txt(f.label,         fx2+fcw/2, y+10, 9,  f.color,    'center', '700');
+    txt(`×${f.weight}%`, fx2+fcw/2, y+22, 8,  COL.muted,  'center', '500');
+    txt(`= ${Math.round(f.val * f.weight/100)}`, fx2+fcw/2, y+34, 9, f.color, 'center', '700');
+  });
+  y += 44;
+
+  // ── Footer ────────────────────────────────────────────────────────
+  c.fillStyle = COL.border; c.fillRect(PAD, y+6, W-PAD*2, 1);
+  y += 18;
+  const footer = currentUser ? `${currentUser.name} · hmm vocal wellness` : 'hmm vocal wellness';
+  txt(footer, cx, y+14, 10, COL.muted, 'center', '500');
+
+  return cv;
+}
+
+</script>
+</body>
+</html>
