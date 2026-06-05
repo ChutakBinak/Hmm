@@ -78,7 +78,21 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
 .vt.active{background:var(--surface);color:var(--al)}
 #spec{width:100%;height:160px;border-radius:0 0 12px 12px;display:block;background:#07091a;border:1px solid var(--border);border-top:none}
 .fp-card{margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px}
-#fp-c{width:100%;aspect-ratio:1;display:block;max-height:240px}
+#fp-c{display:block;margin:0 auto}
+.fp-top-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.fp-profile-pill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.03em}
+
+/* ── AI INSIGHTS ── */
+.ai-section-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin:14px 0 8px;display:flex;align-items:center;gap:6px}
+.ai-insight{border-radius:12px;padding:12px 14px;margin-bottom:8px;border:1px solid}
+.ai-insight:last-child{margin-bottom:0}
+.ai-insight.positive{background:rgba(16,185,129,.06);border-color:rgba(16,185,129,.22)}
+.ai-insight.suggestion{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.22)}
+.ai-insight.neutral{background:var(--surface2);border-color:var(--border)}
+.ai-insight-head{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.ai-insight-head.positive{color:#10b981}
+.ai-insight-head.suggestion{color:#f59e0b}
+.ai-insight-body{font-size:11px;color:var(--muted);line-height:1.65}
 
 .gauge-wrap{display:flex;flex-direction:column;align-items:center;margin:6px 0 0}
 .g-dev{font-size:17px;font-weight:700;text-align:center;min-height:24px}
@@ -806,11 +820,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
       <div id="vp-insight" style="display:none;margin-top:10px;font-size:11px;padding:8px 10px;border-radius:8px;line-height:1.5"></div>
     </div>
 
-    <!-- VOICE FINGERPRINT -->
+    <!-- VOICE FINGERPRINT + AI INSIGHTS -->
     <div class="fp-card" id="fp-card" style="display:none">
-      <div class="clabel">Voice Fingerprint</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Your unique resonance profile for this session</div>
+      <div class="fp-top-row">
+        <div>
+          <div class="clabel">Voice Fingerprint</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px" id="fp-subtitle">Unique acoustic resonance signature</div>
+        </div>
+        <div class="fp-profile-pill" id="fp-profile-pill"></div>
+      </div>
       <canvas id="fp-c"></canvas>
+      <div class="ai-section-label">🧠 AI Insights</div>
+      <div id="ai-insights-list"></div>
     </div>
 
     <!-- POST-SESSION MOOD -->
@@ -1912,9 +1933,10 @@ function showResults(r) {
 
   drawScoreRing(r);
   renderHumTimeline(r);
-  // Voice fingerprint
+  // Voice fingerprint + AI insights
   const fpCard = document.getElementById('fp-card');
   fpCard.style.display = '';
+  renderAIInsights(r);
   requestAnimationFrame(() => drawVoiceFingerprint(r));
   populateResonanceCard(r);
   populateMoodSection(r);
@@ -2301,68 +2323,264 @@ function drawBreathingWave() {
   ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(w, mid); ctx.stroke();
 }
 
-// ── 4. Voice Fingerprint (results) ───────────────────────────────────────
+// ── Hex → "r,g,b" helper ──────────────────────────────────────────────────
+function hexToRgb(hex) {
+  hex = hex.replace('#','');
+  if (hex.length === 3) hex = hex.split('').map(x=>x+x).join('');
+  const n = parseInt(hex, 16);
+  return `${(n>>16)&255},${(n>>8)&255},${n&255}`;
+}
+
+// ── 4. Voice Fingerprint — redesigned layered visualization ─────────────────
 function drawVoiceFingerprint(result) {
   const cv = document.getElementById('fp-c');
   if (!cv || !result) return;
-  const dpr  = devicePixelRatio || 1;
-  const SIZE = Math.min(cv.clientWidth || 240, 240);
-  cv.width   = SIZE * dpr; cv.height = SIZE * dpr;
-  cv.style.height = SIZE + 'px';
-  const ctx  = cv.getContext('2d');
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const cx = SIZE / 2, cy = SIZE / 2, maxR = SIZE * 0.35;
+
+  const DPR  = Math.min(devicePixelRatio || 1, 2);
+  const SIZE = Math.min((cv.parentElement?.clientWidth || 300) - 8, 300);
+  cv.width   = SIZE * DPR;  cv.height = SIZE * DPR;
+  cv.style.width = SIZE + 'px'; cv.style.height = SIZE + 'px';
+
+  const c = cv.getContext('2d');
+  c.scale(DPR, DPR);
+
+  const cx = SIZE / 2, cy = SIZE / 2;
+  const POLY_R  = SIZE * 0.34;   // radar polygon radius
+  const HALO_R  = SIZE * 0.42;   // harmonic halo inner edge
+  const LABEL_R = SIZE * 0.49;   // axis label radius
+  const CTR_R   = SIZE * 0.10;   // center circle radius
+
+  const pColor  = result.voiceColor || '#a78bfa';
+  const pRgb    = hexToRgb(pColor);
 
   const axes = [
-    { label:'Stability',  v: result.stab ?? 0,                          c:'#a78bfa' },
-    { label:'Accuracy',   v: result.acc  ?? 0,                          c:'#f59e0b' },
-    { label:'Resonance',  v: result.res  ?? 0,                          c:'#2dd4bf' },
-    { label:'Harmonics',  v: Math.min(100,(result.avgHarm??0)*12.5),     c:'#10b981' },
-    { label:'HNR',        v: result.avgHNR ?? 0,                        c:'#60a5fa' },
-    { label:'Duration',   v: result.durScore ?? 0,                      c:'#f472b6' },
+    { label:'Stability',  v: result.stab    ?? 0, c:'#a78bfa' },
+    { label:'Accuracy',   v: result.acc     ?? 0, c:'#f59e0b' },
+    { label:'Resonance',  v: result.res     ?? 0, c:'#2dd4bf' },
+    { label:'Harmonics',  v: Math.min(100,(result.avgHarm??0)*14), c:'#10b981' },
+    { label:'HNR',        v: result.avgHNR  ?? 0, c:'#60a5fa' },
+    { label:'Duration',   v: result.durScore?? 0, c:'#f472b6' },
   ];
-  const N    = axes.length;
-  const step = (Math.PI * 2) / N;
-  const ang  = i => -Math.PI / 2 + i * step;
-  const px   = (i, r) => cx + Math.cos(ang(i)) * r;
-  const py   = (i, r) => cy + Math.sin(ang(i)) * r;
 
-  // Background rings
-  ctx.strokeStyle = '#1c2840'; ctx.lineWidth = 1;
-  [25, 50, 75, 100].forEach(pct => {
-    const r = maxR * pct / 100;
-    ctx.beginPath();
-    for (let i = 0; i < N; i++) i ? ctx.lineTo(px(i,r), py(i,r)) : ctx.moveTo(px(i,r), py(i,r));
-    ctx.closePath(); ctx.stroke();
+  const N   = axes.length;
+  const ang = i => -Math.PI / 2 + (i / N) * Math.PI * 2;
+  const ptX = (i, r) => cx + Math.cos(ang(i)) * r;
+  const ptY = (i, r) => cy + Math.sin(ang(i)) * r;
+
+  // ── Background ────────────────────────────────────────────────────
+  const bgG = c.createRadialGradient(cx, cy, 0, cx, cy, SIZE * 0.55);
+  bgG.addColorStop(0, '#111827');
+  bgG.addColorStop(1, '#07091a');
+  c.fillStyle = bgG;
+  c.beginPath(); c.arc(cx, cy, SIZE * 0.55, 0, Math.PI * 2); c.fill();
+
+  // ── Grid rings ────────────────────────────────────────────────────
+  [0.25, 0.5, 0.75, 1.0].forEach(pct => {
+    const r = POLY_R * pct;
+    c.beginPath();
+    for (let i = 0; i < N; i++) {
+      i === 0 ? c.moveTo(ptX(i, r), ptY(i, r)) : c.lineTo(ptX(i, r), ptY(i, r));
+    }
+    c.closePath();
+    c.strokeStyle = pct === 1 ? '#2d3a5a' : '#1a2236';
+    c.lineWidth   = pct === 1 ? 1.2 : 0.6;
+    c.stroke();
+    // pct label
+    if (pct < 1) {
+      c.font = '7px Inter,sans-serif';
+      c.fillStyle = '#2d3a5a'; c.textAlign = 'center';
+      c.fillText((pct * 100).toFixed(0) + '%', cx, cy - r + 8);
+    }
   });
 
-  // Axis spokes
-  axes.forEach((_, i) => {
-    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px(i, maxR), py(i, maxR));
-    ctx.strokeStyle = '#2d3a5a'; ctx.lineWidth = 1; ctx.stroke();
-  });
+  // ── Axis spokes ───────────────────────────────────────────────────
+  for (let i = 0; i < N; i++) {
+    const g = c.createLinearGradient(cx, cy, ptX(i, POLY_R), ptY(i, POLY_R));
+    g.addColorStop(0, 'transparent');
+    g.addColorStop(1, '#2d3a5a');
+    c.beginPath(); c.moveTo(cx, cy); c.lineTo(ptX(i, POLY_R), ptY(i, POLY_R));
+    c.strokeStyle = g; c.lineWidth = 1; c.stroke();
+  }
 
-  // Data polygon
-  ctx.beginPath();
-  axes.forEach((a, i) => { const r = maxR * a.v / 100; i ? ctx.lineTo(px(i,r), py(i,r)) : ctx.moveTo(px(i,r), py(i,r)); });
-  ctx.closePath();
-  const pg = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
-  pg.addColorStop(0, 'rgba(124,58,237,.6)'); pg.addColorStop(1, 'rgba(45,212,191,.2)');
-  ctx.fillStyle = pg; ctx.fill();
-  ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 2; ctx.stroke();
+  // ── Harmonic halo ─────────────────────────────────────────────────
+  const series = result.harmSeries || [];
+  const BARS   = 60;
+  for (let b = 0; b < BARS; b++) {
+    const a       = (b / BARS) * Math.PI * 2 - Math.PI / 2;
+    const hIdx    = Math.floor((b / BARS) * Math.max(series.length, 1));
+    const lvl     = series.length > 0 ? (series[hIdx % series.length]?.level || 0) / 255 : 0.15;
+    const barLen  = lvl * SIZE * 0.065 + SIZE * 0.01;
+    const alpha   = 0.25 + lvl * 0.55;
+    c.beginPath();
+    c.moveTo(cx + Math.cos(a) * HALO_R, cy + Math.sin(a) * HALO_R);
+    c.lineTo(cx + Math.cos(a) * (HALO_R + barLen), cy + Math.sin(a) * (HALO_R + barLen));
+    c.strokeStyle = `rgba(${pRgb},${alpha})`;
+    c.lineWidth   = SIZE * 0.013;
+    c.lineCap     = 'round';
+    c.stroke();
+  }
 
-  // Data-point dots + labels
+  // ── Data polygon ──────────────────────────────────────────────────
+  c.beginPath();
   axes.forEach((a, i) => {
-    const r = maxR * a.v / 100;
-    ctx.beginPath(); ctx.arc(px(i,r), py(i,r), 4, 0, Math.PI*2);
-    ctx.fillStyle = a.c; ctx.shadowColor = a.c; ctx.shadowBlur = 8; ctx.fill(); ctx.shadowBlur = 0;
-
-    const lr = maxR + 18;
-    ctx.fillStyle = a.c; ctx.font = 'bold 9px Inter,sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(a.label, px(i, lr), py(i, lr) + 3);
-    ctx.fillStyle = '#94a3b8'; ctx.font = '8px Inter,sans-serif';
-    ctx.fillText(Math.round(a.v) + '%', px(i, r > 18 ? r - 12 : r + 14), py(i, r > 18 ? r - 10 : r + 12));
+    const r = POLY_R * a.v / 100;
+    i === 0 ? c.moveTo(ptX(i, r), ptY(i, r)) : c.lineTo(ptX(i, r), ptY(i, r));
   });
+  c.closePath();
+
+  // fill
+  const polyFill = c.createRadialGradient(cx, cy, 0, cx, cy, POLY_R);
+  polyFill.addColorStop(0, `rgba(${pRgb},0.55)`);
+  polyFill.addColorStop(0.6, `rgba(${hexToRgb('#2dd4bf')},0.25)`);
+  polyFill.addColorStop(1,   `rgba(${hexToRgb('#2dd4bf')},0.04)`);
+  c.fillStyle = polyFill; c.fill();
+
+  // stroke with glow
+  c.shadowColor = pColor; c.shadowBlur = 14;
+  c.strokeStyle = pColor; c.lineWidth = 2; c.stroke();
+  c.shadowBlur = 0;
+
+  // ── Data point dots ───────────────────────────────────────────────
+  axes.forEach((a, i) => {
+    const r = POLY_R * a.v / 100;
+    const dx = ptX(i, r), dy = ptY(i, r);
+    // aura
+    c.beginPath(); c.arc(dx, dy, 6, 0, Math.PI * 2);
+    c.fillStyle = a.c + '28'; c.fill();
+    // dot
+    c.beginPath(); c.arc(dx, dy, 3.5, 0, Math.PI * 2);
+    c.fillStyle = a.c; c.shadowColor = a.c; c.shadowBlur = 10; c.fill(); c.shadowBlur = 0;
+  });
+
+  // ── Axis labels ───────────────────────────────────────────────────
+  axes.forEach((a, i) => {
+    const lx = ptX(i, LABEL_R), ly = ptY(i, LABEL_R);
+    const θ  = ang(i);
+    c.textAlign = Math.abs(Math.cos(θ)) < 0.25 ? 'center'
+                : Math.cos(θ) > 0 ? 'left' : 'right';
+    c.font = 'bold 9px Inter,sans-serif'; c.fillStyle = a.c;
+    c.fillText(a.label, lx, ly);
+    c.font = '8px Inter,sans-serif'; c.fillStyle = '#94a3b8';
+    c.fillText(Math.round(a.v) + '%', lx, ly + 11);
+  });
+
+  // ── Center circle ─────────────────────────────────────────────────
+  // glow ring
+  c.beginPath(); c.arc(cx, cy, CTR_R + 5, 0, Math.PI * 2);
+  c.strokeStyle = `rgba(${pRgb},0.35)`; c.lineWidth = 1.5; c.stroke();
+  // fill
+  c.beginPath(); c.arc(cx, cy, CTR_R + 3, 0, Math.PI * 2);
+  c.fillStyle = '#0a0f1e'; c.fill();
+  // avg Hz
+  c.textAlign = 'center';
+  c.font = `bold ${SIZE * 0.052}px Inter,sans-serif`; c.fillStyle = pColor;
+  c.fillText(result.avg + '', cx, cy + SIZE * 0.02);
+  c.font = `${SIZE * 0.028}px Inter,sans-serif`; c.fillStyle = '#4e627a';
+  c.fillText('Hz', cx, cy + SIZE * 0.047);
+
+  // ── Profile pill & subtitle ───────────────────────────────────────
+  const pill = document.getElementById('fp-profile-pill');
+  if (pill && result.voiceLabel) {
+    pill.textContent   = result.voiceLabel;
+    pill.style.color   = pColor;
+    pill.style.background = pColor + '18';
+    pill.style.border  = `1px solid ${pColor}44`;
+  }
+  document.getElementById('fp-subtitle').textContent =
+    result.voiceInsight || 'Unique acoustic resonance signature';
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  AI INSIGHTS ENGINE
+// ════════════════════════════════════════════════════════════════════
+function generateAIInsights(r) {
+  const ins  = [];
+  const hist = S.hist;
+
+  // 1 ── Pitch stability ──────────────────────────────────────────────
+  if (r.stab >= 85) {
+    ins.push({ type:'positive', icon:'🎯', title:'Exceptional Pitch Control',
+      body:`${r.stab}% stability — elite-level consistency. Highly coordinated diaphragm and vocal cord tension produces a steady, therapeutic vibration wave.` });
+  } else if (r.stab >= 62) {
+    ins.push({ type:'neutral', icon:'📊', title:'Building Stability',
+      body:`${r.stab}% pitch stability. Focus on slow, even exhalation and a relaxed jaw. Stability typically improves 5–10% within 7 days of daily practice.` });
+  } else {
+    ins.push({ type:'suggestion', icon:'💡', title:'Stability Tip',
+      body:`${r.stab}% stability. Try shorter 5–8s hums with full attention on breath pressure before attempting longer holds.` });
+  }
+
+  // 2 ── HNR / Harmonic richness ─────────────────────────────────────
+  if (r.avgHNR >= 65) {
+    ins.push({ type:'positive', icon:'🌊', title:'Rich Harmonic Resonance',
+      body:`${r.avgHNR}% HNR with ${r.avgHarm.toFixed(1)} overtones. High harmonic density amplifies nitric oxide production in the sinuses — a key mechanism of Bhramari pranayama.` });
+  } else if (r.avgHNR >= 35) {
+    ins.push({ type:'suggestion', icon:'🔊', title:'Deepen Your Resonance',
+      body:`HNR at ${r.avgHNR}%. Press lips gently together and direct the vibration toward your cheekbones. Imagine the sound filling the space behind your eyes.` });
+  } else {
+    ins.push({ type:'suggestion', icon:'🔧', title:'Tone Refinement',
+      body:`Low harmonic content (HNR ${r.avgHNR}%). Ensure lips are sealed but not pressed hard, and hum from a relaxed throat — not the nose or front teeth.` });
+  }
+
+  // 3 ── Voice profile / frequency insight ──────────────────────────
+  const hz = r.avg;
+  if (r.voiceProfile === 'low' && hz <= 130) {
+    ins.push({ type:'positive', icon:'🫀', title:'Deep Vagal Resonance',
+      body:`${hz} Hz activates the lower vagus nerve through chest and throat resonance — optimal zone for calming the nervous system and reducing cortisol.` });
+  } else if (r.voiceProfile === 'medium') {
+    ins.push({ type:'positive', icon:'⚖️', title:'Balanced Resonance Profile',
+      body:`${hz} Hz engages both chest and head resonance chambers simultaneously — a therapeutically powerful range for nervous system regulation and mood elevation.` });
+  } else if (r.voiceProfile === 'high') {
+    ins.push({ type:'positive', icon:'✨', title:'Head Cavity Activation',
+      body:`${hz} Hz stimulates sinus and cranial resonance, promoting focus, clarity, and activation of upper parasympathetic nerve pathways.` });
+  }
+
+  // 4 ── Breath / hum pattern ────────────────────────────────────────
+  if (r.humCount > 0 && r.totalHumMs) {
+    const avgSec = (r.totalHumMs / 1000 / r.humCount);
+    if (avgSec >= 18) {
+      ins.push({ type:'positive', icon:'🫁', title:'Strong Breath Capacity',
+        body:`Average hum of ${avgSec.toFixed(1)}s per breath. Sustained hums above 15s maximize cranial nerve stimulation and deepen the meditative state.` });
+    } else if (r.humCount >= 4 && avgSec < 10) {
+      ins.push({ type:'suggestion', icon:'🫁', title:'Extend Each Breath',
+        body:`${r.humCount} hums averaging ${avgSec.toFixed(1)}s. Inhale more deeply before each hum — aim for 15–20s of continuous vibration per breath cycle.` });
+    }
+  }
+
+  // 5 ── Historical trend ────────────────────────────────────────────
+  if (hist.length >= 2) {
+    const recent   = hist.slice(0, Math.min(3, hist.length));
+    const avgScore = recent.reduce((a, b) => a + (b.score || 0), 0) / recent.length;
+    const delta    = r.score - avgScore;
+    if (delta > 7) {
+      ins.push({ type:'positive', icon:'📈', title:`+${Math.round(delta)} vs Your Average`,
+        body:`Recent average is ${Math.round(avgScore)}. At ${r.score} this is your strongest session in recent practice — consistent training is producing real measurable gains.` });
+    } else if (delta < -7 && hist.length >= 3) {
+      ins.push({ type:'neutral', icon:'🔄', title:'Performance Variation',
+        body:`Score ${Math.abs(Math.round(delta))} points below your recent average. Vocal quality varies with hydration, sleep, and stress — this is data, not a setback.` });
+    }
+  }
+
+  // 6 ── Duration ────────────────────────────────────────────────────
+  if (r.durScore < 35) {
+    ins.push({ type:'suggestion', icon:'⏱️', title:'Extend Your Practice',
+      body:`${r.durStr} session. Research shows 3+ minutes of humming significantly deepens parasympathetic activation. Add 30 seconds each session this week.` });
+  } else if (r.durScore >= 85) {
+    ins.push({ type:'positive', icon:'⏱️', title:'Deep Practice Session',
+      body:`${r.durStr} of sustained humming. Sessions this length trigger measurable decreases in cortisol and meaningful heart rate variability improvements.` });
+  }
+
+  return ins.slice(0, 4);
+}
+
+function renderAIInsights(r) {
+  const list = document.getElementById('ai-insights-list');
+  if (!list) return;
+  const insights = generateAIInsights(r);
+  list.innerHTML = insights.map(ins => `
+    <div class="ai-insight ${ins.type}">
+      <div class="ai-insight-head ${ins.type}">${ins.icon} ${ins.title}</div>
+      <div class="ai-insight-body">${ins.body}</div>
+    </div>`).join('');
 }
 
 // ── 5. Multi-segment Wellness Ring ───────────────────────────────────────
