@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Hmm · Vocal Wellness</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;-webkit-tap-highlight-color:transparent}
-body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;display:flex;flex-direction:column;height:100vh;user-select:none}
+html{height:100%;height:-webkit-fill-available}
+html,body{overflow:hidden;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;display:flex;flex-direction:column;height:100vh;height:-webkit-fill-available;min-height:-webkit-fill-available;user-select:none;-webkit-user-select:none}
 
 :root{
   --bg:#07091a;--surface:#0e1628;--surface2:#151e33;
@@ -21,11 +22,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
 }
 
 /* ── SCREENS ── */
-.screen{display:none;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:16px}
+.screen{display:none;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:16px;-webkit-overflow-scrolling:touch}
 .screen.active{display:flex}
 
 /* ── NAV ── */
-.nav{background:var(--surface);border-top:1px solid var(--border);display:flex;padding:6px 0 env(safe-area-inset-bottom,6px);flex-shrink:0}
+.nav{background:var(--surface);border-top:1px solid var(--border);display:flex;padding:6px 0 max(env(safe-area-inset-bottom,0px),6px);flex-shrink:0}
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;background:none;border:none;color:var(--muted);font-size:10px;font-weight:600;font-family:inherit;cursor:pointer;letter-spacing:.04em;transition:color .2s}
 .nb.active{color:var(--al)}
 .nb svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
