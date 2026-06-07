@@ -10,8 +10,9 @@
 //    4. Copy the Web App URL and paste it into APP_CONFIG.APPS_SCRIPT_URL in hmm.html
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const SPREADSHEET_ID = '1Ajfyfxf3X0Qc7DGnz_sA7RA4SQD_nJTfVy5hPDN_U8o';
-const APP_VERSION    = '1.0';
+const SPREADSHEET_ID    = '1Ajfyfxf3X0Qc7DGnz_sA7RA4SQD_nJTfVy5hPDN_U8o';
+const APP_VERSION       = '1.1';
+const DRIVE_ROOT_FOLDER = 'Hmm_Recordings';   // folder created in your Drive
 
 // ─── CORS / routing ───────────────────────────────────────────────────────────
 function doGet(e) {
@@ -25,6 +26,7 @@ function doPost(e) {
     const payload = JSON.parse(e.postData.contents);
     switch (payload.action) {
       case 'saveSession': return _json(saveSession(payload));
+      case 'saveAudio':   return _json(saveAudioRecording(payload));
       default:            return _json({ error: 'Unknown action: ' + payload.action });
     }
   } catch (err) {
@@ -116,6 +118,8 @@ function saveSession(payload) {
     'target_hz',
     // mood
     'pre_mood', 'post_mood',
+    // volume / decibels
+    'avg_db_fs', 'peak_db_fs', 'min_db_fs', 'db_range',
     // meta
     'notes', 'tags', 'program_id', 'app_version',
   ]);
@@ -156,6 +160,10 @@ function saveSession(payload) {
     session.tgt   || 0,
     session.preMood  || 0,
     session.postMood || 0,
+    session.avgDb   != null ? session.avgDb   : '',
+    session.peakDb  != null ? session.peakDb  : '',
+    session.minDb   != null ? session.minDb   : '',
+    session.dbRange != null ? session.dbRange : '',
     session.notes  || '',
     (session.tags || []).join(', '),
     session.programId || '',
@@ -186,4 +194,117 @@ function saveSession(payload) {
   }
 
   return { success: true, sessionId: session.sessionId };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  AUDIO RECORDING STORAGE
+//  Saves audio blob to Google Drive in organized folder hierarchy:
+//    Hmm_Recordings / {user_email} / {YYYY-MM} / {sessionId}.{ext}
+//  Indexes every file in the Recordings sheet.
+//  Links the audio URL back to the matching row in Sessions sheet.
+// ═══════════════════════════════════════════════════════════════════════════════
+function saveAudioRecording(payload) {
+  const { user, sessionId, audioB64, mimeType, durationMs, sizeBytes } = payload;
+
+  if (!user || !user.sub) return { error: 'Missing user' };
+  if (!audioB64)           return { error: 'Missing audio data' };
+  if (!sessionId)          return { error: 'Missing sessionId' };
+
+  // ── 1. Resolve / create folder structure ──────────────────────────────────
+  const rootFolder  = _driveFolder(null,       DRIVE_ROOT_FOLDER);
+  const userFolder  = _driveFolder(rootFolder, _safeEmail(user.email));
+  const d           = new Date();
+  const monthStr    = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  const monthFolder = _driveFolder(userFolder, monthStr);
+
+  // ── 2. Write audio file ───────────────────────────────────────────────────
+  const mime   = mimeType || 'audio/webm';
+  const ext    = mime.includes('mp4') ? 'mp4' : mime.includes('ogg') ? 'ogg' : 'webm';
+  const fname  = `${sessionId}.${ext}`;
+  const fpath  = `${DRIVE_ROOT_FOLDER}/${_safeEmail(user.email)}/${monthStr}/${fname}`;
+
+  let decoded;
+  try {
+    decoded = Utilities.base64Decode(audioB64);
+  } catch(e) {
+    return { error: 'base64 decode failed: ' + e.toString() };
+  }
+
+  const blob = Utilities.newBlob(decoded, mime, fname);
+  const file = monthFolder.createFile(blob);
+  // Make viewable by anyone with the link (for admin analysis)
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+  const fileId  = file.getId();
+  const fileUrl = `https://drive.google.com/file/d/${fileId}/view`;
+  const now     = new Date().toISOString();
+
+  // ── 3. Recordings sheet ───────────────────────────────────────────────────
+  const ss      = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const recSh   = _sheet(ss, 'Recordings', [
+    'recording_id', 'session_id', 'user_id', 'email', 'display_name',
+    'file_id',      'file_url',   'file_name', 'folder_path',
+    'duration_ms',  'size_bytes', 'mime_type',
+    'uploaded_at',  'month',      'app_version',
+  ]);
+
+  recSh.appendRow([
+    `rec_${sessionId}`,
+    sessionId,
+    user.sub,
+    user.email,
+    user.name || '',
+    fileId,
+    fileUrl,
+    fname,
+    fpath,
+    durationMs  || 0,
+    sizeBytes   || 0,
+    mime,
+    now,
+    monthStr,
+    APP_VERSION,
+  ]);
+
+  // ── 4. Back-fill audio_url into Sessions sheet ────────────────────────────
+  const sessSh = ss.getSheetByName('Sessions');
+  if (sessSh) {
+    const data    = sessSh.getDataRange().getValues();
+    const headers = data[0];
+    let auCol     = headers.indexOf('audio_url');
+    let fiCol     = headers.indexOf('audio_file_id');
+
+    if (auCol === -1) {
+      const next = headers.length + 1;
+      sessSh.getRange(1, next    ).setValue('audio_url');
+      sessSh.getRange(1, next + 1).setValue('audio_file_id');
+      auCol = next - 1;
+      fiCol = next;
+    }
+
+    const sidCol = headers.indexOf('session_id');
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][sidCol] === sessionId) {
+        sessSh.getRange(i + 1, auCol + 1).setValue(fileUrl);
+        sessSh.getRange(i + 1, fiCol + 1).setValue(fileId);
+        break;
+      }
+    }
+  }
+
+  return { success: true, fileId, fileUrl, fileName: fname, path: fpath };
+}
+
+// ── Drive helper: get or create a folder by name under a parent ───────────────
+function _driveFolder(parent, name) {
+  const iter = parent
+    ? parent.getFoldersByName(name)
+    : DriveApp.getFoldersByName(name);
+  if (iter.hasNext()) return iter.next();
+  return parent ? parent.createFolder(name) : DriveApp.createFolder(name);
+}
+
+// ── Make email safe as a folder name ─────────────────────────────────────────
+function _safeEmail(email) {
+  return (email || 'anonymous').replace(/[^a-zA-Z0-9._\-]/g, '_');
 }

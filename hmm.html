@@ -89,7 +89,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
 .ph{padding:20px 20px 0;display:flex;align-items:flex-start;justify-content:space-between}
 .pt{font-size:22px;font-weight:800}
 .ps{font-size:12px;color:var(--muted);margin-top:2px}
-.start-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#5b21b6,#7c3aed);border:none;border-radius:20px;color:#fff;font-family:inherit;font-size:17px;font-weight:700;padding:20px;margin:14px 16px 0;cursor:pointer;width:calc(100% - 32px);transition:transform .15s,box-shadow .15s;box-shadow:0 8px 28px rgba(124,58,237,.45);letter-spacing:-.01em}
+.start-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#5b21b6,#7c3aed);border:none;border-radius:16px;color:#fff;font-family:inherit;font-size:15px;font-weight:700;padding:14px 20px;margin:12px 16px 0;cursor:pointer;width:calc(100% - 32px);transition:transform .15s,box-shadow .15s;box-shadow:0 6px 20px rgba(124,58,237,.4);letter-spacing:-.01em}
 .hz-row{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px 0;font-size:13px;color:var(--muted)}
 .hz-in{width:72px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;font-weight:700;padding:5px 8px;text-align:center}
 .hz-in:focus{outline:none;border-color:var(--accent)}
@@ -155,6 +155,20 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
 .rec-lbl{text-align:center;font-size:11px;color:var(--muted);margin-top:5px}
 
 .tip{text-align:center;font-size:12px;color:var(--muted);padding:0 24px;line-height:1.6;margin-top:4px}
+
+/* ── dB METER ── */
+.db-meter-wrap{margin:6px 16px 2px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px}
+.db-meter-row{display:flex;align-items:center;gap:10px}
+.db-meter-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);flex-shrink:0;width:28px}
+.db-meter-track{flex:1;height:12px;background:var(--surface2);border-radius:6px;overflow:hidden;position:relative}
+.db-meter-fill{height:100%;border-radius:6px;transition:width .07s linear;background:linear-gradient(90deg,#10b981 0%,#10b981 55%,#f59e0b 75%,#ef4444 100%);width:0%}
+.db-meter-peak{position:absolute;top:0;bottom:0;width:2px;background:rgba(255,255,255,.7);border-radius:1px;transition:left .4s ease-out}
+.db-meter-val{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--muted);flex-shrink:0;width:54px;text-align:right}
+.db-meter-val.loud{color:var(--ok)}
+.db-meter-val.peak-warn{color:var(--warn)}
+.db-meter-val.peak-clip{color:var(--danger)}
+.db-meter-ticks{display:flex;justify-content:space-between;margin-top:3px;padding:0 0}
+.db-meter-tick{font-size:8px;color:var(--muted);font-variant-numeric:tabular-nums}
 
 /* ── GUIDE HUM ── */
 .guide-hum-wrap{display:flex;flex-direction:column;align-items:center;gap:5px;margin:8px 0 4px}
@@ -765,6 +779,26 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
       </div>
     </div>
 
+    <!-- dB METER -->
+    <div class="db-meter-wrap" id="db-meter-wrap">
+      <div class="db-meter-row">
+        <div class="db-meter-label">dB</div>
+        <div class="db-meter-track">
+          <div class="db-meter-fill" id="db-fill"></div>
+          <div class="db-meter-peak" id="db-peak-marker" style="left:0%"></div>
+        </div>
+        <div class="db-meter-val" id="db-val">—</div>
+      </div>
+      <div class="db-meter-ticks">
+        <span class="db-meter-tick">-50</span>
+        <span class="db-meter-tick">-40</span>
+        <span class="db-meter-tick">-30</span>
+        <span class="db-meter-tick">-20</span>
+        <span class="db-meter-tick">-10</span>
+        <span class="db-meter-tick">0 dBFS</span>
+      </div>
+    </div>
+
     <!-- Program countdown (shown when started from a program) -->
     <div class="prog-countdown" id="prog-countdown">
       <div class="prog-cd-row">
@@ -833,6 +867,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
       <div class="ri"><div class="ri-v" id="r-acc" style="color:var(--warn)">—%</div><div class="ri-l">Pitch Accuracy</div></div>
       <div class="ri"><div class="ri-v" id="r-peak" style="color:var(--text)">— Hz</div><div class="ri-l">Peak Frequency</div></div>
       <div class="ri"><div class="ri-v" id="r-res" style="color:var(--ok)">—</div><div class="ri-l">Resonance Quality</div></div>
+      <div class="ri"><div class="ri-v" id="r-avgdb" style="color:var(--tl)">—</div><div class="ri-l">Avg Volume</div></div>
+      <div class="ri"><div class="ri-v" id="r-peakdb" style="color:var(--warn)">—</div><div class="ri-l">Peak Volume</div></div>
     </div>
 
     <!-- HUM PATTERN TIMELINE -->
@@ -1176,7 +1212,7 @@ const S = {
   targetHz: parseInt(localStorage.getItem('hmm_hz') || '136'),
   recording: false,
   t0: 0,
-  sdata: { freqs: [], amps: [], ts: [], harmonics: [], hnr: [] },
+  sdata: { freqs: [], amps: [], ts: [], harmonics: [], hnr: [], dbs: [] },
   result: null,
   blog: [],
   bjOpen: false,
@@ -1205,7 +1241,7 @@ const S = {
 //  AUDIO ENGINE
 // ════════════════════════════════════
 let ACtx, AN, src, stream, raf;
-let sfq = 0, srms = 0;
+let sfq = 0, srms = 0, _peakDb = -60, _peakDbHoldFrames = 0;
 const FFT = 8192;
 let fdat, tdat;
 let rtwin = []; // real-time stability window
@@ -1488,10 +1524,10 @@ function toggleRec() {
 function startRec() {
   S.recording = true;
   S.t0 = Date.now();
-  S.sdata = { freqs: [], amps: [], ts: [], harmonics: [], hnr: [] };
+  S.sdata = { freqs: [], amps: [], ts: [], harmonics: [], hnr: [], dbs: [] };
   S.postMood = 0;
   rtwin = [];
-  sfq = 0; srms = 0;
+  sfq = 0; srms = 0; _peakDb = -60; _peakDbHoldFrames = 0;
 
   // Reset segment tracking
   S.segments = [];
@@ -1552,6 +1588,11 @@ function loop() {
     rtwin.push(sfq);
     if (rtwin.length > 40) rtwin.shift();
   }
+
+  // ── dB computation & tracking ──────────────────────────────────────────────
+  const curDb = rawR > 0.0001 ? Math.max(-60, 20 * Math.log10(rawR)) : -60;
+  if (voiced) S.sdata.dbs.push(curDb);
+  updateDbMeter(curDb, voiced);
 
   updateSegments(voiced, sfq, srms, harm, Date.now() - S.t0);
   updateSessUI(sfq, srms, voiced, harm);
@@ -1717,6 +1758,46 @@ function updateSessUI(freq, rms, voiced, harm) {
   });
 }
 
+// ─── Live dB meter ──────────────────────────────────────────────────────────
+const DB_MIN = -50, DB_MAX = 0;  // display range in dBFS
+function updateDbMeter(db, voiced) {
+  const fill        = document.getElementById('db-fill');
+  const peakMarker  = document.getElementById('db-peak-marker');
+  const valEl       = document.getElementById('db-val');
+  if (!fill) return;
+
+  if (!voiced) {
+    // Decay fill toward 0 when silent
+    const prev = parseFloat(fill.style.width) || 0;
+    fill.style.width = Math.max(0, prev - 3) + '%';
+    // Keep peak marker visible, slowly decay
+    _peakDbHoldFrames++;
+    if (_peakDbHoldFrames > 90) {
+      _peakDb = Math.max(DB_MIN, _peakDb - 0.4);
+      const pk = ((_peakDb - DB_MIN) / (DB_MAX - DB_MIN)) * 100;
+      peakMarker.style.left = Math.max(0, pk) + '%';
+    }
+    return;
+  }
+
+  // Clamp and normalise to 0-100%
+  const clamped = Math.max(DB_MIN, Math.min(DB_MAX, db));
+  const pct     = ((clamped - DB_MIN) / (DB_MAX - DB_MIN)) * 100;
+  fill.style.width = pct + '%';
+
+  // Peak hold
+  if (db > _peakDb) { _peakDb = db; _peakDbHoldFrames = 0; }
+  _peakDbHoldFrames++;
+  if (_peakDbHoldFrames > 45) _peakDb = Math.max(DB_MIN, _peakDb - 0.2);
+  const pkPct = ((_peakDb - DB_MIN) / (DB_MAX - DB_MIN)) * 100;
+  peakMarker.style.left = Math.max(0, pkPct) + '%';
+
+  // Numeric label
+  valEl.textContent = `${Math.round(db)} dB`;
+  valEl.className   = 'db-meter-val' +
+    (db > -6 ? ' peak-clip' : db > -15 ? ' peak-warn' : ' loud');
+}
+
 async function stopRec() {
   S.recording = false;
   cancelAnimationFrame(raf);
@@ -1865,6 +1946,15 @@ function calcResult(dur) {
   const humSegs   = S.segments.filter(s => s.type === 'hum');
   const pauseSegs = S.segments.filter(s => s.type === 'pause');
 
+  // ── dB / Volume metrics ────────────────────────────────────────────────────
+  const dbVals = as_.length
+    ? as_.map(a => a > 0.0001 ? Math.max(-60, 20 * Math.log10(a)) : -60)
+    : [-60];
+  const avgDb  = Math.round(dbVals.reduce((a,b) => a+b, 0) / dbVals.length * 10) / 10;
+  const peakDb = Math.round(Math.max(...dbVals) * 10) / 10;
+  const minDb  = Math.round(Math.min(...dbVals) * 10) / 10;
+  const dbRange = Math.round((peakDb - minDb) * 10) / 10;   // dynamic range
+
   return {
     ts: Date.now(), dur, durStr,
     avg: Math.round(avg), peak: Math.round(peak),
@@ -1874,6 +1964,8 @@ function calcResult(dur) {
     tgt: S.targetHz,
     harmSeries: lastHarmSeries,
     preMood: S.preMood, postMood: 0,
+    // Volume / dB
+    avgDb, peakDb, minDb, dbRange,
     // Voice profile
     voiceProfile: vp.profile,
     voiceLabel:   vp.label,
@@ -1967,8 +2059,10 @@ function showResults(r) {
   document.getElementById('r-avg').textContent  = `${r.avg} Hz · ${hzToNote(r.avg)}`;
   document.getElementById('r-stab').textContent = `${r.stab}%`;
   document.getElementById('r-acc').textContent  = `${r.acc}%`;
-  document.getElementById('r-peak').textContent = `${r.peak} Hz`;
-  document.getElementById('r-res').textContent  = r.resLbl;
+  document.getElementById('r-peak').textContent  = `${r.peak} Hz`;
+  document.getElementById('r-res').textContent   = r.resLbl;
+  document.getElementById('r-avgdb').textContent  = r.avgDb  != null ? `${r.avgDb} dBFS`  : '—';
+  document.getElementById('r-peakdb').textContent = r.peakDb != null ? `${r.peakDb} dBFS` : '—';
 
   const badges = [[90,'Transcendent! 🌟','Exceptional resonance achieved'],
                   [75,'Excellent! ✨','Strong frequency stability'],
