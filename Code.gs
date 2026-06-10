@@ -120,6 +120,8 @@ function saveSession(payload) {
     'pre_mood', 'post_mood',
     // volume / decibels
     'avg_db_fs', 'peak_db_fs', 'min_db_fs', 'db_range',
+    // breathing
+    'dominant_nostril',
     // meta
     'notes', 'tags', 'program_id', 'app_version',
   ]);
@@ -164,6 +166,7 @@ function saveSession(payload) {
     session.peakDb  != null ? session.peakDb  : '',
     session.minDb   != null ? session.minDb   : '',
     session.dbRange != null ? session.dbRange : '',
+    session.nostril || '',
     session.notes  || '',
     (session.tags || []).join(', '),
     session.programId || '',

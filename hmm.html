@@ -40,7 +40,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
 .chip-l{font-size:10px;color:var(--muted);margin-top:4px}
 
 /* ── HOME HERO ── */
-.home-hero{position:relative;height:230px;flex-shrink:0;overflow:hidden}
+.home-hero{position:relative;height:230px;flex-shrink:0;overflow:hidden;background:radial-gradient(120% 90% at 50% -10%,rgba(124,58,237,.35),transparent 60%),radial-gradient(100% 80% at 85% 110%,rgba(13,148,136,.28),transparent 55%),var(--bg)}
 #home-canvas{position:absolute;inset:0;width:100%;height:100%}
 .home-hero-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;padding-bottom:8px}
 .home-logo-text{font-size:52px;font-weight:900;letter-spacing:-.03em;background:linear-gradient(135deg,#c4b5fd,#a78bfa 40%,#2dd4bf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:h-float 3.5s ease-in-out infinite;line-height:1}
@@ -155,6 +155,15 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
 .rec-lbl{text-align:center;font-size:11px;color:var(--muted);margin-top:5px}
 
 .tip{text-align:center;font-size:12px;color:var(--muted);padding:0 24px;line-height:1.6;margin-top:4px}
+
+/* ── NOSTRIL SELECTOR ── */
+.nostril-wrap{margin:10px 0 2px;text-align:center}
+.nostril-lbl{font-size:11px;color:var(--muted);margin-bottom:7px}
+.nostril-btns{display:flex;gap:8px;justify-content:center}
+.nb{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:12px;background:var(--surface2);border:2px solid transparent;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;font-family:inherit}
+.nb:hover{background:var(--surface);border-color:var(--border)}
+.nb.sel{border-color:var(--al);background:rgba(124,58,237,.15);color:var(--al)}
+.nb .ni{font-size:15px}
 
 /* ── dB METER ── */
 .db-meter-wrap{margin:6px 16px 2px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px}
@@ -670,34 +679,70 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
 
   <!-- ── HOME ── -->
   <div id="s-home" class="screen active">
-    <div class="ph">
-      <div>
-        <div class="pt">Hmm 🐝</div>
-        <div class="ps" id="hdate">Today's Practice</div>
-      </div>
-      <button onclick="openSM()" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:6px;border-radius:8px">
+    <!-- HERO -->
+    <div class="home-hero">
+      <button class="home-settings-btn" onclick="openSM()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
         </svg>
       </button>
+      <div class="home-hero-overlay">
+        <div class="home-logo-text">Hmm 🐝</div>
+        <div class="home-tagline">Vocal Resonance Practice</div>
+        <div class="home-date-str" id="hdate">Today's Practice</div>
+      </div>
     </div>
 
-    <div class="row">
-      <div class="chip"><div class="chip-n" id="h-streak">0</div><div class="chip-l">Day Streak 🔥</div></div>
-      <div class="chip"><div class="chip-n" id="h-today" style="color:var(--tl)">0</div><div class="chip-l">Sessions Today</div></div>
-      <div class="chip"><div class="chip-n" id="h-avg" style="font-size:20px;color:var(--warn)">—</div><div class="chip-l">Avg Score</div></div>
+    <!-- STATS -->
+    <div class="home-stats-strip">
+      <div class="home-stat"><div class="home-stat-n" id="h-streak">0</div><div class="home-stat-l">Day Streak 🔥</div></div>
+      <div class="home-stat-div"></div>
+      <div class="home-stat"><div class="home-stat-n" id="h-today" style="color:var(--tl)">0</div><div class="home-stat-l">Sessions Today</div></div>
+      <div class="home-stat-div"></div>
+      <div class="home-stat"><div class="home-stat-n" id="h-avg" style="color:var(--warn)">—</div><div class="home-stat-l">Avg Score</div></div>
     </div>
 
-    <button class="start-btn" onclick="goSession()">
-      <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
-      Begin Practice
-    </button>
+    <!-- CTA -->
+    <div class="home-cta-section">
+      <div class="home-cta-btn-wrap">
+        <button class="home-cta-main" onclick="goSession()">
+          <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+          Begin Practice
+        </button>
+      </div>
+      <div class="hz-compact">
+        <span>Target:</span>
+        <input type="number" id="h-hz" value="136" min="50" max="600" onchange="setHz(this.value)">
+        <span>Hz</span>
+        <span style="opacity:.6">(Om = 136)</span>
+      </div>
+    </div>
 
-    <div class="hz-row">
-      <span>Target:</span>
-      <input class="hz-in" type="number" id="h-hz" value="136" min="50" max="600" onchange="setHz(this.value)">
-      <span>Hz</span>
-      <span style="font-size:10px;opacity:.5">(Om = 136)</span>
+    <!-- BENEFITS -->
+    <div class="home-benefits-section">
+      <div class="home-benefits-label">Why Practice</div>
+      <div class="home-benefits-scroll">
+        <div class="benefit-card">
+          <div class="benefit-icon">🧘</div>
+          <div class="benefit-title">Calms the Mind</div>
+          <div class="benefit-desc">Activates the rest-and-digest response and lowers stress hormones.</div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🫁</div>
+          <div class="benefit-title">Strengthens Lungs</div>
+          <div class="benefit-desc">Sustained humming builds breath control and capacity over time.</div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">🎯</div>
+          <div class="benefit-title">Sharpens Focus</div>
+          <div class="benefit-desc">The vibration anchors attention and quiets mental chatter.</div>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">💤</div>
+          <div class="benefit-title">Deepens Sleep</div>
+          <div class="benefit-desc">Slows the heart rate, easing the body toward restful sleep.</div>
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -836,6 +881,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
         <button class="mb2" onclick="setPreMood(4)" title="Calm">😌</button>
         <button class="mb2" onclick="setPreMood(5)" title="Joyful">😊</button>
       </div>
+      <div class="nostril-wrap">
+        <div class="nostril-lbl">Which nostril is dominant right now?</div>
+        <div class="nostril-btns" id="nostril-btns">
+          <button class="nb" onclick="setNostril('left')"  title="Left nostril dominant"><span class="ni">🌙</span> Left</button>
+          <button class="nb" onclick="setNostril('both')"  title="Both nostrils equal"><span class="ni">✨</span> Both</button>
+          <button class="nb" onclick="setNostril('right')" title="Right nostril dominant"><span class="ni">☀️</span> Right</button>
+        </div>
+      </div>
     </div>
 
     <div class="tip" id="rtip">Close eyes · Plug ears gently · Hum from the chest</div>
@@ -869,6 +922,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
       <div class="ri"><div class="ri-v" id="r-res" style="color:var(--ok)">—</div><div class="ri-l">Resonance Quality</div></div>
       <div class="ri"><div class="ri-v" id="r-avgdb" style="color:var(--tl)">—</div><div class="ri-l">Avg Volume</div></div>
       <div class="ri"><div class="ri-v" id="r-peakdb" style="color:var(--warn)">—</div><div class="ri-l">Peak Volume</div></div>
+      <div class="ri"><div class="ri-v" id="r-nostril" style="color:var(--al)">—</div><div class="ri-l">Dominant Nostril</div></div>
     </div>
 
     <!-- HUM PATTERN TIMELINE -->
@@ -1218,6 +1272,7 @@ const S = {
   bjOpen: false,
   preMood: 0,
   postMood: 0,
+  nostril: '',
   notes: '',
   tags: [],
   activeProgram: null,
@@ -1964,6 +2019,7 @@ function calcResult(dur) {
     tgt: S.targetHz,
     harmSeries: lastHarmSeries,
     preMood: S.preMood, postMood: 0,
+    nostril: S.nostril,
     // Volume / dB
     avgDb, peakDb, minDb, dbRange,
     // Voice profile
@@ -2063,6 +2119,8 @@ function showResults(r) {
   document.getElementById('r-res').textContent   = r.resLbl;
   document.getElementById('r-avgdb').textContent  = r.avgDb  != null ? `${r.avgDb} dBFS`  : '—';
   document.getElementById('r-peakdb').textContent = r.peakDb != null ? `${r.peakDb} dBFS` : '—';
+  const nostrilLabels = {left:'🌙 Left', both:'✨ Both', right:'☀️ Right'};
+  document.getElementById('r-nostril').textContent = r.nostril ? (nostrilLabels[r.nostril] || r.nostril) : '—';
 
   const badges = [[90,'Transcendent! 🌟','Exceptional resonance achieved'],
                   [75,'Excellent! ✨','Strong frequency stability'],
@@ -2219,9 +2277,18 @@ function populateMoodSection(r) {
   }
 }
 
+function setNostril(v) {
+  S.nostril = v;
+  document.querySelectorAll('#nostril-btns .nb').forEach(b => {
+    b.classList.toggle('sel', b.getAttribute('onclick').includes(`'${v}'`));
+  });
+}
+
 function resetPreMood() {
   S.preMood = 0;
+  S.nostril = '';
   document.querySelectorAll('#pre-mood-btns .mb2').forEach(b => b.classList.remove('sel'));
+  document.querySelectorAll('#nostril-btns .nb').forEach(b => b.classList.remove('sel'));
 }
 
 // ════════════════════════════════════
