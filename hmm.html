@@ -119,6 +119,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
 .vt{flex:1;padding:5px 4px;background:none;border:none;border-radius:8px;font-family:inherit;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;letter-spacing:.04em}
 .vt.active{background:var(--surface);color:var(--al)}
 #spec{width:100%;height:160px;border-radius:0 0 12px 12px;display:block;background:#07091a;border:1px solid var(--border);border-top:none}
+.vh-card{margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px}
+.vh-row{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
+.vh-row:last-child{border-bottom:none;padding-bottom:0}
+.vh-row:first-child{padding-top:0}
+.vh-icon{font-size:20px;line-height:1.3;flex-shrink:0;width:24px;text-align:center}
+.vh-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px}
+.vh-desc{font-size:11px;color:var(--muted);line-height:1.6}
 .fp-card{margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px}
 #fp-c{display:block;margin:0 auto}
 .fp-top-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
@@ -234,6 +241,41 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
 .bclear{width:100%;margin-top:6px;padding:9px;background:none;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-family:inherit;font-size:12px;cursor:pointer;transition:all .15s}
 .bclear:hover{border-color:var(--danger);color:var(--danger)}
 
+/* ── SESSION JOURNAL ── */
+.jtog{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;cursor:pointer;transition:border-color .2s}
+.jtog:hover{border-color:var(--al)}
+.jtog-lbl{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600}
+.jtog-ico{width:34px;height:34px;border-radius:10px;background:rgba(124,58,237,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.j-count{font-size:11px;color:var(--muted);font-weight:600}
+
+.jpanel{display:none;padding:0 16px;margin-top:8px}
+.jpanel.open{display:block}
+.jpanel-note{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.55}
+
+.j-ta{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:13px;line-height:1.6;padding:10px 12px;resize:none;min-height:60px;transition:border-color .2s}
+.j-ta:focus{outline:none;border-color:var(--accent)}
+.j-ta::placeholder{color:var(--muted)}
+
+.j-actions{display:flex;gap:8px;margin-top:8px}
+.j-add-btn{flex:1;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:transform .15s}
+.j-add-btn:active{transform:scale(.97)}
+.j-rec-btn{flex:1;padding:11px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.j-rec-btn:hover{border-color:var(--danger)}
+.j-rec-btn.recording{background:rgba(220,38,38,.12);border-color:var(--danger);color:#f87171}
+.j-rec-dot{width:8px;height:8px;border-radius:50%;background:var(--danger);animation:pdot 1s ease-in-out infinite}
+
+.j-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.j-empty{font-size:12px;color:var(--muted);text-align:center;padding:10px 0}
+.j-entry{background:var(--surface2);border-radius:12px;padding:10px 12px}
+.j-entry-meta{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.j-entry-text{font-size:13px;color:var(--text);line-height:1.55;margin-top:5px;white-space:pre-wrap}
+.j-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px 4px;border-radius:6px;transition:color .15s}
+.j-del:hover{color:var(--danger)}
+
+/* history journal toggle */
+.si-journal-toggle{font-size:10px;color:var(--muted);cursor:pointer;padding:2px 6px;border-radius:6px;border:1px solid var(--border);background:none;font-family:inherit;margin-left:8px;transition:all .15s;white-space:nowrap}
+.si-journal-toggle:hover{border-color:var(--al);color:var(--al)}
+
 .save-btn{width:calc(100% - 32px);margin:12px 16px 0;padding:16px;background:linear-gradient(135deg,#5b21b6,#7c3aed);border:none;border-radius:14px;color:#fff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:transform .15s,background .3s}
 .save-btn:active{transform:scale(.98)}
 .save-btn.saved{background:var(--ok)}
@@ -272,6 +314,15 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
 .sm-in:focus{outline:none;border-color:var(--accent)}
 .sm-note{font-size:11px;color:var(--muted);margin-top:4px}
 .sm-danger{width:100%;padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;color:var(--danger);font-family:inherit;font-size:13px;cursor:pointer;margin-top:16px}
+.sm-in-text{font-size:13px;font-weight:500;font-family:inherit}
+.ai-loading{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);padding:10px 0}
+.ai-spinner{width:13px;height:13px;border:2px solid var(--border);border-top-color:var(--al);border-radius:50%;animation:ai-spin .7s linear infinite;flex-shrink:0}
+@keyframes ai-spin{to{transform:rotate(360deg)}}
+.ai-badge{font-size:10px;font-weight:700;letter-spacing:.04em;color:var(--al);background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.25);border-radius:8px;padding:5px 10px;margin-bottom:8px;display:inline-block}
+.ai-error{font-size:11px;color:var(--warn);background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.22);border-radius:10px;padding:10px 12px;margin-bottom:8px;line-height:1.6}
+.ai-bring-key{font-size:11px;color:var(--muted);line-height:1.6;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+.ai-bring-key a{color:var(--al)}
+.vt-body p a{color:var(--al)}
 
 /* ── TOAST ── */
 #toast{position:fixed;bottom:74px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:9px 18px;font-size:13px;font-weight:500;opacity:0;transition:opacity .25s,transform .25s;z-index:300;white-space:nowrap;pointer-events:none}
@@ -640,6 +691,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
     <label>Target Frequency (Hz)</label>
     <input class="sm-in" type="number" id="sm-hz" min="50" max="600" value="136" onchange="setHz(this.value)">
     <p class="sm-note">Om = 136 Hz · Bhramari typical range: 100–250 Hz</p>
+
+    <span class="exp-section-lbl">AI Voice Insights</span>
+    <input class="sm-in sm-in-text" type="password" id="sm-api-key" placeholder="sk-ant-…" autocomplete="off" spellcheck="false" onchange="setApiKey(this.value)">
+    <p class="sm-note">Optional — add your own <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener" style="color:var(--al)">Claude API key</a> to get AI analysis of your pitch, resonance, and breath patterns after each session and across your history. Stored only in this browser and sent only to Anthropic's API. <span id="sm-api-key-status" style="color:var(--ok)"></span></p>
     <span class="exp-section-lbl">Export Data</span>
     <div style="font-size:11px;color:var(--muted);margin-bottom:8px" id="sm-export-summary">No sessions yet</div>
     <div class="export-row">
@@ -891,6 +946,26 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
       </div>
     </div>
 
+    <!-- SESSION JOURNAL TOGGLE (during session) -->
+    <div class="jtog" id="jtog-sess" onclick="toggleJournal('sess')">
+      <div class="jtog-lbl">
+        <div class="jtog-ico">📝</div>
+        Session Journal<span class="j-count" id="j-count-sess"></span>
+      </div>
+      <svg class="jarr" id="jarr-sess" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="jpanel" id="jpanel-sess">
+      <p class="jpanel-note">Jot a quick note or record a voice memo — anytime before, during, or after you hum.</p>
+      <textarea class="j-ta" id="jnote-sess" placeholder="What are you noticing right now?" maxlength="500"></textarea>
+      <div class="j-actions">
+        <button class="j-add-btn" onclick="addJournalNote('sess')">+ Add Note</button>
+        <button class="j-rec-btn" id="jrec-btn-sess" onclick="toggleJournalRec('sess')">🎙 Record Memo</button>
+      </div>
+      <div class="j-list" id="jlist-sess"></div>
+    </div>
+
     <div class="tip" id="rtip">Close eyes · Plug ears gently · Hum from the chest</div>
   </div>
 
@@ -932,6 +1007,32 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
       <div class="ht-bar"    id="ht-bar"></div>
       <div class="ht-labels" id="ht-labels"></div>
       <div class="ht-detail" id="ht-detail"></div>
+    </div>
+
+    <!-- VOICE HEALTH SIGNALS -->
+    <div class="vh-card" id="vh-card" style="display:none">
+      <div class="clabel">Voice Health Signals</div>
+      <div class="vh-row">
+        <div class="vh-icon">🫁</div>
+        <div class="vh-main">
+          <div class="vh-title" id="vh-breath-title">Breath Support</div>
+          <div class="vh-desc" id="vh-breath-desc"></div>
+        </div>
+      </div>
+      <div class="vh-row">
+        <div class="vh-icon">😮‍💨</div>
+        <div class="vh-main">
+          <div class="vh-title" id="vh-cough-title">Coughs / Throat Clears</div>
+          <div class="vh-desc" id="vh-cough-desc"></div>
+        </div>
+      </div>
+      <div class="vh-row">
+        <div class="vh-icon">🔇</div>
+        <div class="vh-main">
+          <div class="vh-title" id="vh-ambient-title">Background Noise</div>
+          <div class="vh-desc" id="vh-ambient-desc"></div>
+        </div>
+      </div>
     </div>
 
     <!-- RECORDING INFO -->
@@ -1042,6 +1143,26 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
       <button class="bclear" onclick="clearBL()">Clear Log</button>
     </div>
 
+    <!-- SESSION JOURNAL TOGGLE (results) -->
+    <div class="jtog" id="jtog-res" onclick="toggleJournal('res')">
+      <div class="jtog-lbl">
+        <div class="jtog-ico">📝</div>
+        Session Journal<span class="j-count" id="j-count-res"></span>
+      </div>
+      <svg class="jarr" id="jarr-res" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+    <div class="jpanel" id="jpanel-res">
+      <p class="jpanel-note">Add a reflection or voice memo about this session — saved alongside your results.</p>
+      <textarea class="j-ta" id="jnote-res" placeholder="What are you noticing right now?" maxlength="500"></textarea>
+      <div class="j-actions">
+        <button class="j-add-btn" onclick="addJournalNote('res')">+ Add Note</button>
+        <button class="j-rec-btn" id="jrec-btn-res" onclick="toggleJournalRec('res')">🎙 Record Memo</button>
+      </div>
+      <div class="j-list" id="jlist-res"></div>
+    </div>
+
     <!-- SESSION NOTES -->
     <div class="notes-card">
       <div class="notes-prompt">✍️ How did this session feel?</div>
@@ -1116,6 +1237,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
     <div class="card" style="padding:12px 12px 8px">
       <div class="clabel">Wellness Score — Last 14 Days</div>
       <canvas id="hchart"></canvas>
+    </div>
+    <div class="card" id="vt-card" style="display:none">
+      <div class="clabel">🧠 AI Vocal Trends</div>
+      <div id="vt-body"></div>
     </div>
     <div class="card">
       <div class="clabel" id="slist-label">Sessions</div>
@@ -1266,7 +1391,7 @@ const S = {
   targetHz: parseInt(localStorage.getItem('hmm_hz') || '136'),
   recording: false,
   t0: 0,
-  sdata: { freqs: [], amps: [], ts: [], harmonics: [], hnr: [], dbs: [] },
+  sdata: { freqs: [], amps: [], ts: [], harmonics: [], hnr: [], dbs: [], ambientDbs: [] },
   result: null,
   blog: [],
   bjOpen: false,
@@ -1275,11 +1400,13 @@ const S = {
   nostril: '',
   notes: '',
   tags: [],
+  journal: [],
+  _journalSaved: false,
   activeProgram: null,
   hist: JSON.parse(localStorage.getItem('hmm_hist') || '[]'),
 
   // ─── Hum / Pause segment tracking ──────────────────────────────────────────
-  segments: [],   // [{ type:'hum'|'pause', startTime, endTime, duration, avgFrequency, avgResonance, avgStability }]
+  segments: [],   // [{ type:'hum'|'pause', startTime, endTime, duration, avgFrequency, avgResonance, avgStability, breathSupport, fadeDetected }]
   _humDetect: {
     state:        'idle',  // 'idle' | 'humming' | 'pause'
     voicedFrames: 0,       // debounce: frames of voiced signal before starting a hum
@@ -1290,6 +1417,10 @@ const S = {
     amps:         [],      // amplitude accumulator
     hnrs:         [],      // HNR accumulator (resonance proxy)
   },
+
+  // ─── Cough / throat-clear detection ────────────────────────────────────────
+  coughEvents: [],   // [{ t: msFromStart, dur: ms }]
+  _coughDetect: { inSpike:false, buf:[], spikeStart:0, spikeFrames:0, spikePeak:0 },
 };
 
 // ════════════════════════════════════
@@ -1396,6 +1527,10 @@ async function dbDel(id)   { const db=await getDB(); return new Promise((res,rej
 // ════════════════════════════════════
 let mediaRec = null, recChunks = [];
 let _pendingBlob = null, _pendingMime = '';
+
+// Journal voice-memo recorder (separate MediaRecorder instance, same stream)
+let journalRec = null, journalChunks = [];
+let _journalRecStart = 0, _journalTimerIv = null;
 
 function startMR() {
   if (!stream) return;
@@ -1505,6 +1640,13 @@ let timerIv;
 
 async function goSession(prog) {
   if (S.recording) return;
+  // Starting a fresh session attempt — clean up any unsaved journal voice memos
+  // from a previous session that was never saved, then reset the journal.
+  if (S.journal.length && !S._journalSaved) {
+    S.journal.filter(e => e.type === 'voice').forEach(e => dbDel(e.recId).catch(()=>{}));
+  }
+  S.journal = [];
+  S._journalSaved = false;
   S.activeProgram = prog || null;
   if (!ACtx) {
     document.getElementById('perm').classList.add('show');
@@ -1515,6 +1657,7 @@ async function goSession(prog) {
   if (ACtx.state === 'suspended') await ACtx.resume();
   nav('session');
   resetSessUI();
+  renderJournalList('sess');
 }
 
 async function startProgram(id) {
@@ -1579,7 +1722,7 @@ function toggleRec() {
 function startRec() {
   S.recording = true;
   S.t0 = Date.now();
-  S.sdata = { freqs: [], amps: [], ts: [], harmonics: [], hnr: [], dbs: [] };
+  S.sdata = { freqs: [], amps: [], ts: [], harmonics: [], hnr: [], dbs: [], ambientDbs: [] };
   S.postMood = 0;
   rtwin = [];
   sfq = 0; srms = 0; _peakDb = -60; _peakDbHoldFrames = 0;
@@ -1587,6 +1730,9 @@ function startRec() {
   // Reset segment tracking
   S.segments = [];
   S._humDetect = { state:'idle', voicedFrames:0, silentFrames:0, silentSince:null, segStart:0, freqs:[], amps:[], hnrs:[] };
+  // Reset cough detection
+  S.coughEvents = [];
+  S._coughDetect = { inSpike:false, buf:[], spikeStart:0, spikeFrames:0, spikePeak:0 };
   const segBadge = document.getElementById('seg-status');
   if (segBadge) { segBadge.textContent = ''; segBadge.className = 'seg-badge'; }
 
@@ -1647,9 +1793,12 @@ function loop() {
   // ── dB computation & tracking ──────────────────────────────────────────────
   const curDb = rawR > 0.0001 ? Math.max(-60, 20 * Math.log10(rawR)) : -60;
   if (voiced) S.sdata.dbs.push(curDb);
+  else        S.sdata.ambientDbs.push(curDb);
   updateDbMeter(curDb, voiced);
 
-  updateSegments(voiced, sfq, srms, harm, Date.now() - S.t0);
+  const nowMs = Date.now() - S.t0;
+  updateSegments(voiced, sfq, srms, harm, nowMs);
+  detectCough(rawR, harm, voiced, nowMs);
   updateSessUI(sfq, srms, voiced, harm);
   raf = requestAnimationFrame(loop);
 }
@@ -1720,6 +1869,7 @@ function updateSegments(voiced, freq, rms, harm, now) {
           avgFrequency: Math.round(avgFreq),
           avgResonance,
           avgStability,
+          ...computeBreathFade(d.amps),
         });
 
         // Open a pause segment
@@ -1746,6 +1896,7 @@ function closeOpenSegment(now) {
     S.segments.push({
       type:'hum', startTime: d.segStart, endTime: now, duration: Math.max(0, now - d.segStart),
       avgFrequency: Math.round(avgFreq), avgResonance: avgRes, avgStability: avgStab,
+      ...computeBreathFade(d.amps),
     });
   } else if (d.state === 'pause') {
     const last = S.segments.length > 0 ? S.segments[S.segments.length-1] : null;
@@ -1851,6 +2002,46 @@ function updateDbMeter(db, voiced) {
   valEl.textContent = `${Math.round(db)} dB`;
   valEl.className   = 'db-meter-val' +
     (db > -6 ? ' peak-clip' : db > -15 ? ' peak-warn' : ' loud');
+}
+
+// ─── Cough / throat-clear detection ────────────────────────────────────────
+// Heuristic: a short, sharp spike in raw RMS well above the recent rolling
+// baseline, paired with a low harmonic-to-noise ratio (broadband / non-tonal
+// signature), lasting roughly 50–500ms. Thresholds are heuristic starting
+// points and may need tuning against real recordings.
+const COUGH_BUF_LEN = 30; // ~0.5s rolling window at ~60fps
+function detectCough(rawR, harm, voiced, now) {
+  const cd = S._coughDetect;
+  cd.buf.push(rawR);
+  if (cd.buf.length > COUGH_BUF_LEN) cd.buf.shift();
+  if (cd.buf.length < 12) return;
+
+  const baseline = cd.buf.slice(0, -1).reduce((a,b)=>a+b,0) / (cd.buf.length - 1);
+  const isSpike  = rawR > 0.05 && rawR > Math.max(0.06, baseline * 2.6) && (!voiced || harm.hnr < 25);
+
+  if (isSpike) {
+    if (!cd.inSpike) { cd.inSpike = true; cd.spikeStart = now; cd.spikeFrames = 0; cd.spikePeak = 0; }
+    cd.spikeFrames++;
+    cd.spikePeak = Math.max(cd.spikePeak, rawR);
+  } else if (cd.inSpike) {
+    const dur = now - cd.spikeStart;
+    if (dur >= 50 && dur <= 500) S.coughEvents.push({ t: cd.spikeStart, dur });
+    cd.inSpike = false;
+  }
+}
+
+// ─── Breath-support / fade-out estimate for a finished hum segment ─────────
+// Compares the average amplitude of the final ~20% of a hum to its peak.
+// A large drop suggests the person ran low on breath support near the end.
+function computeBreathFade(amps) {
+  if (!amps || amps.length < 12) return { breathSupport: 100, fadeDetected: false };
+  const peak = Math.max(...amps);
+  if (peak <= 0) return { breathSupport: 100, fadeDetected: false };
+  const tailLen = Math.max(4, Math.round(amps.length * 0.2));
+  const tail    = amps.slice(-tailLen);
+  const tailAvg = tail.reduce((a,b)=>a+b,0) / tail.length;
+  const breathSupport = Math.max(0, Math.min(100, Math.round((tailAvg / peak) * 100)));
+  return { breathSupport, fadeDetected: breathSupport < 45 };
 }
 
 async function stopRec() {
@@ -2010,6 +2201,35 @@ function calcResult(dur) {
   const minDb  = Math.round(Math.min(...dbVals) * 10) / 10;
   const dbRange = Math.round((peakDb - minDb) * 10) / 10;   // dynamic range
 
+  // ── Breath support / fade-out ──────────────────────────────────────────────
+  const breathSupports  = humSegs.map(s => s.breathSupport ?? 100);
+  const avgBreathSupport = breathSupports.length
+    ? Math.round(breathSupports.reduce((a,b)=>a+b,0)/breathSupports.length)
+    : 100;
+  const breathFadeCount = humSegs.filter(s => s.fadeDetected).length;
+
+  // ── Cough / throat-clear events ────────────────────────────────────────────
+  const coughEvents = (S.coughEvents || []).slice();
+
+  // ── Background / ambient noise (sampled during pauses) ─────────────────────
+  const ambDbs = S.sdata.ambientDbs || [];
+  let avgAmbientDb = null, ambientVariability = null, ambientLabel = null, ambientDesc = '';
+  if (ambDbs.length >= 10) {
+    avgAmbientDb = Math.round(ambDbs.reduce((a,b)=>a+b,0)/ambDbs.length * 10)/10;
+    const ambSd  = Math.sqrt(ambDbs.reduce((a,b)=>a+(b-avgAmbientDb)**2,0)/ambDbs.length);
+    ambientVariability = Math.round(ambSd*10)/10;
+    if (avgAmbientDb < -45) {
+      ambientLabel = 'Quiet';
+      ambientDesc  = 'Your space was very quiet between hums — ideal for this practice.';
+    } else if (ambientVariability < 2.5) {
+      ambientLabel = 'Steady background hum';
+      ambientDesc  = `A consistent low-level sound (avg ${avgAmbientDb} dBFS) was present during pauses — could be a fan, AC, or appliance hum.`;
+    } else {
+      ambientLabel = 'Variable room noise';
+      ambientDesc  = `Background sound fluctuated during pauses (avg ${avgAmbientDb} dBFS) — likely intermittent room or outside noise.`;
+    }
+  }
+
   return {
     ts: Date.now(), dur, durStr,
     avg: Math.round(avg), peak: Math.round(peak),
@@ -2034,6 +2254,12 @@ function calcResult(dur) {
     pauseCount:   pauseSegs.length,
     totalHumMs:   humSegs.reduce((a,s) => a+(s.duration||0), 0),
     totalPauseMs: pauseSegs.reduce((a,s) => a+(s.duration||0), 0),
+    // Breath support / fade-out
+    avgBreathSupport, breathFadeCount,
+    // Cough / throat-clear events
+    coughCount: coughEvents.length, coughEvents,
+    // Ambient / background noise
+    avgAmbientDb, ambientVariability, ambientLabel, ambientDesc,
   };
 }
 
@@ -2102,6 +2328,55 @@ function renderHumTimeline(r) {
 }
 
 // ════════════════════════════════════
+//  VOICE HEALTH SIGNALS  (breath support / coughs / ambient noise)
+// ════════════════════════════════════
+function _fmtMs(ms) {
+  const s = Math.max(0, Math.round(ms/1000));
+  return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+}
+
+function renderVoiceHealthCard(r) {
+  const card = document.getElementById('vh-card');
+  if (!card) return;
+  const humSegs = (r.segments || []).filter(s => s.type === 'hum');
+  if (humSegs.length === 0) { card.style.display = 'none'; return; }
+  card.style.display = '';
+
+  // Breath support
+  const bT = document.getElementById('vh-breath-title');
+  const bD = document.getElementById('vh-breath-desc');
+  const fadeCount = r.breathFadeCount || 0;
+  bT.textContent = `Breath Support — ${r.avgBreathSupport}% avg`;
+  bD.textContent = fadeCount === 0
+    ? `Your volume held steady through each hum — solid breath capacity for ${r.durStr} of practice.`
+    : `${fadeCount} of ${humSegs.length} hum${humSegs.length!==1?'s':''} faded noticeably near the end — a sign you're reaching your breath capacity. Try starting slightly softer to sustain longer.`;
+
+  // Cough / throat-clear
+  const cT = document.getElementById('vh-cough-title');
+  const cD = document.getElementById('vh-cough-desc');
+  const cc = r.coughCount || 0;
+  if (cc === 0) {
+    cT.textContent = 'Coughs / Throat Clears — none detected';
+    cD.textContent = 'No throat clears or coughs were detected during this session.';
+  } else {
+    const times = (r.coughEvents || []).slice(0, 5).map(e => _fmtMs(e.t)).join(', ');
+    cT.textContent = `Coughs / Throat Clears — ${cc} detected`;
+    cD.textContent = `Brief throat clears or coughs around ${times}${cc > 5 ? ', …' : ''}. Occasional clearing is normal — frequent clears may mean dryness, so try sipping water before your next session.`;
+  }
+
+  // Ambient / background noise
+  const aT = document.getElementById('vh-ambient-title');
+  const aD = document.getElementById('vh-ambient-desc');
+  if (!r.ambientLabel) {
+    aT.textContent = 'Background Noise';
+    aD.textContent = 'Not enough quiet time between hums to assess your environment.';
+  } else {
+    aT.textContent = `Background Noise — ${r.ambientLabel}`;
+    aD.textContent = r.ambientDesc;
+  }
+}
+
+// ════════════════════════════════════
 //  RESULTS
 // ════════════════════════════════════
 function showResults(r) {
@@ -2146,6 +2421,7 @@ function showResults(r) {
 
   drawScoreRing(r);
   renderHumTimeline(r);
+  renderVoiceHealthCard(r);
   // Voice fingerprint + AI insights
   const fpCard = document.getElementById('fp-card');
   fpCard.style.display = '';
@@ -2174,6 +2450,19 @@ function showResults(r) {
   document.getElementById('barr').classList.remove('open');
   document.getElementById('bevts').innerHTML = '<span style="font-size:11px;color:var(--muted)">No events yet — tap above to log</span>';
   drawBVis();
+
+  // Session Journal — render current entries (may include ones logged during the session)
+  renderJournalList('sess');
+  renderJournalList('res');
+  const jpanelRes = document.getElementById('jpanel-res');
+  const jarrRes   = document.getElementById('jarr-res');
+  if (S.journal.length) {
+    jpanelRes.classList.add('open');
+    if (jarrRes) jarrRes.classList.add('open');
+  } else {
+    jpanelRes.classList.remove('open');
+    if (jarrRes) jarrRes.classList.remove('open');
+  }
 
   document.getElementById('savebtn').textContent = 'Save Session';
   document.getElementById('savebtn').className = 'save-btn';
@@ -2713,6 +3002,117 @@ function drawVoiceFingerprint(result) {
 }
 
 // ════════════════════════════════════════════════════════════════════
+//  AI VOICE INSIGHTS — Claude API (optional, user-supplied key)
+// ════════════════════════════════════════════════════════════════════
+function getApiKey() {
+  return (localStorage.getItem('hmm_api_key') || '').trim();
+}
+function setApiKey(v) {
+  const key    = (v || '').trim();
+  const status = document.getElementById('sm-api-key-status');
+  if (key) {
+    localStorage.setItem('hmm_api_key', key);
+    if (status) status.textContent = '✓ Saved';
+  } else {
+    localStorage.removeItem('hmm_api_key');
+    if (status) status.textContent = '';
+  }
+  if (status && key) setTimeout(() => { status.textContent = ''; }, 2500);
+}
+
+async function callClaude(prompt, maxTokens) {
+  const key = getApiKey();
+  if (!key) return { ok: false, error: 'No API key set' };
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: maxTokens || 600,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+    if (!res.ok) {
+      let msg = `HTTP ${res.status}`;
+      try { const j = await res.json(); if (j?.error?.message) msg = j.error.message; } catch {}
+      return { ok: false, error: msg };
+    }
+    const data = await res.json();
+    const text = (data.content || []).map(b => b.text || '').join('').trim();
+    return { ok: true, text };
+  } catch (e) {
+    return { ok: false, error: e.message || 'Network error' };
+  }
+}
+
+// Parse "1. **Title** — body" style numbered insights into insight cards
+function _formatAIText(text) {
+  const lines = String(text || '').split('\n').map(l => l.trim()).filter(Boolean);
+  const items = [];
+  for (const line of lines) {
+    const m = line.match(/^\d+[.)]\s*\*\*(.+?)\*\*\s*[—\-:]\s*(.+)$/);
+    if (m) items.push({ title: m[1], body: m[2] });
+    else if (items.length) items[items.length - 1].body += ' ' + line.replace(/^\*\*(.+?)\*\*\s*[—\-:]\s*/, '');
+  }
+  if (!items.length) {
+    return `<div class="ai-insight neutral"><div class="ai-insight-body">${escHtml(String(text||'')).replace(/\n+/g,'<br>')}</div></div>`;
+  }
+  const icons = ['🎯','🌊','🫁','📊','💡','🔧'];
+  return items.map((it,i) => `
+    <div class="ai-insight neutral">
+      <div class="ai-insight-head">${icons[i % icons.length]} ${escHtml(it.title)}</div>
+      <div class="ai-insight-body">${escHtml(it.body)}</div>
+    </div>`).join('');
+}
+
+// Build a voice/breath-only prompt for a single just-completed session
+function buildSessionVoicePrompt(r) {
+  const humSegs  = (r.segments || []).filter(s => s.type === 'hum');
+  const segLines = humSegs.map((s,i) =>
+    `  Hum ${i+1}: ${(s.duration/1000).toFixed(1)}s, avg ${Math.round(s.avgFrequency)}Hz, breath support ${s.breathSupport ?? '—'}%${s.fadeDetected ? ' (late fade-out)' : ''}`
+  ).join('\n');
+
+  return `You are a vocal-acoustics analyst reviewing ONE Bhramari pranayama (humming/Om) practice session, using only objective voice measurements captured by the app's microphone analysis. Do NOT discuss mood, time of day, journaling, or anything outside this data — focus strictly on pitch, resonance, breath dynamics, and vocal-health signals.
+
+SESSION DATA:
+- Duration: ${r.durStr}
+- Target frequency: ${r.tgt} Hz | Average pitch: ${r.avg} Hz (${r.avg - r.tgt >= 0 ? '+' : ''}${Math.round(r.avg - r.tgt)} Hz vs target) | Peak: ${r.peak} Hz
+- Pitch stability: ${r.stab}% | Pitch accuracy to target: ${r.acc}%
+- Amplitude consistency: ${r.ampCons}%
+- Harmonic-to-noise ratio (HNR): ${r.avgHNR}% | Avg overtones: ${r.avgHarm}
+- Resonance score: ${r.res}/100 (${r.resLbl}) | Voice profile: ${r.voiceLabel} (${r.voiceRange})
+- Volume: avg ${r.avgDb} dBFS, peak ${r.peakDb} dBFS, dynamic range ${r.dbRange} dB
+- Hum segments: ${r.humCount} (${(r.totalHumMs/1000).toFixed(1)}s total) | Pauses: ${r.pauseCount} (${(r.totalPauseMs/1000).toFixed(1)}s total)
+${segLines ? segLines + '\n' : ''}- Avg breath support across hums: ${r.avgBreathSupport}%${r.breathFadeCount ? ` — ${r.breathFadeCount} hum${r.breathFadeCount===1?'':'s'} faded late` : ''}
+- Cough/throat-clear events: ${r.coughCount}
+${r.ambientLabel ? `- Background noise during pauses: ${r.ambientLabel}` : ''}
+
+Write 2-4 short insights (1-2 sentences each) about this person's VOCAL and BREATH performance — pitch control, tone/resonance quality, breath support and stamina, and any vocal-health notes. Be specific and reference the numbers. Encouraging but honest tone. Format strictly as a numbered list with a bold title per item, e.g. "1. **Title** — body text". No preamble, no closing summary.`;
+}
+
+// Build a voice/breath-only prompt across recent session history
+function buildHistoryVoicePrompt() {
+  const sessions = S.hist.slice(0, 14);
+  const lines = sessions.map((s,i) => {
+    const dateStr = new Date(s.ts).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    return `${i+1}. ${dateStr} — ${s.durStr}, avg ${s.avg}Hz (target ${s.tgt}Hz), stability ${s.stab}%, HNR ${s.avgHNR}%, resonance ${s.res}/100, breath support ${s.avgBreathSupport ?? '—'}%, coughs ${s.coughCount ?? 0}`;
+  }).join('\n');
+
+  return `You are a vocal-acoustics coach reviewing a Bhramari pranayama (humming/Om) practitioner's session history, using only objective voice measurements. Do NOT discuss mood, time of day, journaling, or anything outside this data — focus strictly on trends in pitch, resonance, breath support, and vocal-health signals over time.
+
+SESSION HISTORY (most recent first, ${sessions.length} of ${S.hist.length} total):
+${lines}
+
+Write 3-5 short insights (1-2 sentences each) about trends in this person's VOICE and BREATH across sessions — pitch stability trends, resonance/HNR changes, breath support trends, recurring vocal-health flags, and progress toward the target frequency. Be specific, reference numbers/dates. Encouraging but honest tone. Format strictly as a numbered list with a bold title per item, e.g. "1. **Title** — body text". No preamble, no closing summary.`;
+}
+
+// ════════════════════════════════════════════════════════════════════
 //  AI INSIGHTS ENGINE
 // ════════════════════════════════════════════════════════════════════
 function generateAIInsights(r) {
@@ -2794,15 +3194,56 @@ function generateAIInsights(r) {
   return ins.slice(0, 4);
 }
 
-function renderAIInsights(r) {
+async function renderAIInsights(r) {
   const list = document.getElementById('ai-insights-list');
   if (!list) return;
-  const insights = generateAIInsights(r);
-  list.innerHTML = insights.map(ins => `
+
+  const fallback = () => generateAIInsights(r).map(ins => `
     <div class="ai-insight ${ins.type}">
       <div class="ai-insight-head ${ins.type}">${ins.icon} ${ins.title}</div>
       <div class="ai-insight-body">${ins.body}</div>
     </div>`).join('');
+
+  if (!getApiKey()) {
+    list.innerHTML = fallback() +
+      `<div class="ai-bring-key">Add your <a href="javascript:void(0)" onclick="openSM()">Claude API key</a> in Settings for AI-generated insights into your pitch, resonance, and breath.</div>`;
+    return;
+  }
+
+  list.innerHTML = `<div class="ai-loading"><div class="ai-spinner"></div>Analyzing your voice with Claude…</div>`;
+  const res = await callClaude(buildSessionVoicePrompt(r), 600);
+
+  if (!res.ok) {
+    list.innerHTML = `<div class="ai-error">Couldn't reach Claude (${escHtml(res.error || 'unknown error')}). Showing built-in insights instead.</div>` + fallback();
+    return;
+  }
+  list.innerHTML = `<div class="ai-badge">✨ Claude AI Analysis</div>` + _formatAIText(res.text);
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  AI VOCAL TRENDS — History screen (Claude API)
+// ════════════════════════════════════════════════════════════════════
+async function renderVocalTrendsCard() {
+  const card = document.getElementById('vt-card');
+  const body = document.getElementById('vt-body');
+  if (!card || !body) return;
+
+  if (S.hist.length < 2) { card.style.display = 'none'; return; }
+  card.style.display = '';
+
+  if (!getApiKey()) {
+    body.innerHTML = `<div class="ai-bring-key" style="margin-top:0;padding-top:0;border-top:none">Add your <a href="javascript:void(0)" onclick="openSM()">Claude API key</a> in Settings to see AI-generated trends across your practice history.</div>`;
+    return;
+  }
+
+  body.innerHTML = `<div class="ai-loading"><div class="ai-spinner"></div>Analyzing your vocal history with Claude…</div>`;
+  const res = await callClaude(buildHistoryVoicePrompt(), 700);
+
+  if (!res.ok) {
+    body.innerHTML = `<div class="ai-error">Couldn't reach Claude (${escHtml(res.error || 'unknown error')}).</div>`;
+    return;
+  }
+  body.innerHTML = `<div class="ai-badge">✨ Claude AI Analysis</div>` + _formatAIText(res.text);
 }
 
 // ── 5. Multi-segment Wellness Ring ───────────────────────────────────────
@@ -2977,9 +3418,226 @@ function drawBVis() {
 }
 
 // ════════════════════════════════════
+//  SESSION JOURNAL — text & voice memos
+// ════════════════════════════════════
+function _fmtJTime(t) {
+  const m = Math.floor(t / 60), s = t % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function toggleJournal(scope) {
+  const panel = document.getElementById('jpanel-' + scope);
+  const arr   = document.getElementById('jarr-' + scope);
+  if (!panel) return;
+  const open = panel.classList.toggle('open');
+  if (arr) arr.classList.toggle('open', open);
+  if (open) renderJournalList(scope);
+}
+
+function addJournalNote(scope) {
+  const ta = document.getElementById('jnote-' + scope);
+  const text = (ta?.value || '').trim();
+  if (!text) return;
+  S.journal.push({
+    id: `j_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`,
+    type: 'text',
+    when: scope === 'sess' ? 'during' : 'after',
+    t: (scope === 'sess' && S.recording) ? Math.round((Date.now() - S.t0) / 1000) : null,
+    ts: Date.now(),
+    text,
+  });
+  ta.value = '';
+  renderJournalList('sess');
+  renderJournalList('res');
+  toast('Note added to journal');
+}
+
+function startJournalRec(scope) {
+  if (!stream) { toast('Microphone not available'); return; }
+  if (journalRec) return;
+  journalChunks = [];
+  const mime = ['audio/webm;codecs=opus','audio/webm','audio/ogg','audio/mp4']
+    .find(m => MediaRecorder.isTypeSupported(m)) || '';
+  try {
+    journalRec = mime ? new MediaRecorder(stream, { mimeType: mime, audioBitsPerSecond: 128000 })
+                       : new MediaRecorder(stream);
+  } catch(e) { toast('Voice memo recording unavailable'); journalRec = null; return; }
+  journalRec._mime  = mime || journalRec.mimeType || 'audio/webm';
+  journalRec._scope = scope;
+  journalRec.ondataavailable = e => { if (e.data && e.data.size > 0) journalChunks.push(e.data); };
+  journalRec.start(200);
+  _journalRecStart = Date.now();
+
+  ['sess','res'].forEach(sc => {
+    const btn = document.getElementById('jrec-btn-' + sc);
+    if (btn) {
+      btn.classList.add('recording');
+      btn.innerHTML = `<span class="j-rec-dot"></span> <span id="jrec-time-${sc}">0:00</span> · Tap to stop`;
+    }
+  });
+  _journalTimerIv = setInterval(() => {
+    const txt = _fmtJTime(Math.floor((Date.now() - _journalRecStart) / 1000));
+    ['sess','res'].forEach(sc => {
+      const t = document.getElementById('jrec-time-' + sc);
+      if (t) t.textContent = txt;
+    });
+  }, 500);
+}
+
+async function stopJournalRec() {
+  if (!journalRec) return;
+  const rec       = journalRec;
+  const mime      = rec._mime;
+  const scope     = rec._scope;
+  const startedAt = _journalRecStart;
+
+  await new Promise(resolve => {
+    rec.onstop = resolve;
+    try { rec.requestData(); } catch(e) {}
+    rec.stop();
+  });
+
+  clearInterval(_journalTimerIv); _journalTimerIv = null;
+  journalRec = null;
+  ['sess','res'].forEach(sc => {
+    const btn = document.getElementById('jrec-btn-' + sc);
+    if (btn) { btn.classList.remove('recording'); btn.innerHTML = '🎙 Record Memo'; }
+  });
+
+  const blob = journalChunks.length ? new Blob(journalChunks, { type: mime }) : null;
+  journalChunks = [];
+  if (!blob || blob.size < 500) { toast('Memo too short — try again'); return; }
+
+  const dur   = Date.now() - startedAt;
+  const id    = `j_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`;
+  const recId = `jrec_${id}`;
+
+  try {
+    await dbPut({ id: recId, blob, mimeType: mime, duration: dur, fileSize: blob.size });
+  } catch(e) { toast('Could not save memo'); return; }
+
+  S.journal.push({
+    id, type: 'voice',
+    when: scope === 'sess' ? 'during' : 'after',
+    t: (scope === 'sess' && S.recording) ? Math.round((startedAt - S.t0) / 1000) : null,
+    ts: startedAt, recId, dur, size: blob.size,
+  });
+  renderJournalList('sess');
+  renderJournalList('res');
+  toast('Voice memo saved');
+}
+
+function toggleJournalRec(scope) {
+  if (journalRec) stopJournalRec();
+  else startJournalRec(scope);
+}
+
+function renderJournalList(scope) {
+  const list    = document.getElementById('jlist-' + scope);
+  const countEl = document.getElementById('j-count-' + scope);
+  if (!list) return;
+
+  if (countEl) countEl.textContent = S.journal.length ? ` · ${S.journal.length}` : '';
+
+  if (!S.journal.length) {
+    list.innerHTML = `<div class="j-empty">No journal entries yet — add a note or record a voice memo.</div>`;
+    return;
+  }
+
+  list.innerHTML = S.journal.map(e => _journalEntryHTML(e, null)).join('');
+
+  // Wire up play + delete buttons (re-rendered each time, so always fresh)
+  S.journal.forEach(e => {
+    if (e.type === 'voice') {
+      const btn = list.querySelector(`#play-${e.recId}`);
+      if (btn) btn.addEventListener('click', () => playRec(e.recId, btn));
+    }
+  });
+  list.querySelectorAll('[data-jdel]').forEach(btn => {
+    btn.addEventListener('click', () => deleteJournalEntry(btn.dataset.jdel));
+  });
+}
+
+// Renders a single journal entry (text note or voice memo). When histIdx is
+// non-null, the delete button also carries the S.hist index so the handler
+// can route to deleteJournalHistEntry instead of the live-journal deleter.
+function _journalEntryHTML(e, histIdx) {
+  const whenLbl = e.when === 'during'
+    ? (e.t != null ? `⏱ ${_fmtJTime(e.t)} into session` : '⏱ during session')
+    : '📍 after session';
+  const delAttrs = histIdx != null
+    ? `data-jdel="${e.id}" data-hist-idx="${histIdx}"`
+    : `data-jdel="${e.id}"`;
+
+  if (e.type === 'text') {
+    return `
+      <div class="j-entry">
+        <div class="j-entry-meta">
+          <span>${whenLbl}</span>
+          <button class="j-del" ${delAttrs} title="Delete">🗑</button>
+        </div>
+        <div class="j-entry-text">${escHtml(e.text)}</div>
+      </div>`;
+  }
+  return `
+    <div class="j-entry">
+      <div class="j-entry-meta">
+        <span>${whenLbl} · 🎙 voice memo</span>
+        <button class="j-del" ${delAttrs} title="Delete">🗑</button>
+      </div>
+      <div class="pb-wrap" style="margin-top:6px">
+        <canvas class="pb-wvfm" id="wv-${e.recId}"></canvas>
+        <div class="pb-row">
+          <button class="pb-btn" id="play-${e.recId}" title="Play">▶</button>
+          <button class="pb-btn" title="Pause/Resume" onclick="pausePB()">⏸</button>
+          <button class="pb-btn" title="Stop" onclick="stopPB()">⏹</button>
+          <span class="pb-time" id="pt-${e.recId}">0:00</span>
+          <span class="pb-meta">${fmtSize(e.size)}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function deleteJournalEntry(id) {
+  const idx = S.journal.findIndex(e => e.id === id);
+  if (idx === -1) return;
+  const entry = S.journal[idx];
+  if (!confirm('Delete this journal entry?')) return;
+  if (entry.type === 'voice') {
+    if (_pbActiveId === entry.recId) stopPB();
+    try { await dbDel(entry.recId); } catch(e) {}
+  }
+  S.journal.splice(idx, 1);
+  renderJournalList('sess');
+  renderJournalList('res');
+}
+
+// Deletes a journal entry from a saved (historical) session.
+async function deleteJournalHistEntry(histIdx, entryId) {
+  const sess = S.hist[histIdx];
+  if (!sess || !sess.journal) return;
+  const idx = sess.journal.findIndex(e => e.id === entryId);
+  if (idx === -1) return;
+  const entry = sess.journal[idx];
+  if (!confirm('Delete this journal entry?')) return;
+  if (entry.type === 'voice') {
+    if (_pbActiveId === entry.recId) stopPB();
+    try { await dbDel(entry.recId); } catch(e) {}
+  }
+  sess.journal.splice(idx, 1);
+  localStorage.setItem('hmm_hist', JSON.stringify(S.hist));
+  renderSessionList();
+}
+
+// ════════════════════════════════════
 //  PLAYBACK ENGINE
 // ════════════════════════════════════
 let _pbAudio = null, _pbRaf = null, _pbActiveId = null, _pbObjUrl = null;
+// DOM refs for the currently-playing track's waveform/time, scoped via the
+// clicked button's closest('.pb-wrap') — recId-based IDs can be duplicated
+// across panels (e.g. a journal voice memo shown on both the session and
+// results screens), so getElementById would grab the wrong copy.
+let _pbWvEl = null, _pbTimeEl = null;
 
 async function playRec(recId, btnEl) {
   // Stop any existing playback
@@ -2989,11 +3647,16 @@ async function playRec(recId, btnEl) {
   document.querySelectorAll('.pb-btn.active').forEach(b => b.classList.remove('active'));
 
   // If same track — just stopped it
-  if (_pbActiveId === recId) { _pbActiveId = null; return; }
+  if (_pbActiveId === recId) { _pbActiveId = null; _pbWvEl = null; _pbTimeEl = null; return; }
   _pbActiveId = recId;
 
-  const wvEl  = document.getElementById('wv-'  + recId);
-  const timeEl= document.getElementById('pt-'  + recId);
+  // Scope lookups to this button's own .pb-wrap — recId-based IDs can be
+  // duplicated across panels (e.g. a journal voice memo shown on both the
+  // session and results screens), so getElementById would grab the wrong copy.
+  const wrap  = btnEl.closest('.pb-wrap');
+  const wvEl  = wrap ? wrap.querySelector('.pb-wvfm') : null;
+  const timeEl= wrap ? wrap.querySelector('.pb-time') : null;
+  _pbWvEl = wvEl; _pbTimeEl = timeEl;
   btnEl.classList.add('active');
   if (wvEl) { const c=wvEl.getContext('2d'); c.fillStyle='#0a0f1e'; c.fillRect(0,0,wvEl.width,wvEl.height); }
 
@@ -3023,7 +3686,7 @@ async function playRec(recId, btnEl) {
   };
   _pbAudio.onended = () => {
     btnEl.classList.remove('active');
-    _pbActiveId = null;
+    _pbActiveId = null; _pbWvEl = null; _pbTimeEl = null;
     if (timeEl) timeEl.textContent = '0:00';
     if (wvEl) drawPlayhead(wvEl, 0);
   };
@@ -3042,9 +3705,9 @@ function stopPB() {
   _pbAudio.currentTime = 0;
   _pbAudio = null;
   document.querySelectorAll('.pb-btn.active').forEach(b => b.classList.remove('active'));
-  const timeEl = document.getElementById('pt-' + _pbActiveId);
-  if (timeEl) timeEl.textContent = '0:00';
-  _pbActiveId = null;
+  if (_pbTimeEl) _pbTimeEl.textContent = '0:00';
+  if (_pbWvEl) drawPlayhead(_pbWvEl, 0);
+  _pbActiveId = null; _pbWvEl = null; _pbTimeEl = null;
   if (_pbObjUrl) { URL.revokeObjectURL(_pbObjUrl); _pbObjUrl = null; }
 }
 
@@ -3444,6 +4107,7 @@ async function saveS() {
   }
   const entry = {...S.result, postMood: S.postMood, blog: S.blog,
     notes: S.notes, tags: [...S.tags],
+    journal: S.journal.map(e=>({...e})),
     recordingId: null, recSize: 0};
 
   // Save blob to IndexedDB if present
@@ -3470,6 +4134,7 @@ async function saveS() {
 
   S.hist.unshift(entry);
   localStorage.setItem('hmm_hist', JSON.stringify(S.hist));
+  S._journalSaved = true;
 
   // Check achievements after history is updated
   const newAch = checkAchievements(S.hist);
@@ -3613,8 +4278,9 @@ function renderSessionList() {
     const idx     = S.hist.indexOf(s);
     const d       = new Date(s.ts);
     const hasRec  = !!s.recordingId;
+    const hasJournal = !!(s.journal && s.journal.length);
     const el      = document.createElement('div');
-    el.className  = hasRec ? 'si has-rec' : 'si';
+    el.className  = (hasRec || hasJournal) ? 'si has-rec' : 'si';
     const moodStr = (s.preMood && s.postMood)
       ? ` · ${MOODS[s.preMood]}→${MOODS[s.postMood]}`
       : (s.postMood ? ` · ${MOODS[s.postMood]}` : '');
@@ -3636,6 +4302,7 @@ function renderSessionList() {
         </div>
         <div style="display:flex;align-items:flex-start;gap:6px;flex-shrink:0;padding-left:8px">
           ${hasRec?`<button class="si-rec-toggle" data-rec-id="${recId}">▶ Play</button>`:''}
+          ${hasJournal?`<button class="si-journal-toggle" data-j-toggle>📝 ${s.journal.length}</button>`:''}
           <div class="si-s">${s.score}</div>
         </div>
       </div>
@@ -3650,6 +4317,10 @@ function renderSessionList() {
           <span class="pb-meta">${sizeStr}</span>
           <button class="pb-btn del" title="Delete recording" data-del-id="${recId}" data-idx="${idx}">🗑</button>
         </div>
+      </div>`:''}
+      ${hasJournal?`
+      <div class="j-list" data-j-list style="display:none;margin-top:8px">
+        ${s.journal.map(e => _journalEntryHTML(e, idx)).join('')}
       </div>`:''}`;
 
     if (hasRec) {
@@ -3663,6 +4334,24 @@ function renderSessionList() {
       if (playBtn) playBtn.addEventListener('click', () => playRec(recId, playBtn));
       const delBtn  = el.querySelector('[data-del-id]');
       if (delBtn)  delBtn.addEventListener('click', () => deleteRec(delBtn.dataset.delId, delBtn.dataset.idx));
+    }
+    if (hasJournal) {
+      const jToggle = el.querySelector('[data-j-toggle]');
+      const jWrap   = el.querySelector('[data-j-list]');
+      jToggle.addEventListener('click', () => {
+        const open = jWrap.style.display !== 'none';
+        jWrap.style.display = open ? 'none' : '';
+        jToggle.textContent = open ? `📝 ${s.journal.length}` : '📝 Hide';
+      });
+      s.journal.forEach(e => {
+        if (e.type === 'voice') {
+          const btn = jWrap.querySelector(`#play-${e.recId}`);
+          if (btn) btn.addEventListener('click', () => playRec(e.recId, btn));
+        }
+      });
+      jWrap.querySelectorAll('[data-jdel]').forEach(btn => {
+        btn.addEventListener('click', () => deleteJournalHistEntry(parseInt(btn.dataset.histIdx, 10), btn.dataset.jdel));
+      });
     }
     sl.appendChild(el);
   });
@@ -3686,6 +4375,7 @@ function refreshHist() {
   if(!S.hist.length){
     sl.style.display='none'; em.style.display='flex'; hc.style.display='none';
     document.getElementById('hsub').textContent='Start your first session!';
+    document.getElementById('vt-card').style.display='none';
     return;
   }
   sl.style.display=''; em.style.display='none'; hc.style.display='';
@@ -3696,6 +4386,7 @@ function refreshHist() {
   document.querySelectorAll('.ftag').forEach(b => b.classList.toggle('active', b.dataset.filter==='all'));
   drawHistChart();
   renderSessionList();
+  renderVocalTrendsCard();
 }
 
 function drawHistChart() {
@@ -3878,6 +4569,7 @@ function setHz(v) {
 function openSM() {
   document.getElementById('smodal').classList.add('show');
   document.getElementById('sm-hz').value = S.targetHz;
+  document.getElementById('sm-api-key').value = getApiKey();
   const totalMin = Math.round(S.hist.reduce((a,s)=>a+(s.dur||0)/60000, 0));
   const withNotes = S.hist.filter(s=>s.notes||(s.tags||[]).length).length;
   document.getElementById('sm-export-summary').textContent =
