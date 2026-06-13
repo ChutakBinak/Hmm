@@ -4211,19 +4211,31 @@ let _tempo = {
   pauseEvents: [],         // {t, dur}
 };
 
+// Dedicated audio context for the metronome — independent of the mic-input
+// analysis context, so it works even before/without microphone permission
+// and isn't affected by mic context suspension.
+let _metroCtx = null;
+function getMetroCtx() {
+  if (!_metroCtx || _metroCtx.state === 'closed') {
+    _metroCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return _metroCtx;
+}
+
 // Synthesize a short metronome tick using Web Audio
-function playMetronomeTick(type) {
-  if (!ACtx) return;
-  const t = ACtx.currentTime;
-  const osc = ACtx.createOscillator();
-  const gain = ACtx.createGain();
-  osc.connect(gain); gain.connect(ACtx.destination);
-  let freq = 1000, dur = 0.035, wave = 'sine', peak = 0.28;
+async function playMetronomeTick(type) {
+  const ctx = getMetroCtx();
+  if (ctx.state === 'suspended') { try { await ctx.resume(); } catch {} }
+  const t = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain); gain.connect(ctx.destination);
+  let freq = 1000, dur = 0.06, wave = 'sine', peak = 0.5;
   switch (type) {
-    case 'beep': freq = 1500; dur = 0.09; wave = 'sine';     peak = 0.3;  break;
-    case 'wood': freq = 400;  dur = 0.045; wave = 'square';  peak = 0.22; break;
-    case 'tick': freq = 2200; dur = 0.02; wave = 'triangle'; peak = 0.18; break;
-    default:     freq = 1000; dur = 0.035; wave = 'sine';    peak = 0.28; // click
+    case 'beep': freq = 1500; dur = 0.12; wave = 'sine';     peak = 0.5; break;
+    case 'wood': freq = 400;  dur = 0.07; wave = 'square';   peak = 0.4; break;
+    case 'tick': freq = 2200; dur = 0.04; wave = 'triangle'; peak = 0.4; break;
+    default:     freq = 1000; dur = 0.06; wave = 'sine';     peak = 0.5; // click
   }
   osc.type = wave;
   osc.frequency.value = freq;
@@ -4235,7 +4247,10 @@ function playMetronomeTick(type) {
 
 function startMetronome() {
   stopMetronome();
-  if (!_tempo.metronomeEnabled || !ACtx) return;
+  if (!_tempo.metronomeEnabled) return;
+  // Unlock/resume the metronome audio context (must happen on a user gesture)
+  const ctx = getMetroCtx();
+  if (ctx.state === 'suspended') ctx.resume().catch(() => {});
   const interval = 60000 / _tempo.targetWpm;
   const beat = () => {
     playMetronomeTick(_tempo.metronomeSound);
@@ -4250,16 +4265,21 @@ function stopMetronome() {
   if (_tempo.metronomeIv) { clearInterval(_tempo.metronomeIv); _tempo.metronomeIv = null; }
 }
 
-function toggleMetronome(v) { _tempo.metronomeEnabled = v; }
+function toggleMetronome(v) {
+  _tempo.metronomeEnabled = v;
+  if (_tempo.screen === 'active') {
+    if (v) startMetronome(); else stopMetronome();
+  }
+}
 
 async function setMetronomeSound(v) {
   _tempo.metronomeSound = v;
-  if (_tempo.screen === 'active') startMetronome(); // restart with new sound
+  if (_tempo.screen === 'active' && _tempo.metronomeEnabled) startMetronome(); // restart with new sound
 }
 
 async function previewMetronomeSound() {
-  if (!ACtx) { const ok = await initAudio(); if (!ok) return; }
-  if (ACtx.state === 'suspended') await ACtx.resume();
+  const ctx = getMetroCtx();
+  if (ctx.state === 'suspended') await ctx.resume();
   playMetronomeTick(_tempo.metronomeSound);
 }
 
@@ -4462,14 +4482,15 @@ function updateTempoLive(elapsed) {
   if (wEl) wEl.textContent = words;
   if (pEl) pEl.textContent = liveWpm || '—';
   const pace = document.getElementById('tl-pace');
+  const dot = '<span class="metro-beat-dot" id="metro-dot"></span>';
   if (pace && liveWpm) {
     const diff = liveWpm - _tempo.targetWpm;
     if (Math.abs(diff) <= _tempo.targetWpm * 0.12) {
-      pace.className = 'pace-indicator ok'; pace.textContent = '✓ On pace';
+      pace.className = 'pace-indicator ok'; pace.innerHTML = '✓ On pace' + dot;
     } else if (diff > 0) {
-      pace.className = 'pace-indicator fast'; pace.textContent = '⏩ You\'re rushing — ease up a little';
+      pace.className = 'pace-indicator fast'; pace.innerHTML = '⏩ You\'re rushing — ease up a little' + dot;
     } else {
-      pace.className = 'pace-indicator slow'; pace.textContent = '🐢 You\'re dragging — pick up the pace';
+      pace.className = 'pace-indicator slow'; pace.innerHTML = '🐢 You\'re dragging — pick up the pace' + dot;
     }
   }
 }
