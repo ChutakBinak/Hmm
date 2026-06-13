@@ -453,6 +453,24 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
 .tempo-result-actions button{flex:1;padding:12px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .tempo-retry{background:var(--surface2);border:1px solid var(--border);color:var(--text)}
 .tempo-save{background:linear-gradient(135deg,#5b21b6,#7c3aed);border:none;color:#fff}
+/* metronome */
+.tempo-toggle-row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);cursor:pointer;margin-bottom:10px}
+.tempo-toggle-row input{width:18px;height:18px;accent-color:var(--al);flex-shrink:0}
+.tempo-sound-row{display:flex;gap:8px}
+.tempo-sound-row select{flex:1;padding:9px 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:inherit;font-size:12px}
+.metro-test-btn{padding:9px 14px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--al);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.metro-beat-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--border);margin-left:6px;transition:background .08s,transform .08s}
+.metro-beat-dot.on{background:var(--al);transform:scale(1.3)}
+/* focus areas */
+.focus-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.focus-item{display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--border)}
+.focus-time{font-size:11px;font-weight:800;color:var(--al);font-variant-numeric:tabular-nums;flex-shrink:0;min-width:38px}
+.focus-body{font-size:12px;color:var(--text);line-height:1.5}
+.focus-tag{font-weight:700}
+.focus-tag.fast{color:#fbbf24}
+.focus-tag.slow{color:#60a5fa}
+.focus-tag.pause{color:#f472b6}
+.focus-snippet{color:var(--muted);font-style:italic}
 
 /* ── ACHIEVEMENTS ── */
 .ach-section{margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px}
@@ -4165,6 +4183,13 @@ const TEMPO_PRESETS = [
   { wpm: 180, name: 'Brisk' },
 ];
 
+const METRONOME_SOUNDS = [
+  { id: 'click', name: 'Click' },
+  { id: 'beep',  name: 'Beep' },
+  { id: 'wood',  name: 'Wood Block' },
+  { id: 'tick',  name: 'Soft Tick' },
+];
+
 let _tempo = {
   screen: 'setup',        // setup | active | results
   passageId: PASSAGES[0].id,
@@ -4178,7 +4203,65 @@ let _tempo = {
   energySamples: [],      // {t, rms}
   energyIv: null,
   lastResult: null,
+  metronomeEnabled: true,
+  metronomeSound: 'click',
+  metronomeIv: null,
+  chunks: [],             // {tStart, tEnd, text, words, localWpm}
+  lastChunkEnd: 0,
+  pauseEvents: [],         // {t, dur}
 };
+
+// Synthesize a short metronome tick using Web Audio
+function playMetronomeTick(type) {
+  if (!ACtx) return;
+  const t = ACtx.currentTime;
+  const osc = ACtx.createOscillator();
+  const gain = ACtx.createGain();
+  osc.connect(gain); gain.connect(ACtx.destination);
+  let freq = 1000, dur = 0.035, wave = 'sine', peak = 0.28;
+  switch (type) {
+    case 'beep': freq = 1500; dur = 0.09; wave = 'sine';     peak = 0.3;  break;
+    case 'wood': freq = 400;  dur = 0.045; wave = 'square';  peak = 0.22; break;
+    case 'tick': freq = 2200; dur = 0.02; wave = 'triangle'; peak = 0.18; break;
+    default:     freq = 1000; dur = 0.035; wave = 'sine';    peak = 0.28; // click
+  }
+  osc.type = wave;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(peak, t);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  osc.start(t);
+  osc.stop(t + dur);
+}
+
+function startMetronome() {
+  stopMetronome();
+  if (!_tempo.metronomeEnabled || !ACtx) return;
+  const interval = 60000 / _tempo.targetWpm;
+  const beat = () => {
+    playMetronomeTick(_tempo.metronomeSound);
+    const dot = document.getElementById('metro-dot');
+    if (dot) { dot.classList.add('on'); setTimeout(() => dot.classList.remove('on'), 90); }
+  };
+  beat();
+  _tempo.metronomeIv = setInterval(beat, interval);
+}
+
+function stopMetronome() {
+  if (_tempo.metronomeIv) { clearInterval(_tempo.metronomeIv); _tempo.metronomeIv = null; }
+}
+
+function toggleMetronome(v) { _tempo.metronomeEnabled = v; }
+
+async function setMetronomeSound(v) {
+  _tempo.metronomeSound = v;
+  if (_tempo.screen === 'active') startMetronome(); // restart with new sound
+}
+
+async function previewMetronomeSound() {
+  if (!ACtx) { const ok = await initAudio(); if (!ok) return; }
+  if (ACtx.state === 'suspended') await ACtx.resume();
+  playMetronomeTick(_tempo.metronomeSound);
+}
 
 function switchProgTab(tab, btn) {
   document.querySelectorAll('.ptab').forEach(b => b.classList.toggle('active', b === btn));
@@ -4227,6 +4310,19 @@ function renderTempoSetup(el) {
       </div>
       <button class="ai-suggest-btn" id="ai-tempo-btn" onclick="aiSuggestTempo()">✨ Let AI suggest a tempo for this passage</button>
       <div id="ai-tempo-note" style="font-size:11px;color:var(--muted);margin-top:8px;display:none"></div>
+    </div>
+    <div class="tempo-card">
+      <div class="tempo-card-title">Metronome</div>
+      <label class="tempo-toggle-row">
+        <input type="checkbox" ${_tempo.metronomeEnabled ? 'checked' : ''} onchange="toggleMetronome(this.checked)">
+        Play a tempo click while I read<span class="metro-beat-dot" id="metro-dot"></span>
+      </label>
+      <div class="tempo-sound-row">
+        <select onchange="setMetronomeSound(this.value)">
+          ${METRONOME_SOUNDS.map(s => `<option value="${s.id}"${s.id===_tempo.metronomeSound?' selected':''}>${s.name}</option>`).join('')}
+        </select>
+        <button class="metro-test-btn" onclick="previewMetronomeSound()">▶ Test</button>
+      </div>
     </div>
     <button class="tempo-start" onclick="startTempoSession()">Start 1-Minute Reading</button>
   `;
@@ -4297,9 +4393,13 @@ async function startTempoSession() {
   _tempo.finalWords = 0;
   _tempo.interimWords = 0;
   _tempo.energySamples = [];
+  _tempo.chunks = [];
+  _tempo.lastChunkEnd = 0;
+  _tempo.pauseEvents = [];
   _tempo.startTime = Date.now();
   _tempo.screen = 'active';
   renderTempoPanel();
+  startMetronome();
 
   // Speech recognition for word-count WPM
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -4314,7 +4414,16 @@ async function startTempoSession() {
         const t = e.results[i][0].transcript;
         if (e.results[i].isFinal) finalText += ' ' + t; else interimText += ' ' + t;
       }
-      if (finalText.trim()) _tempo.finalWords += finalText.trim().split(/\s+/).filter(Boolean).length;
+      if (finalText.trim()) {
+        const words = finalText.trim().split(/\s+/).filter(Boolean).length;
+        _tempo.finalWords += words;
+        const tEnd = Date.now() - _tempo.startTime;
+        const tStart = _tempo.lastChunkEnd;
+        const durMin = Math.max(0.001, (tEnd - tStart) / 60000);
+        const localWpm = Math.round(words / durMin);
+        _tempo.chunks.push({ tStart, tEnd, text: finalText.trim(), words, localWpm });
+        _tempo.lastChunkEnd = tEnd;
+      }
       _tempo.interimWords = interimText.trim() ? interimText.trim().split(/\s+/).filter(Boolean).length : 0;
     };
     rec.onerror = () => {};
@@ -4369,7 +4478,7 @@ function renderTempoActive(el) {
   const pg = tempoPassage();
   el.innerHTML = `
     <div class="tempo-card">
-      <div id="tl-pace" class="pace-indicator ok">Listening…</div>
+      <div id="tl-pace" class="pace-indicator ok">Listening…<span class="metro-beat-dot" id="metro-dot"></span></div>
       <div class="tempo-live-stats">
         <div class="tls-box"><div class="tls-n" id="tl-time">${_tempo.duration}s</div><div class="tls-l">Remaining</div></div>
         <div class="tls-box"><div class="tls-n" id="tl-words">0</div><div class="tls-l">Words</div></div>
@@ -4386,6 +4495,7 @@ function endTempoSession() {
   if (_tempo.screen !== 'active') return;
   clearInterval(_tempo.timerIv); _tempo.timerIv = null;
   clearInterval(_tempo.energyIv); _tempo.energyIv = null;
+  stopMetronome();
   if (_tempo.recognition) { try { _tempo.recognition.onend = null; _tempo.recognition.stop(); } catch {} _tempo.recognition = null; }
 
   const elapsed = Math.max(1, (Date.now() - _tempo.startTime) / 1000);
@@ -4401,10 +4511,35 @@ function endTempoSession() {
     } else if (inPause) {
       inPause = false;
       const dur = (s.t - pauseStart) / 1000;
-      if (dur > 0.25) { pauses++; pauseDurations.push(dur); }
+      if (dur > 0.25) {
+        pauses++; pauseDurations.push(dur);
+        _tempo.pauseEvents.push({ t: pauseStart, dur });
+      }
     }
   });
   const avgPause = pauseDurations.length ? pauseDurations.reduce((a,b)=>a+b,0) / pauseDurations.length : 0;
+
+  // Focus areas: chunks where local pace deviated >20% from target, plus long pauses (>1s)
+  const fmtT = (ms) => {
+    const s = Math.round(ms / 1000);
+    return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+  };
+  const focusAreas = [];
+  _tempo.chunks.forEach(c => {
+    if (c.words < 2) return;
+    const dev = (c.localWpm - target) / target;
+    if (dev > 0.2) {
+      focusAreas.push({ t: c.tStart, tag: 'fast', label: 'Rushed', text: c.text, detail: `~${c.localWpm} wpm here, faster than your ${target} wpm target.` });
+    } else if (dev < -0.2) {
+      focusAreas.push({ t: c.tStart, tag: 'slow', label: 'Dragged', text: c.text, detail: `~${c.localWpm} wpm here, slower than your ${target} wpm target.` });
+    }
+  });
+  _tempo.pauseEvents.forEach(p => {
+    if (p.dur > 1) {
+      focusAreas.push({ t: p.t, tag: 'pause', label: 'Long pause', text: '', detail: `Paused for ${Math.round(p.dur*10)/10}s here.` });
+    }
+  });
+  focusAreas.sort((a,b) => a.t - b.t);
 
   // Verdict
   const target = _tempo.targetWpm;
@@ -4433,6 +4568,7 @@ function endTempoSession() {
     avgPause: Math.round(avgPause * 10) / 10,
     verdict, verdictEmoji,
     attention,
+    focusAreas: focusAreas.map(f => ({ ...f, tFmt: fmtT(f.t) })),
   };
 
   _tempo.screen = 'results';
@@ -4463,6 +4599,18 @@ function renderTempoResults(el) {
         r.verdict === 'You were dragging' ? 'Try trimming pauses slightly and keeping momentum between sentences.' :
         r.words ? 'Your rhythm of speech and pauses felt natural and well-balanced.' : 'Allow microphone and speech permissions, then try again.'
       }</div>
+      ${r.focusAreas && r.focusAreas.length ? `
+      <div class="tempo-card-title" style="margin-top:14px">Focus Areas</div>
+      <div class="focus-list">
+        ${r.focusAreas.map(f => `
+          <div class="focus-item">
+            <div class="focus-time">${f.tFmt}</div>
+            <div class="focus-body">
+              <span class="focus-tag ${f.tag}">${f.label}.</span> ${f.detail}
+              ${f.text ? `<div class="focus-snippet">"${f.text}"</div>` : ''}
+            </div>
+          </div>`).join('')}
+      </div>` : ''}
       <div class="tempo-result-actions">
         <button class="tempo-retry" onclick="retryTempo()">Try Again</button>
         <button class="tempo-save" onclick="saveTempoResult()">Save Result</button>
