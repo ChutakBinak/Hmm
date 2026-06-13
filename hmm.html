@@ -404,6 +404,56 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
 .pb-indigo{background:linear-gradient(135deg,#3730a3,#4f46e5)}
 .pb-rose{background:linear-gradient(135deg,#9f1239,#be185d)}
 
+/* ── SPEECH TEMPO ── */
+.prog-tabs{display:flex;gap:8px;padding:10px 16px 0}
+.ptab{flex:1;padding:9px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.ptab.active{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;border-color:transparent}
+.tempo-panel{padding:10px 16px 0}
+.tempo-card{border-radius:16px;border:1px solid var(--border);background:var(--surface);padding:14px;margin-bottom:12px}
+.tempo-card-title{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.passage-list{display:flex;flex-direction:column;gap:8px}
+.passage-opt{border:1.5px solid var(--border);border-radius:12px;padding:10px 12px;cursor:pointer;transition:all .15s}
+.passage-opt.active{border-color:var(--al);background:rgba(124,58,237,.08)}
+.passage-opt-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.passage-opt-meta{font-size:11px;color:var(--muted)}
+.passage-preview{font-size:12px;color:var(--muted);line-height:1.6;margin-top:10px;max-height:120px;overflow-y:auto;padding:10px;border-radius:10px;background:var(--surface2)}
+.tempo-presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tpreset{flex:1;min-width:70px;padding:10px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text);font-family:inherit;cursor:pointer;text-align:center;transition:all .15s}
+.tpreset.active{border-color:var(--al);background:rgba(124,58,237,.12)}
+.tpreset-wpm{font-size:15px;font-weight:800}
+.tpreset-name{font-size:10px;color:var(--muted);margin-top:2px}
+.tempo-slider-row{display:flex;align-items:center;gap:10px}
+.tempo-slider-row input[type=range]{flex:1}
+.tempo-slider-val{font-size:14px;font-weight:800;color:var(--al);min-width:64px;text-align:right}
+.ai-suggest-btn{width:100%;margin-top:10px;padding:10px;border-radius:10px;border:1px solid rgba(45,212,191,.3);background:rgba(45,212,191,.07);color:var(--tl);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.ai-suggest-btn:disabled{opacity:.5}
+.tempo-start{width:100%;padding:14px;background:linear-gradient(135deg,#5b21b6,#7c3aed);border:none;border-radius:12px;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
+/* active reading session */
+.tempo-live-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.tls-box{background:var(--surface2);border-radius:12px;padding:10px;text-align:center}
+.tls-n{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
+.tls-l{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+.tempo-passage-live{font-size:15px;line-height:1.9;padding:14px;border-radius:12px;background:var(--surface2);max-height:280px;overflow-y:auto}
+.pace-indicator{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px;border-radius:10px;font-size:12px;font-weight:700;margin-bottom:12px}
+.pace-indicator.ok{background:rgba(45,212,191,.1);color:var(--tl)}
+.pace-indicator.fast{background:rgba(251,191,36,.1);color:#fbbf24}
+.pace-indicator.slow{background:rgba(96,165,250,.1);color:#60a5fa}
+.tempo-stop{width:100%;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
+/* results */
+.tempo-result-hero{text-align:center;padding:18px 14px}
+.tempo-result-verdict{font-size:18px;font-weight:800;margin-bottom:4px}
+.tempo-result-sub{font-size:12px;color:var(--muted)}
+.tempo-compare-row{display:flex;justify-content:space-around;margin:14px 0}
+.tcr-box{text-align:center}
+.tcr-n{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.tcr-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.attn-meter-track{height:10px;border-radius:6px;background:var(--surface2);overflow:hidden;margin:8px 0}
+.attn-meter-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#60a5fa,var(--tl),#34d399)}
+.tempo-result-actions{display:flex;gap:8px;margin-top:6px}
+.tempo-result-actions button{flex:1;padding:12px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.tempo-retry{background:var(--surface2);border:1px solid var(--border);color:var(--text)}
+.tempo-save{background:linear-gradient(135deg,#5b21b6,#7c3aed);border:none;color:#fff}
+
 /* ── ACHIEVEMENTS ── */
 .ach-section{margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px}
 .ach-header{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer}
@@ -1198,7 +1248,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:#07091a;color:#e2e8f0;d
         <div class="ps" id="prog-sub">Choose a guided practice</div>
       </div>
     </div>
+    <div class="prog-tabs">
+      <button class="ptab active" id="ptab-programs" onclick="switchProgTab('programs',this)">🐝 Guided Programs</button>
+      <button class="ptab" id="ptab-tempo" onclick="switchProgTab('tempo',this)">🗣️ Speech Tempo</button>
+    </div>
     <div class="prog-list" id="prog-list"></div>
+    <div class="tempo-panel" id="tempo-panel" style="display:none"></div>
     <div style="height:8px"></div>
   </div>
 
@@ -4075,6 +4130,361 @@ function renderPrograms() {
       </div>`;
     list.appendChild(card);
   });
+}
+
+// ════════════════════════════════════
+//  SPEECH TEMPO / STORYTELLING PACE
+// ════════════════════════════════════
+const PASSAGES = [
+  {
+    id: 'lighthouse',
+    title: 'The Lighthouse Keeper',
+    text: "Every evening, as the sun dipped below the horizon, old Samuel climbed the spiral staircase to light the lamp. The sea below was restless, churning with a quiet power that never truly slept. He had kept this light burning for thirty years, through storms that rattled the windows and nights so calm you could hear your own heartbeat. Tonight felt different. A thick fog rolled in from the west, swallowing the stars one by one. Samuel struck the match with steady hands, watching the flame catch and grow, throwing warm light across the glass. Somewhere out there, a ship was finding its way home because of this small, stubborn flame."
+  },
+  {
+    id: 'marketplace',
+    title: 'The Morning Market',
+    text: "The market came alive before dawn, when the air still smelled of rain and fresh bread. Vendors called out to one another, stacking crates of oranges and tomatoes into bright pyramids. A young woman wove between the stalls, her basket already half full, pausing now and then to taste a slice of melon offered by a smiling farmer. Steam rose from a cart selling roasted chestnuts, curling into the cool morning light. Somewhere a radio played an old song, and an elderly man hummed along while sorting flowers into bundles. By the time the sun was fully up, the whole square buzzed with color, noise, and the simple joy of people gathering to begin their day."
+  },
+  {
+    id: 'storm-warning',
+    title: 'The Storm Warning',
+    text: "By midafternoon, the sky had turned the color of a bruise. Birds that had been singing all morning suddenly fell silent and disappeared into the trees. Maria stood on the porch, watching the wind bend the tall grass in long, rolling waves. Her grandmother had always said that when the air felt heavy like this, you had maybe twenty minutes before the rain arrived. She hurried to bring in the laundry, gather the garden tools, and check that the windows were latched. Just as she stepped back inside, the first fat drops began to fall, hitting the tin roof with a sound like scattered applause. Within moments, the storm arrived in full, and the whole house seemed to hum with it."
+  },
+  {
+    id: 'first-day',
+    title: 'First Day on the Job',
+    text: "Daniel arrived twenty minutes early, which somehow felt both too early and not early enough. He sat in the lobby, rehearsing the names of people he was about to meet for the first time, hoping he wouldn't forget them the moment he heard them. The receptionist smiled and told him to relax, that everyone remembers their first day far more vividly than anyone else does. When his new manager finally appeared, she shook his hand warmly and led him through a maze of desks, introducing him to faces that blurred together in a friendly haze. By lunchtime, his nerves had faded into something closer to curiosity, and he found himself actually looking forward to tomorrow."
+  },
+];
+
+const TEMPO_PRESETS = [
+  { wpm: 100, name: 'Slow & Deliberate' },
+  { wpm: 130, name: 'Conversational' },
+  { wpm: 155, name: 'Engaging' },
+  { wpm: 180, name: 'Brisk' },
+];
+
+let _tempo = {
+  screen: 'setup',        // setup | active | results
+  passageId: PASSAGES[0].id,
+  targetWpm: 130,
+  recognition: null,
+  finalWords: 0,
+  interimWords: 0,
+  startTime: 0,
+  duration: 60,
+  timerIv: null,
+  energySamples: [],      // {t, rms}
+  energyIv: null,
+  lastResult: null,
+};
+
+function switchProgTab(tab, btn) {
+  document.querySelectorAll('.ptab').forEach(b => b.classList.toggle('active', b === btn));
+  document.getElementById('prog-list').style.display   = tab === 'programs' ? '' : 'none';
+  document.getElementById('tempo-panel').style.display = tab === 'tempo' ? '' : 'none';
+  if (tab === 'tempo') renderTempoPanel();
+}
+
+function tempoPassage() {
+  return PASSAGES.find(p => p.id === _tempo.passageId) || PASSAGES[0];
+}
+
+function renderTempoPanel() {
+  const el = document.getElementById('tempo-panel');
+  if (_tempo.screen === 'setup') return renderTempoSetup(el);
+  if (_tempo.screen === 'active') return renderTempoActive(el);
+  if (_tempo.screen === 'results') return renderTempoResults(el);
+}
+
+function renderTempoSetup(el) {
+  const pg = tempoPassage();
+  el.innerHTML = `
+    <div class="tempo-card">
+      <div class="tempo-card-title">Choose a Passage</div>
+      <div class="passage-list">
+        ${PASSAGES.map(p => `
+          <div class="passage-opt${p.id===_tempo.passageId?' active':''}" onclick="selectPassage('${p.id}')">
+            <div class="passage-opt-title">${p.title}</div>
+            <div class="passage-opt-meta">${p.text.trim().split(/\s+/).length} words · ~1 min read</div>
+          </div>`).join('')}
+      </div>
+      <div class="passage-preview">${pg.text}</div>
+    </div>
+    <div class="tempo-card">
+      <div class="tempo-card-title">Choose Your Tempo</div>
+      <div class="tempo-presets">
+        ${TEMPO_PRESETS.map(t => `
+          <button class="tpreset${t.wpm===_tempo.targetWpm?' active':''}" onclick="selectTempoPreset(${t.wpm},this)">
+            <div class="tpreset-wpm">${t.wpm}</div>
+            <div class="tpreset-name">${t.name}</div>
+          </button>`).join('')}
+      </div>
+      <div class="tempo-slider-row">
+        <input type="range" min="70" max="220" step="5" value="${_tempo.targetWpm}" oninput="onTempoSlider(this.value)">
+        <div class="tempo-slider-val" id="tempo-slider-val">${_tempo.targetWpm} wpm</div>
+      </div>
+      <button class="ai-suggest-btn" id="ai-tempo-btn" onclick="aiSuggestTempo()">✨ Let AI suggest a tempo for this passage</button>
+      <div id="ai-tempo-note" style="font-size:11px;color:var(--muted);margin-top:8px;display:none"></div>
+    </div>
+    <button class="tempo-start" onclick="startTempoSession()">Start 1-Minute Reading</button>
+  `;
+}
+
+function selectPassage(id) {
+  _tempo.passageId = id;
+  renderTempoSetup(document.getElementById('tempo-panel'));
+}
+
+function selectTempoPreset(wpm, btn) {
+  _tempo.targetWpm = wpm;
+  document.querySelectorAll('.tpreset').forEach(b => b.classList.toggle('active', b === btn));
+  const slider = document.querySelector('.tempo-slider-row input[type=range]');
+  if (slider) slider.value = wpm;
+  const val = document.getElementById('tempo-slider-val');
+  if (val) val.textContent = wpm + ' wpm';
+}
+
+function onTempoSlider(v) {
+  _tempo.targetWpm = parseInt(v);
+  document.getElementById('tempo-slider-val').textContent = v + ' wpm';
+  document.querySelectorAll('.tpreset').forEach(b => b.classList.remove('active'));
+}
+
+async function aiSuggestTempo() {
+  const btn = document.getElementById('ai-tempo-btn');
+  const note = document.getElementById('ai-tempo-note');
+  const key = getApiKey();
+  if (!key) {
+    note.style.display = 'block';
+    note.textContent = 'Add a Claude API key in Settings to enable AI tempo suggestions.';
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = '✨ Thinking…';
+  const pg = tempoPassage();
+  const prompt = `You are a speech coach. Here is a passage someone will read aloud for storytelling practice:\n\n"${pg.text}"\n\nSuggest the ideal reading tempo in words per minute (between 90 and 200) for telling this passage as an engaging story, and explain why in one short sentence (mention pacing, mood, or moments to slow down/speed up). Respond in exactly this format:\nWPM: <number>\nReason: <one sentence>`;
+  const res = await callClaude(prompt, 200);
+  btn.disabled = false;
+  btn.textContent = '✨ Let AI suggest a tempo for this passage';
+  if (!res.ok) {
+    note.style.display = 'block';
+    note.textContent = 'AI suggestion failed: ' + res.error;
+    return;
+  }
+  const m = res.text.match(/WPM:\s*(\d+)/i);
+  const r = res.text.match(/Reason:\s*(.+)/i);
+  if (m) {
+    const wpm = Math.max(70, Math.min(220, parseInt(m[1])));
+    _tempo.targetWpm = wpm;
+    document.querySelectorAll('.tpreset').forEach(b => b.classList.remove('active'));
+    const slider = document.querySelector('.tempo-slider-row input[type=range]');
+    if (slider) slider.value = wpm;
+    document.getElementById('tempo-slider-val').textContent = wpm + ' wpm';
+  }
+  note.style.display = 'block';
+  note.textContent = (m ? `AI suggests ${m[1]} wpm. ` : '') + (r ? r[1] : 'No reasoning returned.');
+}
+
+async function startTempoSession() {
+  if (!ACtx) {
+    const ok = await initAudio();
+    if (!ok) return;
+  }
+  if (ACtx.state === 'suspended') await ACtx.resume();
+
+  _tempo.finalWords = 0;
+  _tempo.interimWords = 0;
+  _tempo.energySamples = [];
+  _tempo.startTime = Date.now();
+  _tempo.screen = 'active';
+  renderTempoPanel();
+
+  // Speech recognition for word-count WPM
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SR) {
+    const rec = new SR();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = 'en-US';
+    rec.onresult = (e) => {
+      let finalText = '', interimText = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finalText += ' ' + t; else interimText += ' ' + t;
+      }
+      if (finalText.trim()) _tempo.finalWords += finalText.trim().split(/\s+/).filter(Boolean).length;
+      _tempo.interimWords = interimText.trim() ? interimText.trim().split(/\s+/).filter(Boolean).length : 0;
+    };
+    rec.onerror = () => {};
+    rec.onend = () => { if (_tempo.screen === 'active') { try { rec.start(); } catch {} } };
+    try { rec.start(); } catch {}
+    _tempo.recognition = rec;
+  } else {
+    _tempo.recognition = null;
+    const note = document.getElementById('tempo-live-note');
+    if (note) note.textContent = 'Speech recognition not supported in this browser — pacing will be measured by voice energy only.';
+  }
+
+  // Audio-energy sampling for pacing/pause analysis
+  _tempo.energyIv = setInterval(() => {
+    _tempo.energySamples.push({ t: Date.now() - _tempo.startTime, rms: getRMS() });
+  }, 100);
+
+  // 60s countdown
+  _tempo.timerIv = setInterval(() => {
+    const elapsed = (Date.now() - _tempo.startTime) / 1000;
+    updateTempoLive(elapsed);
+    if (elapsed >= _tempo.duration) endTempoSession();
+  }, 250);
+
+  updateTempoLive(0);
+}
+
+function updateTempoLive(elapsed) {
+  const remaining = Math.max(0, _tempo.duration - elapsed);
+  const words = _tempo.finalWords + _tempo.interimWords;
+  const liveWpm = elapsed > 2 ? Math.round(words / (elapsed / 60)) : 0;
+  const tEl = document.getElementById('tl-time');
+  const wEl = document.getElementById('tl-words');
+  const pEl = document.getElementById('tl-wpm');
+  if (tEl) tEl.textContent = Math.ceil(remaining) + 's';
+  if (wEl) wEl.textContent = words;
+  if (pEl) pEl.textContent = liveWpm || '—';
+  const pace = document.getElementById('tl-pace');
+  if (pace && liveWpm) {
+    const diff = liveWpm - _tempo.targetWpm;
+    if (Math.abs(diff) <= _tempo.targetWpm * 0.12) {
+      pace.className = 'pace-indicator ok'; pace.textContent = '✓ On pace';
+    } else if (diff > 0) {
+      pace.className = 'pace-indicator fast'; pace.textContent = '⏩ You\'re rushing — ease up a little';
+    } else {
+      pace.className = 'pace-indicator slow'; pace.textContent = '🐢 You\'re dragging — pick up the pace';
+    }
+  }
+}
+
+function renderTempoActive(el) {
+  const pg = tempoPassage();
+  el.innerHTML = `
+    <div class="tempo-card">
+      <div id="tl-pace" class="pace-indicator ok">Listening…</div>
+      <div class="tempo-live-stats">
+        <div class="tls-box"><div class="tls-n" id="tl-time">${_tempo.duration}s</div><div class="tls-l">Remaining</div></div>
+        <div class="tls-box"><div class="tls-n" id="tl-words">0</div><div class="tls-l">Words</div></div>
+        <div class="tls-box"><div class="tls-n" id="tl-wpm">—</div><div class="tls-l">Live WPM</div></div>
+      </div>
+      <div class="tempo-passage-live">${pg.text}</div>
+      <div id="tempo-live-note" style="font-size:11px;color:var(--muted);margin-top:8px"></div>
+      <button class="tempo-stop" style="margin-top:12px" onclick="endTempoSession()">Stop &amp; See Results</button>
+    </div>
+  `;
+}
+
+function endTempoSession() {
+  if (_tempo.screen !== 'active') return;
+  clearInterval(_tempo.timerIv); _tempo.timerIv = null;
+  clearInterval(_tempo.energyIv); _tempo.energyIv = null;
+  if (_tempo.recognition) { try { _tempo.recognition.onend = null; _tempo.recognition.stop(); } catch {} _tempo.recognition = null; }
+
+  const elapsed = Math.max(1, (Date.now() - _tempo.startTime) / 1000);
+  const words = _tempo.finalWords + _tempo.interimWords;
+  const actualWpm = Math.round(words / (elapsed / 60));
+
+  // Pause / pacing analysis from audio energy
+  const THRESH = 0.02;
+  let pauses = 0, inPause = false, pauseStart = 0, pauseDurations = [];
+  _tempo.energySamples.forEach(s => {
+    if (s.rms < THRESH) {
+      if (!inPause) { inPause = true; pauseStart = s.t; }
+    } else if (inPause) {
+      inPause = false;
+      const dur = (s.t - pauseStart) / 1000;
+      if (dur > 0.25) { pauses++; pauseDurations.push(dur); }
+    }
+  });
+  const avgPause = pauseDurations.length ? pauseDurations.reduce((a,b)=>a+b,0) / pauseDurations.length : 0;
+
+  // Verdict
+  const target = _tempo.targetWpm;
+  const diffPct = (actualWpm - target) / target;
+  let verdict, verdictEmoji;
+  if (!words) { verdict = 'No speech detected'; verdictEmoji = '🤔'; }
+  else if (diffPct > 0.12) { verdict = 'You were rushing'; verdictEmoji = '⏩'; }
+  else if (diffPct < -0.12) { verdict = 'You were dragging'; verdictEmoji = '🐢'; }
+  else { verdict = 'Well-paced storytelling'; verdictEmoji = '✅'; }
+
+  // Attention meter: blend of tempo accuracy + healthy pause rhythm (2-6 pauses/min ideal)
+  const wpmAccuracy = words ? Math.max(0, 100 - Math.min(100, Math.abs(diffPct) * 200)) : 0;
+  const idealPauses = elapsed / 60 * 4; // ~4 natural pauses per minute
+  const pauseScore = Math.max(0, 100 - Math.min(100, Math.abs(pauses - idealPauses) / Math.max(1, idealPauses) * 100));
+  const attention = words ? Math.round(wpmAccuracy * 0.65 + pauseScore * 0.35) : 0;
+
+  _tempo.lastResult = {
+    ts: Date.now(),
+    passageId: _tempo.passageId,
+    passageTitle: tempoPassage().title,
+    targetWpm: target,
+    actualWpm,
+    words,
+    elapsed: Math.round(elapsed),
+    pauses,
+    avgPause: Math.round(avgPause * 10) / 10,
+    verdict, verdictEmoji,
+    attention,
+  };
+
+  _tempo.screen = 'results';
+  renderTempoPanel();
+}
+
+function renderTempoResults(el) {
+  const r = _tempo.lastResult;
+  if (!r) { _tempo.screen = 'setup'; return renderTempoPanel(); }
+  el.innerHTML = `
+    <div class="tempo-card">
+      <div class="tempo-result-hero">
+        <div style="font-size:40px">${r.verdictEmoji}</div>
+        <div class="tempo-result-verdict">${r.verdict}</div>
+        <div class="tempo-result-sub">"${r.passageTitle}" · ${r.elapsed}s reading</div>
+      </div>
+      <div class="tempo-compare-row">
+        <div class="tcr-box"><div class="tcr-n">${r.targetWpm}</div><div class="tcr-l">Target WPM</div></div>
+        <div class="tcr-box"><div class="tcr-n">${r.actualWpm || '—'}</div><div class="tcr-l">Your WPM</div></div>
+        <div class="tcr-box"><div class="tcr-n">${r.words}</div><div class="tcr-l">Words Read</div></div>
+      </div>
+      <div class="tempo-card-title" style="margin-top:6px">Attention Meter</div>
+      <div class="attn-meter-track"><div class="attn-meter-fill" style="width:${r.attention}%"></div></div>
+      <div class="passage-opt-meta">${r.attention}/100 — how engaging this delivery would feel to a listener</div>
+      <div class="tempo-card-title" style="margin-top:14px">Pacing Detail</div>
+      <div class="passage-opt-meta">${r.pauses} natural pause${r.pauses!==1?'s':''} detected, averaging ${r.avgPause}s each. ${
+        r.verdict === 'You were rushing' ? 'Try adding more pauses between ideas to let key moments land.' :
+        r.verdict === 'You were dragging' ? 'Try trimming pauses slightly and keeping momentum between sentences.' :
+        r.words ? 'Your rhythm of speech and pauses felt natural and well-balanced.' : 'Allow microphone and speech permissions, then try again.'
+      }</div>
+      <div class="tempo-result-actions">
+        <button class="tempo-retry" onclick="retryTempo()">Try Again</button>
+        <button class="tempo-save" onclick="saveTempoResult()">Save Result</button>
+      </div>
+      <div id="tempo-save-note" style="font-size:11px;color:var(--tl);margin-top:8px;text-align:center;display:none">Saved to your tempo history ✓</div>
+    </div>
+  `;
+}
+
+function retryTempo() {
+  _tempo.screen = 'setup';
+  renderTempoPanel();
+}
+
+function saveTempoResult() {
+  const r = _tempo.lastResult;
+  if (!r) return;
+  const hist = JSON.parse(localStorage.getItem('hmm_tempo_hist') || '[]');
+  hist.push(r);
+  localStorage.setItem('hmm_tempo_hist', JSON.stringify(hist));
+  const note = document.getElementById('tempo-save-note');
+  if (note) note.style.display = 'block';
 }
 
 function toggleProgCard(id, btn) {
