@@ -4205,6 +4205,8 @@ let _tempo = {
   lastResult: null,
   metronomeEnabled: true,
   metronomeSound: 'click',
+  metronomeLinked: true,   // when true, metronome BPM follows the reading tempo (WPM)
+  metronomeBpm: 130,
   metronomeIv: null,
   chunks: [],             // {tStart, tEnd, text, words, localWpm}
   lastChunkEnd: 0,
@@ -4251,7 +4253,8 @@ function startMetronome() {
   // Unlock/resume the metronome audio context (must happen on a user gesture)
   const ctx = getMetroCtx();
   if (ctx.state === 'suspended') ctx.resume().catch(() => {});
-  const interval = 60000 / _tempo.targetWpm;
+  const bpm = _tempo.metronomeLinked ? _tempo.targetWpm : _tempo.metronomeBpm;
+  const interval = 60000 / bpm;
   const beat = () => {
     playMetronomeTick(_tempo.metronomeSound);
     const dot = document.getElementById('metro-dot');
@@ -4325,7 +4328,7 @@ function renderTempoSetup(el) {
           </button>`).join('')}
       </div>
       <div class="tempo-slider-row">
-        <input type="range" min="70" max="220" step="5" value="${_tempo.targetWpm}" oninput="onTempoSlider(this.value)">
+        <input type="range" min="60" max="240" step="1" value="${_tempo.targetWpm}" oninput="onTempoSlider(this.value)">
         <div class="tempo-slider-val" id="tempo-slider-val">${_tempo.targetWpm} wpm</div>
       </div>
       <button class="ai-suggest-btn" id="ai-tempo-btn" onclick="aiSuggestTempo()">✨ Let AI suggest a tempo for this passage</button>
@@ -4342,6 +4345,14 @@ function renderTempoSetup(el) {
           ${METRONOME_SOUNDS.map(s => `<option value="${s.id}"${s.id===_tempo.metronomeSound?' selected':''}>${s.name}</option>`).join('')}
         </select>
         <button class="metro-test-btn" onclick="previewMetronomeSound()">▶ Test</button>
+      </div>
+      <label class="tempo-toggle-row" style="margin-top:10px">
+        <input type="checkbox" ${_tempo.metronomeLinked ? 'checked' : ''} onchange="toggleMetronomeLink(this.checked)">
+        Sync beat to my reading tempo (${_tempo.targetWpm} BPM)
+      </label>
+      <div class="tempo-slider-row" id="metro-bpm-row" style="${_tempo.metronomeLinked ? 'display:none' : ''}">
+        <input type="range" min="40" max="240" step="1" value="${_tempo.metronomeBpm}" oninput="onMetroBpmSlider(this.value)">
+        <div class="tempo-slider-val" id="metro-bpm-val">${_tempo.metronomeBpm} bpm</div>
       </div>
     </div>
     <button class="tempo-start" onclick="startTempoSession()">Start 1-Minute Reading</button>
@@ -4366,6 +4377,21 @@ function onTempoSlider(v) {
   _tempo.targetWpm = parseInt(v);
   document.getElementById('tempo-slider-val').textContent = v + ' wpm';
   document.querySelectorAll('.tpreset').forEach(b => b.classList.remove('active'));
+  const syncLabel = document.querySelector('#metro-bpm-row')?.previousElementSibling;
+  if (syncLabel && _tempo.metronomeLinked) {
+    syncLabel.lastChild.textContent = ` Sync beat to my reading tempo (${_tempo.targetWpm} BPM)`;
+  }
+}
+
+function toggleMetronomeLink(v) {
+  _tempo.metronomeLinked = v;
+  const row = document.getElementById('metro-bpm-row');
+  if (row) row.style.display = v ? 'none' : '';
+}
+
+function onMetroBpmSlider(v) {
+  _tempo.metronomeBpm = parseInt(v);
+  document.getElementById('metro-bpm-val').textContent = v + ' bpm';
 }
 
 async function aiSuggestTempo() {
